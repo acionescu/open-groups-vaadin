@@ -1,0 +1,51 @@
+@import url(../reindeer/styles.css);
+
+.v-panel-gray .v-panel-content-gray {
+	background: #aaaaaa;
+}
+
+.issue-title {
+	font-size: 16px
+}
+
+.issue-title .v-button-wrap .v-button-caption {
+	font-size: 16px
+}
+
+.with-left-margin {
+	margin-left: 10px
+}
+
+.v-loading-indicator,.v-loading-indicator-delay,.v-loading-indicator-wait
+	{
+	background: url(../base/common/img/loading-indicator.gif) no-repeat
+		center;
+	position: fixed !important;
+	width: 85px;
+	height: 85px;
+	top: 44%;
+	left: 45%;
+	z-index: 30000;
+}
+
+.v-panel .v-panel-content-text-content {
+	max-height: 200px;
+	overflow-x: hidden !important;
+}
+
+.v-panel-content-text-content>div {
+	background: transparent;
+}
+
+.list-container {
+	border-top-style: solid; border-width : thin;
+	border-color: grey;
+	border-width: thin;
+}
+
+.list-item {
+	border-bottom-style: solid;
+	border-width: thin;
+	border-color: grey;
+	padding-top: 20px;
+}
