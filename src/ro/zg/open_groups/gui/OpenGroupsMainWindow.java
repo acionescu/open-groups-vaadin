@@ -17,6 +17,7 @@ package ro.zg.open_groups.gui;
 
 import ro.zg.open_groups.resources.OpenGroupsResources;
 
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UriFragmentUtility;
@@ -25,128 +26,126 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.themes.Reindeer;
 
-public class OpenGroupsMainWindow extends Window{
-    /**
+public class OpenGroupsMainWindow extends Window {
+	/**
      * 
      */
-    private static final long serialVersionUID = -8492978667795915161L;
-    private GridLayout headerPanel;
-    private TabSheet entitiesTabSheet;
-    private VerticalLayout userActionsContainer;
-    private TabSheet mainTabSheet;
-    private Tab entitiesTab;
-    private Tab userActionsTab;
-    private VerticalLayout mainContent;
-    private UriFragmentUtility uriUtility;
-    
-    
-    public OpenGroupsMainWindow(String caption) {
-	super(caption);
-//	createLayout();			
-    }
-    
-    public OpenGroupsMainWindow() {
-//	createLayout();
-    }
-    
-    public void createLayout(){
-	mainContent = new VerticalLayout();
-//	mainContent.setSizeFull();
-	mainContent.setMargin(true);
-	
-	this.setSizeFull();
-	setContent(mainContent);
-	
-	uriUtility = new UriFragmentUtility();
-	mainContent.addComponent(uriUtility);
+	private static final long serialVersionUID = -8492978667795915161L;
+	private GridLayout headerPanel;
+	private TabSheet entitiesTabSheet;
+	private CssLayout userActionsContainer;
+	private TabSheet mainTabSheet;
+	private Tab entitiesTab;
+	private Tab userActionsTab;
+	private VerticalLayout mainContent;
+	private UriFragmentUtility uriUtility;
+
+	public OpenGroupsMainWindow(String caption) {
+		super(caption);
+		// createLayout();
+	}
+
+	public OpenGroupsMainWindow() {
+		// createLayout();
+	}
+
+	public void createLayout() {
+//		mainContent = new VerticalLayout();
+//		mainContent.setSizeFull();
+//		mainContent.setMargin(true);
+//		
+//		setContent(mainContent);
 		
-	headerPanel = new GridLayout(2,1);
-	headerPanel.setWidth("100%");
-	mainContent.addComponent(headerPanel);
-//	headerContainer=new VerticalLayout();
-//	mainContent.addComponent(headerContainer);
-	
-//	Panel contentContainer = new Panel();
-//	VerticalLayout hlv = new VerticalLayout();
-//	hlv.setMargin(false);
-//	contentContainer.setContent(hlv);
-//	mainContent.addComponent(contentContainer);
-	
-	
-	entitiesTabSheet = new TabSheet();
-	entitiesTabSheet.setSizeFull();
-	entitiesTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
-//	entitiesTabSheet.setImmediate(true);
-	
-	userActionsContainer=new VerticalLayout();
-	
-	mainTabSheet = new TabSheet();
-	mainTabSheet.setSizeFull();
-//	mainTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
-//	mainTabSheet.setImmediate(true);
-	
-	entitiesTab = mainTabSheet.addTab(entitiesTabSheet, OpenGroupsResources.getMessage("metagovernment.tab.caption"), null);
-	userActionsTab = mainTabSheet.addTab(userActionsContainer, OpenGroupsResources.getMessage("user.tab.caption"), null);
-	userActionsTab.setVisible(false);
-	
-	
-//	Panel mainTabSheetContainer = new Panel();
-//	mainTabSheetContainer.addComponent(mainTabSheet);
-//	mainTabSheetContainer.addStyleName("gray");
-	
-	mainContent.addComponent(mainTabSheet);
-	
-	mainContent.setExpandRatio(mainTabSheet, 1f);
-	
-    }
-    
-    public void clear() {
-	removeAllComponents();
-	createLayout();
-    }
-    
-//    public void setHeaderContent(Component c) {
-//	headerContainer.removeAllComponents();
-//	headerContainer.addComponent(c);
-//    }
-    
-    public void setUserActionsTabVisible(boolean visible) {
-	userActionsTab.setVisible(visible);
-    }
-    
-    /**
-     * @return the headerPanel
-     */
-    public GridLayout getHeaderPanel() {
-        return headerPanel;
-    }
-   
-   
-    /**
-     * @param headerPanel the headerPanel to set
-     */
-    public void setHeaderPanel(GridLayout headerPanel) {
-        this.headerPanel = headerPanel;
-    }
+		mainContent=(VerticalLayout)this.getContent();
+		uriUtility = new UriFragmentUtility();
+		mainContent.addComponent(uriUtility);
 
-    /**
-     * @return the entitiesTabSheet
-     */
-    public TabSheet getEntitiesTabSheet() {
-        return entitiesTabSheet;
-    }
+		headerPanel = new GridLayout(2, 1);
+		headerPanel.setWidth("100%");
+		mainContent.addComponent(headerPanel);
+		// headerContainer=new VerticalLayout();
+		// mainContent.addComponent(headerContainer);
 
-    /**
-     * @return the userActionsContainer
-     */
-    public VerticalLayout getUserActionsContainer() {
-        return userActionsContainer;
-    }
+		// Panel contentContainer = new Panel();
+		// VerticalLayout hlv = new VerticalLayout();
+		// hlv.setMargin(false);
+		// contentContainer.setContent(hlv);
+		// mainContent.addComponent(contentContainer);
 
-    /**
-     * @return the uriUtility
-     */
-    public UriFragmentUtility getUriUtility() {
-        return uriUtility;
-    }
+		entitiesTabSheet = new TabSheet();
+//		entitiesTabSheet.setSizeFull();
+		entitiesTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
+		// entitiesTabSheet.setImmediate(true);
+
+		userActionsContainer = new CssLayout();
+
+		mainTabSheet = new TabSheet();
+//		mainTabSheet.setSizeFull();
+		// mainTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
+		// mainTabSheet.setImmediate(true);
+
+		entitiesTab = mainTabSheet.addTab(entitiesTabSheet, OpenGroupsResources
+				.getMessage("metagovernment.tab.caption"), null);
+		userActionsTab = mainTabSheet.addTab(userActionsContainer,
+				OpenGroupsResources.getMessage("user.tab.caption"), null);
+		userActionsTab.setVisible(false);
+
+		// Panel mainTabSheetContainer = new Panel();
+		// mainTabSheetContainer.addComponent(mainTabSheet);
+		// mainTabSheetContainer.addStyleName("gray");
+
+		mainContent.addComponent(mainTabSheet);
+		// mainContent.setExpandRatio(mainTabSheet, 1f);
+
+	}
+
+	public void clear() {
+		removeAllComponents();
+		createLayout();
+	}
+
+	// public void setHeaderContent(Component c) {
+	// headerContainer.removeAllComponents();
+	// headerContainer.addComponent(c);
+	// }
+
+	public void setUserActionsTabVisible(boolean visible) {
+		userActionsTab.setVisible(visible);
+	}
+
+	/**
+	 * @return the headerPanel
+	 */
+	public GridLayout getHeaderPanel() {
+		return headerPanel;
+	}
+
+	/**
+	 * @param headerPanel
+	 *            the headerPanel to set
+	 */
+	public void setHeaderPanel(GridLayout headerPanel) {
+		this.headerPanel = headerPanel;
+	}
+
+	/**
+	 * @return the entitiesTabSheet
+	 */
+	public TabSheet getEntitiesTabSheet() {
+		return entitiesTabSheet;
+	}
+
+	/**
+	 * @return the userActionsContainer
+	 */
+	public CssLayout getUserActionsContainer() {
+		return userActionsContainer;
+	}
+
+	/**
+	 * @return the uriUtility
+	 */
+	public UriFragmentUtility getUriUtility() {
+		return uriUtility;
+	}
 }

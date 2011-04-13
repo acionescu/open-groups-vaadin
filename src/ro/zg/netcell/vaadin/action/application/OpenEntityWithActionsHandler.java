@@ -21,7 +21,7 @@ import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.opengroups.vo.Entity;
 
 import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.CssLayout;
 
 public class OpenEntityWithActionsHandler extends BaseEntityHandler{
 
@@ -47,8 +47,7 @@ public class OpenEntityWithActionsHandler extends BaseEntityHandler{
 	ComponentContainer targetContainer = actionContext.getTargetContainer();
 	targetContainer.removeAllComponents();
 	/* show the component */
-	VerticalLayout entityContainer = new VerticalLayout();
-	entityContainer.setSizeFull();
+	CssLayout entityContainer = new CssLayout();
 	/* set current container the entity container */
 //	application.setTargetComponent(entityContainer);
 	targetContainer.addComponent(entityContainer);
@@ -72,8 +71,7 @@ public class OpenEntityWithActionsHandler extends BaseEntityHandler{
 //	availableActions.executeHandler(application,actionsContainer,true);
 	
 	/* add the container for the actions to the window */
-	VerticalLayout actionsContainer = new VerticalLayout();
-	actionsContainer.setSizeFull();
+	CssLayout actionsContainer = new CssLayout();
 	targetContainer.addComponent(actionsContainer);
 //	targetContainer.setExpandRatio(actionsContainer, 1f);
 //	sp.setSecondComponent(actionsContainer);
