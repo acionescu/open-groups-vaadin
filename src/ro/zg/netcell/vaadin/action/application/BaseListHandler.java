@@ -64,7 +64,7 @@ public abstract class BaseListHandler extends BaseEntityHandler {
 		for (Entity currentEntity : list.getItemsList()) {
 			// Panel entityContainer = new Panel();
 			CssLayout entityContainer = new CssLayout();
-			entityContainer.setSizeFull();
+//			entityContainer.setSizeFull();
 			currentEntity.setEntityContainer(entityContainer);
 			
 			// displayArea.addItem(new Object[] {entityContainer}, null);

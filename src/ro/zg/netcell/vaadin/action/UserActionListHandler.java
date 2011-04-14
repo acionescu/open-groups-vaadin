@@ -31,7 +31,6 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.themes.Reindeer;
@@ -62,8 +61,8 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 
 		TabSheet actionsTabSheet = new TabSheet();
 		actionsTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
-//		actionsTabSheet.setWidth("100%");
-		actionsTabSheet.setSizeFull();
+		actionsTabSheet.setWidth("100%");
+//		actionsTabSheet.setSizeFull();
 		displayArea.addComponent(actionsTabSheet);
 		/* add listener */
 		actionsTabSheet.addListener(new SelectedTabChangeListener() {
@@ -131,15 +130,16 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 			}
 
 			AbstractComponentContainer tabContent = new CssLayout();
-			tabContent.setSizeFull();
+//			tabContent.setSizeFull();
 			if (cua instanceof UserActionList) {
 				((CssLayout) tabContent).setMargin(false);
 			} else {
 				tabContent = new Panel();
-				((Panel) tabContent).getContent().setSizeFull();
+				tabContent.setWidth("100%");
+//				((Panel) tabContent).getContent().setSizeFull();
 				((Panel) tabContent).setScrollable(false);
 			}
-			tabContent.setSizeFull();
+//			tabContent.setSizeFull();
 
 			actionPathContainers.put(cua.getActionName(), tabContent);
 			tabContent.setData(cua);

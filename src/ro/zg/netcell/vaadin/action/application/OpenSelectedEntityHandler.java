@@ -69,7 +69,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	
 //	Panel currentContainer = (Panel) container;
 	ComponentContainer currentContainer = container;
-	
+	currentContainer.setWidth("100%");
 	entity.setEntityContainer(container);
 
 	GridLayout headerContainer = new GridLayout(2, 1);
