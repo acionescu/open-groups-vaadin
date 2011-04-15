@@ -36,6 +36,7 @@ import ro.zg.util.date.DateUtil;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -68,15 +69,17 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	
 //	Panel currentContainer = (Panel) container;
 	ComponentContainer currentContainer = container;
-	
+	currentContainer.setWidth("100%");
 	entity.setEntityContainer(container);
 
 	GridLayout headerContainer = new GridLayout(2, 1);
-	headerContainer.setSizeFull();
+//	headerContainer.setSizeFull();
+	headerContainer.setWidth("100%");
 	currentContainer.addComponent(headerContainer);
 
 	HorizontalLayout titleContainer = new HorizontalLayout();
-	titleContainer.setSizeFull();
+//	titleContainer.setSizeFull();
+	titleContainer.setWidth("100%");
 	// titleContainer.setWidth("800px");
 	// titleContainer.setHeight("100%");
 	titleContainer.setSpacing(true);
@@ -96,7 +99,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    entityTypeCaption = "(" + getMessage(entity.getComplexType()) + ")";
 	    Label etl = new Label(entityTypeCaption);
 	    etl.addStyleName("issue-title");
-	    etl.setSizeFull();
+//	    etl.setSizeFull();
+	    etl.setWidth("100%");
 	    titleContainer.addComponent(etl);
 	    titleContainer.setExpandRatio(etl, 1.2f);
 	}
@@ -125,18 +129,21 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	/* display title */
 	/* if the entity is opened or it is a leaf entity, and it is not displayed in the recent activity list */
 	if (isOpened || (subtyesList == null && parentEntityId < 0)) {
-	    VerticalLayout vl = new VerticalLayout();
-	    vl.setSizeFull();
+	    CssLayout vl = new CssLayout();
+//	    vl.setSizeFull();
+	    vl.setWidth("100%");
 	    titleContainer.addComponent(vl);
 	    titleContainer.setComponentAlignment(vl, Alignment.MIDDLE_LEFT);
 	    titleContainer.setExpandRatio(vl, 10f);
 
 	    Label title = new Label(entity.getTitle());
 	    title.setStyleName("issue-title");
-	    title.setSizeFull();
-
+//	    title.setSizeFull();
+	    title.setWidth("100%");
+	    
 	    vl.addComponent(title);
-	    vl.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
+//	    vl.setSizeFull();
+//	    vl.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
 	    
 	    if(subtyesList == null) {
 		currentContainer.addStyleName("list-item");
@@ -144,7 +151,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
 	} else {
 	    Button titleLink = new Button(entity.getTitle());
-	    titleLink.setSizeFull();
+//	    titleLink.setSizeFull();
+	    titleLink.setWidth("100%");
 	    titleLink.addStyleName(BaseTheme.BUTTON_LINK);
 	    titleLink.addStyleName("issue-title");
 	    titleLink.setDescription(entity.getContentPreview());
@@ -264,7 +272,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	}
 
 	GridLayout statusPane = new GridLayout(2, 1);
-	statusPane.setSizeFull();
+//	statusPane.setSizeFull();
+	statusPane.setWidth("100%");
 	currentContainer.addComponent(statusPane);
 
 	if (getAppConfigManager().getComplexEntityBooleanParam(complexEntityType, ComplexEntityParam.SHOW_POST_INFO)) {
@@ -275,11 +284,13 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	}
 
 	GridLayout summaryLayout = new GridLayout();
-	summaryLayout.setSizeFull();
+//	summaryLayout.setSizeFull();
+	summaryLayout.setWidth("100%");
 	currentContainer.addComponent(summaryLayout);
 
 	HorizontalLayout statsSummaryPane = new HorizontalLayout();
-	statsSummaryPane.setSizeFull();
+//	statsSummaryPane.setSizeFull();
+	statsSummaryPane.setWidth("100%");
 
 	summaryLayout.addComponent(statsSummaryPane, 0, 0);
 	summaryLayout.setColumnExpandRatio(1, 1.8f);
@@ -361,7 +372,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    return;
 	}
 	GridLayout actionsContainer = new GridLayout(1, actions.getActions().size());
-	actionsContainer.setSizeFull();
+//	actionsContainer.setSizeFull();
+	actionsContainer.setWidth("100%");
 	currentContainer.addComponent(actionsContainer);
 	int row = 0;
 	for (UserAction ua : actions.getActions().values()) {
@@ -385,7 +397,6 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
 	for (UserAction ua : actions.getActions().values()) {
 	    HorizontalLayout actionContainer = new HorizontalLayout();
-	    actionContainer.setSizeFull();
 	    currentContainer.addComponent(actionContainer);
 	    currentContainer.setExpandRatio(actionContainer, 2f);
 	    currentContainer.setComponentAlignment(actionContainer, Alignment.MIDDLE_RIGHT);
@@ -408,7 +419,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    @Override
 	    public void buttonClick(ClickEvent event) {
 		// ha.executeHandler(entity,app,app.getTemporaryTab(entity).getContainer());
-		VerticalLayout hac = (VerticalLayout) entity.getHeaderActionContainer(ha.getActionName());
+		CssLayout hac = (CssLayout) entity.getHeaderActionContainer(ha.getActionName());
 		ha.executeHandler(entity, app, hac);
 		hac.setVisible(true);
 		// app.refreshEntity(entity);
@@ -428,7 +439,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		entity.getState().setActionInactive(ha.getActionName());
 		// app.getTemporaryTab(entity).setRefreshOn(true);
 		// getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, entity,app,null, false);
-		VerticalLayout hac = (VerticalLayout) entity.getHeaderActionContainer(ha.getActionName());
+		CssLayout hac = (CssLayout) entity.getHeaderActionContainer(ha.getActionName());
 		hac.setVisible(false);
 		// app.refreshEntity(entity);
 		refreshHeaderActionLinks(entity, app);

@@ -128,7 +128,8 @@ public class EntityListHandler extends BaseListHandler {
 	    pageControlsContainer.setSpacing(true);
 	    refreshPageControls(entity, ua, app, pageControlsContainer);
 	    GridLayout gl = new GridLayout(1, 1);
-	    gl.setSizeFull();
+//	    gl.setSizeFull();
+	    gl.setWidth("100%");
 	    displayArea.addComponent(gl);
 	    gl.addComponent(pageControlsContainer, 0, 0);
 	    gl.setComponentAlignment(pageControlsContainer, Alignment.MIDDLE_RIGHT);

@@ -25,7 +25,6 @@ import ro.zg.opengroups.vo.UserActionList;
 
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.VerticalLayout;
 
 public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 
@@ -47,15 +46,17 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 	}
 
 	container.removeAllComponents();
+	container.setSizeFull();
 	UserActionList headerActions = getAvailableActions(entity, ActionLocations.HEADER);
 	if (headerActions != null && headerActions.getActions() != null) {
 	    // HorizontalLayout actionsContainer = new HorizontalLayout();
 	    for (final UserAction ha : headerActions.getActions().values()) {
 
 		/* create container for this action */
-		VerticalLayout hac = (VerticalLayout) entity.getHeaderActionContainer(ha.getActionName());
+		CssLayout hac = (CssLayout) entity.getHeaderActionContainer(ha.getActionName());
 		if (hac == null) {
-		    hac = new VerticalLayout();
+		    hac = new CssLayout();
+//		    hac.setSizeFull();
 		    entity.addHeaderActionContainer(ha.getActionName(), hac);
 		    hac.setVisible(false);
 		}
@@ -65,7 +66,6 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 //	Panel entityContainer = new Panel();
 	CssLayout entityContainer = new CssLayout();
 	entityContainer.setSizeFull();
-	
 	container.addComponent(entityContainer);
 	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY, entity,app, entityContainer, false);
 	

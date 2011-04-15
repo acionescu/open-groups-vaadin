@@ -46,438 +46,480 @@ import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.open_groups.user.UsersManager;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.ObjectsUtil;
+import ro.zg.util.parser.ParserException;
 import ro.zg.util.parser.utils.ListMapParser;
 
 import com.vaadin.ui.ComponentContainer;
 
 public class UserAction implements Serializable {
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = 6392501241895451134L;
+	private static final long serialVersionUID = 6392501241895451134L;
 
-    // protected ActionsManager actionsManager = ActionsManager.getInstance();
+	// protected ActionsManager actionsManager = ActionsManager.getInstance();
 
-    // private static Map<String, String> actionsDisplayNames;
-    // private static Map<String, String> targetEntityDisplayNames;
-    // private static Map<String, String> actionTargetDisplayNames;
-    private static Map<String, OpenGroupsActionHandler> actionsHandlers;
-    private static Map<String, OpenGroupsActionHandler> actionsHandlersByName;
-    static {
-	/*
-	 * actionsDisplayNames = new HashMap<String, String>(); targetEntityDisplayNames = new HashMap<String,
-	 * String>(); actionTargetDisplayNames = new HashMap<String, String>();
-	 * 
-	 * actionsDisplayNames.put("entity.list.newest", "Newest"); actionsDisplayNames.put("entity.list.most_popular",
-	 * "Most popular"); actionsDisplayNames.put("entity.list.by.my.priority", "My priorities");
-	 * actionsDisplayNames.put("entity.list.by.global.priority", "Global priorities");
-	 * actionsDisplayNames.put("user.login", "Login"); actionsDisplayNames.put("user.register", "Register");
-	 * actionsDisplayNames.put("user.logout", "Logout"); actionsDisplayNames.put("entity.vote", "Vote");
-	 * actionsDisplayNames.put("entity.update", "Update"); actionsDisplayNames.put("entity.upstream.hierarchy",
-	 * "Show hierarchy");
-	 * 
-	 * targetEntityDisplayNames.put("SOLUTION", "Solutions"); targetEntityDisplayNames.put("COMMENT", "Comments");
-	 * 
-	 * actionTargetDisplayNames.put("entity.create.with_tags/ISSUE", "Create issue");
-	 * actionTargetDisplayNames.put("entity.create/COMMENT", "Add comment");
-	 * actionTargetDisplayNames.put("entity.create/SOLUTION", "Propose solution");
-	 * actionTargetDisplayNames.put("entity.list.recent.activity/*", "Recent activity");
+	// private static Map<String, String> actionsDisplayNames;
+	// private static Map<String, String> targetEntityDisplayNames;
+	// private static Map<String, String> actionTargetDisplayNames;
+	private static Map<String, OpenGroupsActionHandler> actionsHandlers;
+	private static Map<String, OpenGroupsActionHandler> actionsHandlersByName;
+	static {
+		/*
+		 * actionsDisplayNames = new HashMap<String, String>();
+		 * targetEntityDisplayNames = new HashMap<String, String>();
+		 * actionTargetDisplayNames = new HashMap<String, String>();
+		 * 
+		 * actionsDisplayNames.put("entity.list.newest", "Newest");
+		 * actionsDisplayNames.put("entity.list.most_popular", "Most popular");
+		 * actionsDisplayNames.put("entity.list.by.my.priority",
+		 * "My priorities");
+		 * actionsDisplayNames.put("entity.list.by.global.priority",
+		 * "Global priorities"); actionsDisplayNames.put("user.login", "Login");
+		 * actionsDisplayNames.put("user.register", "Register");
+		 * actionsDisplayNames.put("user.logout", "Logout");
+		 * actionsDisplayNames.put("entity.vote", "Vote");
+		 * actionsDisplayNames.put("entity.update", "Update");
+		 * actionsDisplayNames.put("entity.upstream.hierarchy",
+		 * "Show hierarchy");
+		 * 
+		 * targetEntityDisplayNames.put("SOLUTION", "Solutions");
+		 * targetEntityDisplayNames.put("COMMENT", "Comments");
+		 * 
+		 * actionTargetDisplayNames.put("entity.create.with_tags/ISSUE",
+		 * "Create issue");
+		 * actionTargetDisplayNames.put("entity.create/COMMENT", "Add comment");
+		 * actionTargetDisplayNames.put("entity.create/SOLUTION",
+		 * "Propose solution");
+		 * actionTargetDisplayNames.put("entity.list.recent.activity/*",
+		 * "Recent activity");
+		 */
+		actionsHandlers = new HashMap<String, OpenGroupsActionHandler>();
+		actionsHandlers.put("ro.problems.flows.login", new LoginHandler());
+		actionsHandlers.put("ro.problems.flows.logout", new LogoutHandler());
+		actionsHandlers.put("ro.problems.flows.create-user",
+				new RegisterUserHandler());
+		actionsHandlers.put("ro.problems.flows.get-entities-list",
+				new EntityListHandler());
+		actionsHandlers.put("ro.problems.flows.create-entity-with-tags",
+				new CreateEntityHandler());
+		actionsHandlers.put("ro.problems.flows.create-entity",
+				new CreateEntityHandler());
+		// actionsHandlers.put("ro.problems.flows.vote-entity", new
+		// VoteEntityHandler());
+		actionsHandlers.put("ro.problems.flows.update-entity",
+				new UpdateEntityHandler());
+
+		actionsHandlersByName = new HashMap<String, OpenGroupsActionHandler>();
+		actionsHandlersByName.put("entity.upstream.hierarchy",
+				new OpenHierarchyForEntityHandler());
+		actionsHandlersByName.put("entity.vote", new VoteEntityHandler());
+		actionsHandlersByName.put("entity.set.priority",
+				new SetEntityPriorityHandler());
+		actionsHandlersByName.put("entity.set.status",
+				new SetEntityStatusHandler());
+		actionsHandlersByName.put("user.update.data", new UpdateUserHandler());
+		actionsHandlersByName.put("user.request.password.reset",
+				new RequestPasswordResetHandler());
+		actionsHandlersByName.put("user.reset.password",
+				new ResetPasswordHandler());
+	}
+
+	private String action;
+	private String actionName;
+	private Map<String, Object> actionParams;
+	/**
+	 * the parameters that need to be gathered from the user these parameters
+	 * are defined in the actions table as: <param name>=? the question mark
+	 * means that the parameter needs to be collected from the user
 	 */
-	actionsHandlers = new HashMap<String, OpenGroupsActionHandler>();
-	actionsHandlers.put("ro.problems.flows.login", new LoginHandler());
-	actionsHandlers.put("ro.problems.flows.logout", new LogoutHandler());
-	actionsHandlers.put("ro.problems.flows.create-user", new RegisterUserHandler());
-	actionsHandlers.put("ro.problems.flows.get-entities-list", new EntityListHandler());
-	actionsHandlers.put("ro.problems.flows.create-entity-with-tags", new CreateEntityHandler());
-	actionsHandlers.put("ro.problems.flows.create-entity", new CreateEntityHandler());
-	// actionsHandlers.put("ro.problems.flows.vote-entity", new VoteEntityHandler());
-	actionsHandlers.put("ro.problems.flows.update-entity", new UpdateEntityHandler());
+	private List<String> userInputParamNames;
+	/**
+	 * correspondent of the action_target column in action_strategies table this
+	 * will have the form actionLocation:actionPath
+	 */
+	private String actionTarget;
+	private String displayName;
+	private String targetEntityType;
+	private String sourceEntityComplexType;
+	private String targetEntityComplexType;
+	private String userType;
+	private String actionLocation;
+	private String actionPath;
+	/**
+	 * this will have the format {@link #sourceEntityComplexType}:
+	 * {@link #actionLocation} will be used to group the actions based on source
+	 * entity complex type and the location where the action will be displayed
+	 * in the gui
+	 */
+	private String sourceEntityActionLocation;
+	private boolean allowReadToAll;
+	private OpenGroupsActionHandler actionHandler;
+	private FormGenerator formGenerator;
 
-	actionsHandlersByName = new HashMap<String, OpenGroupsActionHandler>();
-	actionsHandlersByName.put("entity.upstream.hierarchy", new OpenHierarchyForEntityHandler());
-	actionsHandlersByName.put("entity.vote", new VoteEntityHandler());
-	actionsHandlersByName.put("entity.set.priority", new SetEntityPriorityHandler());
-	actionsHandlersByName.put("entity.set.status", new SetEntityStatusHandler());
-	actionsHandlersByName.put("user.update.data", new UpdateUserHandler());
-	actionsHandlersByName.put("user.request.password.reset", new RequestPasswordResetHandler());
-	actionsHandlersByName.put("user.reset.password", new ResetPasswordHandler());
-    }
+	public UserAction() {
 
-    private String action;
-    private String actionName;
-    private Map<String, Object> actionParams;
-    /**
-     * the parameters that need to be gathered from the user these parameters are defined in the actions table as:
-     * <param name>=? the question mark means that the parameter needs to be collected from the user
-     */
-    private List<String> userInputParamNames;
-    /**
-     * correspondent of the action_target column in action_strategies table this will have the form
-     * actionLocation:actionPath
-     */
-    private String actionTarget;
-    private String displayName;
-    private String targetEntityType;
-    private String sourceEntityComplexType;
-    private String targetEntityComplexType;
-    private String userType;
-    private String actionLocation;
-    private String actionPath;
-    /**
-     * this will have the format {@link #sourceEntityComplexType}:{@link #actionLocation} will be used to group the
-     * actions based on source entity complex type and the location where the action will be displayed in the gui
-     */
-    private String sourceEntityActionLocation;
-    private boolean allowReadToAll;
-    private OpenGroupsActionHandler actionHandler;
-    private FormGenerator formGenerator;
-
-    public UserAction() {
-
-    }
-
-    public UserAction(GenericNameValueContext contextMap) {
-	action = (String) contextMap.getValue("action");
-	actionTarget = (String) contextMap.getValue("action_target");
-	targetEntityType = (String) contextMap.getValue("target_entity_type");
-	actionName = (String) contextMap.getValue("action_name");
-	sourceEntityComplexType = (String) contextMap.getValue("source_entity_complex_type");
-	targetEntityComplexType = (String) contextMap.getValue("target_entity_complex_type");
-	userType = (String) contextMap.getValue("user_type");
-	initActionLocationAndActionPath(actionTarget);
-	// initParamsFromString((String) contextMap.getValue("action_params"));
-	initActionParamsFromString((String) contextMap.getValue("action_params"));
-	sourceEntityActionLocation = sourceEntityComplexType + ":" + actionLocation;
-	allowReadToAll = (Boolean) contextMap.getValue("allow_read_to_all");
-	actionHandler = actionsHandlersByName.get(actionName);
-	if (actionHandler == null) {
-	    actionHandler = actionsHandlers.get(action);
 	}
-	if (actionHandler != null) {
-	    actionHandler.setUserAction(this);
+
+	public UserAction(GenericNameValueContext contextMap) {
+		action = (String) contextMap.getValue("action");
+		actionTarget = (String) contextMap.getValue("action_target");
+		targetEntityType = (String) contextMap.getValue("target_entity_type");
+		actionName = (String) contextMap.getValue("action_name");
+		sourceEntityComplexType = (String) contextMap
+				.getValue("source_entity_complex_type");
+		targetEntityComplexType = (String) contextMap
+				.getValue("target_entity_complex_type");
+		userType = (String) contextMap.getValue("user_type");
+		initActionLocationAndActionPath(actionTarget);
+		// initParamsFromString((String) contextMap.getValue("action_params"));
+		initActionParamsFromString((String) contextMap
+				.getValue("action_params"));
+		sourceEntityActionLocation = sourceEntityComplexType + ":"
+				+ actionLocation;
+		allowReadToAll = (Boolean) contextMap.getValue("allow_read_to_all");
+		actionHandler = actionsHandlersByName.get(actionName);
+		if (actionHandler == null) {
+			actionHandler = actionsHandlers.get(action);
+		}
+		if (actionHandler != null) {
+			actionHandler.setUserAction(this);
+		}
+		initDisplayName();
 	}
-	initDisplayName();
-    }
 
-    // public CommandResponse execute(Map<String, Object> params) {
-    // return ActionsManager.getInstance().execute(action, params);
-    // }
-
-    public boolean checkUserAllowedToExecuteAction(Entity entity, OpenGroupsApplication app, UserAction ua) {
-	List<String> currentUserTypes = UsersManager.getInstance().getCurrentUserTypes(entity, app);
-	return currentUserTypes.contains(ua.getUserType());
-    }
-
-    public void executeHandler(Entity selectedEntity, OpenGroupsApplication app, ComponentContainer targetContainer,
-	    boolean runInSeparateThread) {
-	/* set this actions as active on current selected entity */
-	if (selectedEntity != null) {
-	    selectedEntity.getState().setActionActive(actionName);
-	}
-	ActionsManager.getInstance().executeHandler(getActionHandler(), this, selectedEntity, app, targetContainer,
-		runInSeparateThread);
-    }
-
-    public void executeHandler(Entity entity, OpenGroupsApplication app, ComponentContainer targetContainer) {
-	/* run the handler in a separate thread */
-	executeHandler(entity, app, targetContainer, false);
-    }
-
-    public void executeHandler(OpenGroupsApplication app, Map<String, Object> params) {
-	ActionsManager.getInstance().executeHandler(getActionHandler(), new ActionContext(this, app, null, params));
-    }
-
-    public boolean allowRead(List<String> userTypes) {
-	if (allowReadToAll) {
-	    return true;
-	}
-	return userTypes.contains(userType);
-    }
-
-    public DefaultForm generateForm() {
-	// System.out.println("generating form for actions " + actionName + " with " + formGenerator);
-	if (formGenerator != null) {
-	    return formGenerator.generate();
-	}
-	return null;
-    }
-
-    public List<InputParameter> getUserInputParamsList(List<InputParameter> actionParams) {
-	if (userInputParamNames.size() == 0) {
-	    return actionParams;
-	}
-	List<InputParameter> userInputParams = new ArrayList<InputParameter>();
-	for (InputParameter uip : actionParams) {
-	    if (userInputParamNames.contains(uip.getName())) {
-		userInputParams.add(uip);
-	    }
-	}
-	return userInputParams;
-    }
-
-    public List<InputParameter> getUserInputParamsList(List<InputParameter> actionParams, Map<String, Object> values) {
-	if (userInputParamNames.size() == 0) {
-	    return actionParams;
-	}
-	List<InputParameter> userInputParams = new ArrayList<InputParameter>();
-	for (InputParameter uip : actionParams) {
-	    if (userInputParamNames.contains(uip.getName())) {
-		InputParameter p = (InputParameter) ObjectsUtil.copy(uip);
-		p.setValue(values.get(p.getName()));
-		userInputParams.add(p);
-	    }
-	}
-	return userInputParams;
-    }
-
-    public String getFullActionPath() {
-	if (actionPath != null) {
-	    return actionPath + "/" + actionName;
-	}
-	return actionName;
-    }
-
-    private void initDisplayName() {
-	displayName = OpenGroupsResources.getMessage(actionName);
-
-	if (displayName == null) {
-	    displayName = OpenGroupsResources.getMessage(actionName + "/" + targetEntityType);
-	}
-	// if (displayName == null) {
-	// System.out.println("displayname for "+actionName+" : "+action+" : "+targetEntityType);
-	// // displayName = targetEntityDisplayNames.get(targetEntityType);
+	// public CommandResponse execute(Map<String, Object> params) {
+	// return ActionsManager.getInstance().execute(action, params);
 	// }
-    }
 
-    private void initParamsFromString(String paramsString) {
-	actionParams = new HashMap<String, Object>();
-	userInputParamNames = new ArrayList<String>();
+	public boolean checkUserAllowedToExecuteAction(Entity entity,
+			OpenGroupsApplication app, UserAction ua) {
+		List<String> currentUserTypes = UsersManager.getInstance()
+				.getCurrentUserTypes(entity, app);
+		return currentUserTypes.contains(ua.getUserType());
+	}
 
-	if (paramsString != null) {
-	    String[] paramsArray = paramsString.trim().split("\\|");
-	    for (String param : paramsArray) {
-		if ("".equals(param.trim())) {
-		    continue;
+	public void executeHandler(Entity selectedEntity,
+			OpenGroupsApplication app, ComponentContainer targetContainer,
+			boolean runInSeparateThread) {
+		/* set this actions as active on current selected entity */
+		if (selectedEntity != null) {
+			selectedEntity.getState().setActionActive(actionName);
 		}
-		String[] pa = param.split("=");
-		String name = pa[0].trim();
-		String value = pa[1].trim();
-		if ("".equals(value)) {
-		    value = null;
-		} else if ("?".equals(value)) {
-		    userInputParamNames.add(name);
-		    value = null;
+		ActionsManager.getInstance().executeHandler(getActionHandler(), this,
+				selectedEntity, app, targetContainer, runInSeparateThread);
+	}
+
+	public void executeHandler(Entity entity, OpenGroupsApplication app,
+			ComponentContainer targetContainer) {
+		/* run the handler in a separate thread */
+		executeHandler(entity, app, targetContainer, false);
+	}
+
+	public void executeHandler(OpenGroupsApplication app,
+			Map<String, Object> params) {
+		ActionsManager.getInstance().executeHandler(getActionHandler(),
+				new ActionContext(this, app, null, params));
+	}
+
+	public boolean allowRead(List<String> userTypes) {
+		if (allowReadToAll) {
+			return true;
 		}
-		actionParams.put(name, value);
-	    }
+		return userTypes.contains(userType);
 	}
-    }
 
-    private void initActionParamsFromString(String s) {
-	actionParams = new HashMap<String, Object>();
-	if (s == null) {
-	    return;
+	public DefaultForm generateForm() {
+		// System.out.println("generating form for actions " + actionName +
+		// " with " + formGenerator);
+		if (formGenerator != null) {
+			return formGenerator.generate();
+		}
+		return null;
 	}
-	List<Map<String, String>> paramsList = (List<Map<String, String>>) ListMapParser.parse(s);
-	List<Map<String, String>> formParamsList = new ArrayList<Map<String, String>>();
-	for (Map<String, String> paramConfig : paramsList) {
-	    String value = paramConfig.get(ActionParamProperties.VALUE);
-	    if (value != null && !"".equals(value.trim())) {
-		String name = paramConfig.get(ActionParamProperties.NAME);
-		actionParams.put(name, value);
-	    }
-	    if ("true".equals(paramConfig.get(ActionParamProperties.IS_FORM_FIELD))) {
-		formParamsList.add(paramConfig);
-	    }
+
+	public List<InputParameter> getUserInputParamsList(
+			List<InputParameter> actionParams) {
+		if (userInputParamNames.size() == 0) {
+			return actionParams;
+		}
+		List<InputParameter> userInputParams = new ArrayList<InputParameter>();
+		for (InputParameter uip : actionParams) {
+			if (userInputParamNames.contains(uip.getName())) {
+				userInputParams.add(uip);
+			}
+		}
+		return userInputParams;
 	}
-	if (formParamsList.size() > 0) {
-	    formGenerator = new FormGenerator(actionName, formParamsList, OpenGroupsResources.getBundle());
+
+	public List<InputParameter> getUserInputParamsList(
+			List<InputParameter> actionParams, Map<String, Object> values) {
+		if (userInputParamNames.size() == 0) {
+			return actionParams;
+		}
+		List<InputParameter> userInputParams = new ArrayList<InputParameter>();
+		for (InputParameter uip : actionParams) {
+			if (userInputParamNames.contains(uip.getName())) {
+				InputParameter p = (InputParameter) ObjectsUtil.copy(uip);
+				p.setValue(values.get(p.getName()));
+				userInputParams.add(p);
+			}
+		}
+		return userInputParams;
 	}
-    }
 
-    private void initActionLocationAndActionPath(String actionTarget) {
-	if (actionTarget == null) {
-	    return;
+	public String getFullActionPath() {
+		if (actionPath != null) {
+			return actionPath + "/" + actionName;
+		}
+		return actionName;
 	}
-	int index = actionTarget.indexOf(":");
-	if (index > 0) {
-	    actionLocation = actionTarget.substring(0, index);
-	    actionPath = actionTarget.substring(index + 1);
-	    if ("".equals(actionPath.trim())) {
-		actionPath = null;
-	    }
-	} else {
-	    actionLocation = actionTarget;
+
+	private void initDisplayName() {
+		displayName = OpenGroupsResources.getMessage(actionName);
+
+		if (displayName == null) {
+			displayName = OpenGroupsResources.getMessage(actionName + "/"
+					+ targetEntityType);
+		}
+		// if (displayName == null) {
+		// System.out.println("displayname for "+actionName+" : "+action+" : "+targetEntityType);
+		// // displayName = targetEntityDisplayNames.get(targetEntityType);
+		// }
 	}
-    }
 
-    /**
-     * @return the action
-     */
-    public String getAction() {
-	return action;
-    }
+	private void initParamsFromString(String paramsString) {
+		actionParams = new HashMap<String, Object>();
+		userInputParamNames = new ArrayList<String>();
 
-    /**
-     * @return the actionTarget
-     */
-    public String getActionTarget() {
-	return actionTarget;
-    }
+		if (paramsString != null) {
+			String[] paramsArray = paramsString.trim().split("\\|");
+			for (String param : paramsArray) {
+				if ("".equals(param.trim())) {
+					continue;
+				}
+				String[] pa = param.split("=");
+				String name = pa[0].trim();
+				String value = pa[1].trim();
+				if ("".equals(value)) {
+					value = null;
+				} else if ("?".equals(value)) {
+					userInputParamNames.add(name);
+					value = null;
+				}
+				actionParams.put(name, value);
+			}
+		}
+	}
 
-    /**
-     * @return the displayName
-     */
-    public String getDisplayName() {
-	return displayName;
-    }
+	private void initActionParamsFromString(String s) {
+		actionParams = new HashMap<String, Object>();
+		if (s == null) {
+			return;
+		}
+		List<Map<String, String>> paramsList = null;
+		paramsList = (List<Map<String, String>>) ListMapParser.parse(s);
+		List<Map<String, String>> formParamsList = new ArrayList<Map<String, String>>();
+		for (Map<String, String> paramConfig : paramsList) {
+			String value = paramConfig.get(ActionParamProperties.VALUE);
+			if (value != null && !"".equals(value.trim())) {
+				String name = paramConfig.get(ActionParamProperties.NAME);
+				actionParams.put(name, value);
+			}
+			if ("true".equals(paramConfig
+					.get(ActionParamProperties.IS_FORM_FIELD))) {
+				formParamsList.add(paramConfig);
+			}
+		}
+		if (formParamsList.size() > 0) {
+			formGenerator = new FormGenerator(actionName, formParamsList,
+					OpenGroupsResources.getBundle());
+		}
+	}
 
-    /**
-     * @param action
-     *            the action to set
-     */
-    public void setAction(String action) {
-	this.action = action;
-    }
+	private void initActionLocationAndActionPath(String actionTarget) {
+		if (actionTarget == null) {
+			return;
+		}
+		int index = actionTarget.indexOf(":");
+		if (index > 0) {
+			actionLocation = actionTarget.substring(0, index);
+			actionPath = actionTarget.substring(index + 1);
+			if ("".equals(actionPath.trim())) {
+				actionPath = null;
+			}
+		} else {
+			actionLocation = actionTarget;
+		}
+	}
 
-    /**
-     * @param actionTarget
-     *            the actionTarget to set
-     */
-    public void setActionTarget(String actionTarget) {
-	this.actionTarget = actionTarget;
-    }
+	/**
+	 * @return the action
+	 */
+	public String getAction() {
+		return action;
+	}
 
-    /**
-     * @param displayName
-     *            the displayName to set
-     */
-    public void setDisplayName(String displayName) {
-	this.displayName = displayName;
-    }
+	/**
+	 * @return the actionTarget
+	 */
+	public String getActionTarget() {
+		return actionTarget;
+	}
 
-    /**
-     * @return the actionHandler
-     */
-    public OpenGroupsActionHandler getActionHandler() {
-	return actionHandler;
-    }
+	/**
+	 * @return the displayName
+	 */
+	public String getDisplayName() {
+		return displayName;
+	}
 
-    /**
-     * @param actionHandler
-     *            the actionHandler to set
-     */
-    public void setActionHandler(OpenGroupsActionHandler actionHandler) {
-	this.actionHandler = actionHandler;
-    }
+	/**
+	 * @param action
+	 *            the action to set
+	 */
+	public void setAction(String action) {
+		this.action = action;
+	}
 
-    /**
-     * @return the targetEntityType
-     */
-    public String getTargetEntityType() {
-	return targetEntityType;
-    }
+	/**
+	 * @param actionTarget
+	 *            the actionTarget to set
+	 */
+	public void setActionTarget(String actionTarget) {
+		this.actionTarget = actionTarget;
+	}
 
-    /**
-     * @param targetEntityType
-     *            the targetEntityType to set
-     */
-    public void setTargetEntityType(String targetEntityType) {
-	this.targetEntityType = targetEntityType;
-    }
+	/**
+	 * @param displayName
+	 *            the displayName to set
+	 */
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
-    /**
-     * @return the actionName
-     */
-    public String getActionName() {
-	return actionName;
-    }
+	/**
+	 * @return the actionHandler
+	 */
+	public OpenGroupsActionHandler getActionHandler() {
+		return actionHandler;
+	}
 
-    /**
-     * @return the actionParams
-     */
-    public Map<String, Object> getActionParams() {
-	return (Map<String, Object>) ObjectsUtil.copy(actionParams);
-    }
+	/**
+	 * @param actionHandler
+	 *            the actionHandler to set
+	 */
+	public void setActionHandler(OpenGroupsActionHandler actionHandler) {
+		this.actionHandler = actionHandler;
+	}
 
-    /**
-     * @param actionName
-     *            the actionName to set
-     */
-    public void setActionName(String actionName) {
-	this.actionName = actionName;
-    }
+	/**
+	 * @return the targetEntityType
+	 */
+	public String getTargetEntityType() {
+		return targetEntityType;
+	}
 
-    /**
-     * @return the userInputParamNames
-     */
-    public List<String> getUserInputParamNames() {
-	return userInputParamNames;
-    }
+	/**
+	 * @param targetEntityType
+	 *            the targetEntityType to set
+	 */
+	public void setTargetEntityType(String targetEntityType) {
+		this.targetEntityType = targetEntityType;
+	}
 
-    /**
-     * @return the sourceEntityComplexType
-     */
-    public String getSourceEntityComplexType() {
-	return sourceEntityComplexType;
-    }
+	/**
+	 * @return the actionName
+	 */
+	public String getActionName() {
+		return actionName;
+	}
 
-    /**
-     * @return the targetEntityComplexType
-     */
-    public String getTargetEntityComplexType() {
-	return targetEntityComplexType;
-    }
+	/**
+	 * @return the actionParams
+	 */
+	public Map<String, Object> getActionParams() {
+		return (Map<String, Object>) ObjectsUtil.copy(actionParams);
+	}
 
-    /**
-     * @return the userType
-     */
-    public String getUserType() {
-	return userType;
-    }
+	/**
+	 * @param actionName
+	 *            the actionName to set
+	 */
+	public void setActionName(String actionName) {
+		this.actionName = actionName;
+	}
 
-    /**
-     * @return the actionLocation
-     */
-    public String getActionLocation() {
-	return actionLocation;
-    }
+	/**
+	 * @return the userInputParamNames
+	 */
+	public List<String> getUserInputParamNames() {
+		return userInputParamNames;
+	}
 
-    /**
-     * @return the actionPath
-     */
-    public String getActionPath() {
-	return actionPath;
-    }
+	/**
+	 * @return the sourceEntityComplexType
+	 */
+	public String getSourceEntityComplexType() {
+		return sourceEntityComplexType;
+	}
 
-    /**
-     * @return the sourceEntityActionLocation
-     */
-    public String getSourceEntityActionLocation() {
-	return sourceEntityActionLocation;
-    }
+	/**
+	 * @return the targetEntityComplexType
+	 */
+	public String getTargetEntityComplexType() {
+		return targetEntityComplexType;
+	}
 
-    /**
-     * @param sourceEntityActionLocation
-     *            the sourceEntityActionLocation to set
-     */
-    public void setSourceEntityActionLocation(String sourceEntityActionLocation) {
-	this.sourceEntityActionLocation = sourceEntityActionLocation;
-    }
+	/**
+	 * @return the userType
+	 */
+	public String getUserType() {
+		return userType;
+	}
 
-    /**
-     * @return the allowReadToAll
-     */
-    public boolean isAllowReadToAll() {
-	return allowReadToAll;
-    }
+	/**
+	 * @return the actionLocation
+	 */
+	public String getActionLocation() {
+		return actionLocation;
+	}
 
-    /**
-     * @param actionPath
-     *            the actionPath to set
-     */
-    protected void setActionPath(String actionPath) {
-	this.actionPath = actionPath;
-    }
+	/**
+	 * @return the actionPath
+	 */
+	public String getActionPath() {
+		return actionPath;
+	}
+
+	/**
+	 * @return the sourceEntityActionLocation
+	 */
+	public String getSourceEntityActionLocation() {
+		return sourceEntityActionLocation;
+	}
+
+	/**
+	 * @param sourceEntityActionLocation
+	 *            the sourceEntityActionLocation to set
+	 */
+	public void setSourceEntityActionLocation(String sourceEntityActionLocation) {
+		this.sourceEntityActionLocation = sourceEntityActionLocation;
+	}
+
+	/**
+	 * @return the allowReadToAll
+	 */
+	public boolean isAllowReadToAll() {
+		return allowReadToAll;
+	}
+
+	/**
+	 * @param actionPath
+	 *            the actionPath to set
+	 */
+	protected void setActionPath(String actionPath) {
+		this.actionPath = actionPath;
+	}
 
 }

@@ -29,7 +29,7 @@ public class OpenGroupsApplicationServlet extends ApplicationServlet {
      */
     private static final long serialVersionUID = -2024202391223576656L;
 
-    protected void writeAjaxPageHtmlHeader(final BufferedWriter page, String title, String themeUri, HttpServletRequest req ) throws IOException {
+    protected void writeAjaxPageHtmlHeader(final BufferedWriter page, String title, String themeUri, HttpServletRequest req) throws IOException {
 	super.writeAjaxPageHtmlHeader(page, title, themeUri,req);
 	page
 		.write("<script type=\"text/javascript\">\n"
