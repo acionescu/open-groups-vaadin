@@ -41,111 +41,124 @@ import com.vaadin.ui.Button.ClickListener;
 
 public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = 7749139033732845419L;
+	private static final long serialVersionUID = 7749139033732845419L;
 
-    @Override
-    public void handle(ActionContext actionContext) throws Exception {
-	// initMainWindow(application);
-	buildGuiLogic(actionContext.getApp());
-    }
-
-    private void buildGuiLogic(OpenGroupsApplication application) {
-	addUserHeaderActions(application);
-	addMainRootEntityTab(application);
-	addApplicationEntityTab(application);
-//	addUserTabActions(application);
-    }
-
-    private void addMainRootEntityTab(OpenGroupsApplication app) {
-	/* set the default entity as the current selected entity */
-	Entity selectedEntity = app.getRootEntity();
-	if (selectedEntity == null) {
-	    selectedEntity = new Entity((Long) getAppConfigManager().getApplicationConfigParam(
-		    ApplicationConfigParam.DEFAULT_ENTITY_ID));
-	    // getActionsManager().executeAction(ActionsManager.REFRESH_SELECTED_ENTITY, selectedEntity, app, null,
-	    // false);
-	    String caption = getMessage("metagroup.caption");
-	    selectedEntity.setTitle(caption);
-	    app.setRootEntity(selectedEntity);
-	    selectedEntity.getState().setOpened(true);
-	    TabContainer tabContainer = app.addTab(selectedEntity, false);
-	    tabContainer.setRefreshOn(true);
-	    // app.setSelectedTab(tabContainer.getContainer());
-	    // getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS, selectedEntity,app,
-	    // tabContainer.getContainer(), false);
+	@Override
+	public void handle(ActionContext actionContext) throws Exception {
+		// initMainWindow(application);
+		buildGuiLogic(actionContext.getApp());
 	}
-    }
 
-    private void addApplicationEntityTab(OpenGroupsApplication app) {
-	Long entityId = (Long) getAppConfigManager().getApplicationConfigParam(ApplicationConfigParam.APP_ENTITY_ID);
-	if (entityId != null) {
-	    Entity entity = new Entity(entityId);
-	    String caption = getMessage("app.metagroup.caption");
-	    entity.setTitle(caption);
-	    entity.getState().setOpened(true);
-	    entity.getState().setEntityTypeVisible(true);
-	    TabContainer tabContainer = app.addTab(entity, false);
-	    tabContainer.setRefreshOn(true);
-	    // getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS, entity, app,
-	    // tabContainer.getContainer(), false);
+	private void buildGuiLogic(OpenGroupsApplication application) {
+		addUserHeaderActions(application);
+		addMainRootEntityTab(application);
+		addApplicationEntityTab(application);
+		// addUserTabActions(application);
 	}
-    }
 
-    private void addUserTabActions(OpenGroupsApplication app) {
-	if (app.getCurrentUser() != null) {
-	    UserActionList actionsList = ActionsManager.getInstance().getGlobalActions(ActionLocations.TAB);
-	    app.getMainWindow().setUserActionsTabVisible(true);
-	    actionsList.executeHandler(null, app, app.getMainWindow().getUserActionsContainer());
-	}
-    }
-
-    private void addUserHeaderActions(final OpenGroupsApplication app) {
-	UserActionList actionList = getGlobalActions(ActionLocations.HEADER);
-	if (actionList == null) {
-	    return;
-	}
-	Collection<UserAction> userActions = actionList.getActions().values();
-
-	User user = app.getCurrentUser();
-	GridLayout userArea = app.getMainWindow().getHeaderPanel();
-	userArea.removeAllComponents();
-
-	if (user != null) {
-	    Label userInfo = new Label(app.getMessage("login.user.info") + ": " + user.getUsername());
-	    // userInfo.setSizeFull();
-	    userArea.addComponent(userInfo, 0, 0);
-	    userArea.setColumnExpandRatio(0, 1f);
-	    userArea.setComponentAlignment(userInfo, Alignment.MIDDLE_LEFT);
-	}
-	HorizontalLayout actionsContainer = new HorizontalLayout();
-	actionsContainer.setSizeUndefined();
-
-	/* get the current user types */
-	List<String> userTypes = UsersManager.getInstance().getCurrentUserTypes(null, app);
-	for (final UserAction ua : userActions) {
-	    /* if the current user is not allowed to read/view the current action then skip it */
-	    if (!ua.allowRead(userTypes)) {
-		continue;
-	    }
-	    Button actButton = new Button(ua.getDisplayName());
-	    actButton.addListener(new ClickListener() {
-
-		@Override
-		public void buttonClick(ClickEvent event) {
-		    // app.executeAction(ua, null);
-		    ua.executeHandler(null, app, null);
+	private void addMainRootEntityTab(OpenGroupsApplication app) {
+		/* set the default entity as the current selected entity */
+		Entity selectedEntity = app.getRootEntity();
+		if (selectedEntity == null) {
+			selectedEntity = new Entity((Long) getAppConfigManager()
+					.getApplicationConfigParam(
+							ApplicationConfigParam.DEFAULT_ENTITY_ID));
+			// getActionsManager().executeAction(ActionsManager.REFRESH_SELECTED_ENTITY,
+			// selectedEntity, app, null,
+			// false);
+			String caption = getMessage("metagroup.caption");
+			selectedEntity.setTitle(caption);
+			app.setRootEntity(selectedEntity);
+			selectedEntity.getState().setOpened(true);
+			TabContainer tabContainer = app.addTab(selectedEntity, false);
+			tabContainer.setRefreshOn(true);
+			// app.setSelectedTab(tabContainer.getContainer());
+			// getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS,
+			// selectedEntity,app,
+			// tabContainer.getContainer(), false);
 		}
-	    });
-
-	    actionsContainer.addComponent(actButton);
 	}
-	userArea.addComponent(actionsContainer, 1, 0);
-	userArea.setColumnExpandRatio(1, 1f);
-	userArea.setComponentAlignment(actionsContainer, Alignment.MIDDLE_RIGHT);
 
-    }
+	private void addApplicationEntityTab(OpenGroupsApplication app) {
+		Long entityId = (Long) getAppConfigManager().getApplicationConfigParam(
+				ApplicationConfigParam.APP_ENTITY_ID);
+		if (entityId != null) {
+			Entity entity = new Entity(entityId);
+			String caption = getMessage("app.metagroup.caption");
+			entity.setTitle(caption);
+			entity.getState().setOpened(true);
+			entity.getState().setEntityTypeVisible(true);
+			TabContainer tabContainer = app.addTab(entity, false);
+			tabContainer.setRefreshOn(true);
+			// getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS,
+			// entity, app,
+			// tabContainer.getContainer(), false);
+		}
+	}
+
+	private void addUserTabActions(OpenGroupsApplication app) {
+		if (app.getCurrentUser() != null) {
+			UserActionList actionsList = ActionsManager.getInstance()
+					.getGlobalActions(ActionLocations.TAB);
+			app.getMainWindow().setUserActionsTabVisible(true);
+			actionsList.executeHandler(null, app, app.getMainWindow()
+					.getUserActionsContainer());
+		}
+	}
+
+	private void addUserHeaderActions(final OpenGroupsApplication app) {
+		UserActionList actionList = getGlobalActions(ActionLocations.HEADER);
+		if (actionList == null) {
+			return;
+		}
+		Collection<UserAction> userActions = actionList.getActions().values();
+
+		User user = app.getCurrentUser();
+		GridLayout userArea = app.getMainWindow().getHeaderPanel();
+		userArea.removeAllComponents();
+
+		if (user != null) {
+			Label userInfo = new Label(app.getMessage("login.user.info") + ": "
+					+ user.getUsername());
+			// userInfo.setSizeFull();
+			userArea.addComponent(userInfo, 0, 0);
+			userArea.setColumnExpandRatio(0, 1f);
+			userArea.setComponentAlignment(userInfo, Alignment.MIDDLE_LEFT);
+		}
+		HorizontalLayout actionsContainer = new HorizontalLayout();
+		actionsContainer.setSizeUndefined();
+
+		/* get the current user types */
+		List<String> userTypes = UsersManager.getInstance()
+				.getCurrentUserTypes(null, app);
+		for (final UserAction ua : userActions) {
+			/*
+			 * if the current user is not allowed to read/view the current
+			 * action then skip it
+			 */
+			if (!ua.allowRead(userTypes)) {
+				continue;
+			}
+			Button actButton = new Button(ua.getDisplayName());
+			actButton.addListener(new ClickListener() {
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					// app.executeAction(ua, null);
+					ua.executeHandler(null, app, null);
+				}
+			});
+
+			actionsContainer.addComponent(actButton);
+		}
+		userArea.addComponent(actionsContainer, 1, 0);
+		userArea.setColumnExpandRatio(1, 1f);
+		userArea
+				.setComponentAlignment(actionsContainer, Alignment.MIDDLE_RIGHT);
+
+	}
 
 }

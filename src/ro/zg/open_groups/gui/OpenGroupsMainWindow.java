@@ -50,13 +50,14 @@ public class OpenGroupsMainWindow extends Window {
 	}
 
 	public void createLayout() {
-//		mainContent = new VerticalLayout();
-//		mainContent.setSizeFull();
-//		mainContent.setMargin(true);
-//		
-//		setContent(mainContent);
+		// mainContent = new VerticalLayout();
+		// mainContent.setSizeFull();
+		// mainContent.setMargin(true);
+		//		
+		// setContent(mainContent);
+
+		mainContent = (VerticalLayout) this.getContent();
 		
-		mainContent=(VerticalLayout)this.getContent();
 		uriUtility = new UriFragmentUtility();
 		mainContent.addComponent(uriUtility);
 
@@ -73,28 +74,29 @@ public class OpenGroupsMainWindow extends Window {
 		// mainContent.addComponent(contentContainer);
 
 		entitiesTabSheet = new TabSheet();
-//		entitiesTabSheet.setSizeFull();
+		// entitiesTabSheet.setSizeFull();
 		entitiesTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
 		// entitiesTabSheet.setImmediate(true);
 
 		userActionsContainer = new CssLayout();
 
-		mainTabSheet = new TabSheet();
-//		mainTabSheet.setSizeFull();
-		// mainTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
-		// mainTabSheet.setImmediate(true);
-
-		entitiesTab = mainTabSheet.addTab(entitiesTabSheet, OpenGroupsResources
-				.getMessage("metagovernment.tab.caption"), null);
-		userActionsTab = mainTabSheet.addTab(userActionsContainer,
-				OpenGroupsResources.getMessage("user.tab.caption"), null);
-		userActionsTab.setVisible(false);
+//		mainTabSheet = new TabSheet();
+//		// mainTabSheet.setSizeFull();
+//		// mainTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
+//		// mainTabSheet.setImmediate(true);
+//
+//		entitiesTab = mainTabSheet.addTab(entitiesTabSheet, OpenGroupsResources
+//				.getMessage("metagovernment.tab.caption"), null);
+//		userActionsTab = mainTabSheet.addTab(userActionsContainer,
+//				OpenGroupsResources.getMessage("user.tab.caption"), null);
+//		userActionsTab.setVisible(false);
 
 		// Panel mainTabSheetContainer = new Panel();
 		// mainTabSheetContainer.addComponent(mainTabSheet);
 		// mainTabSheetContainer.addStyleName("gray");
 
-		mainContent.addComponent(mainTabSheet);
+		// mainContent.addComponent(mainTabSheet);
+		mainContent.addComponent(entitiesTabSheet);
 		// mainContent.setExpandRatio(mainTabSheet, 1f);
 
 	}

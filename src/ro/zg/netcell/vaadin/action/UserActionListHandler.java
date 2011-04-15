@@ -62,7 +62,7 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 		TabSheet actionsTabSheet = new TabSheet();
 		actionsTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
 		actionsTabSheet.setWidth("100%");
-//		actionsTabSheet.setSizeFull();
+		// actionsTabSheet.setSizeFull();
 		displayArea.addComponent(actionsTabSheet);
 		/* add listener */
 		actionsTabSheet.addListener(new SelectedTabChangeListener() {
@@ -130,16 +130,13 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 			}
 
 			AbstractComponentContainer tabContent = new CssLayout();
-//			tabContent.setSizeFull();
 			if (cua instanceof UserActionList) {
 				((CssLayout) tabContent).setMargin(false);
 			} else {
-				tabContent = new Panel();
-				tabContent.setWidth("100%");
-//				((Panel) tabContent).getContent().setSizeFull();
-				((Panel) tabContent).setScrollable(false);
+				// tabContent = new Panel();
+				// ((Panel) tabContent).setScrollable(false);
 			}
-//			tabContent.setSizeFull();
+			tabContent.setSizeFull();
 
 			actionPathContainers.put(cua.getActionName(), tabContent);
 			tabContent.setData(cua);
