@@ -18,6 +18,8 @@ package ro.zg.open_groups;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.vaadin.terminal.gwt.server.ApplicationServlet;
 
 public class OpenGroupsApplicationServlet extends ApplicationServlet {
@@ -27,8 +29,8 @@ public class OpenGroupsApplicationServlet extends ApplicationServlet {
      */
     private static final long serialVersionUID = -2024202391223576656L;
 
-    protected void writeAjaxPageHtmlHeader(final BufferedWriter page, String title, String themeUri) throws IOException {
-	super.writeAjaxPageHtmlHeader(page, title, themeUri);
+    protected void writeAjaxPageHtmlHeader(final BufferedWriter page, String title, String themeUri, HttpServletRequest req ) throws IOException {
+	super.writeAjaxPageHtmlHeader(page, title, themeUri,req);
 	page
 		.write("<script type=\"text/javascript\">\n"
 			+ "\n"
