@@ -46,7 +46,6 @@ import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.open_groups.user.UsersManager;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.ObjectsUtil;
-import ro.zg.util.parser.ParserException;
 import ro.zg.util.parser.utils.ListMapParser;
 
 import com.vaadin.ui.ComponentContainer;
