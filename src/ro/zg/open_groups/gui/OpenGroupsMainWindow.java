@@ -15,8 +15,6 @@
  ******************************************************************************/
 package ro.zg.open_groups.gui;
 
-import ro.zg.open_groups.resources.OpenGroupsResources;
-
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.TabSheet;
@@ -24,7 +22,6 @@ import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.themes.Reindeer;
 
 public class OpenGroupsMainWindow extends Window {
 	/**
@@ -32,12 +29,10 @@ public class OpenGroupsMainWindow extends Window {
      */
 	private static final long serialVersionUID = -8492978667795915161L;
 	private GridLayout headerPanel;
-	private TabSheet entitiesTabSheet;
 	private CssLayout userActionsContainer;
-	private TabSheet mainTabSheet;
-	private Tab entitiesTab;
 	private Tab userActionsTab;
 	private VerticalLayout mainContent;
+	private CssLayout entityContent;
 	private UriFragmentUtility uriUtility;
 
 	public OpenGroupsMainWindow(String caption) {
@@ -57,47 +52,19 @@ public class OpenGroupsMainWindow extends Window {
 		// setContent(mainContent);
 
 		mainContent = (VerticalLayout) this.getContent();
-		
+
 		uriUtility = new UriFragmentUtility();
 		mainContent.addComponent(uriUtility);
 
 		headerPanel = new GridLayout(2, 1);
 		headerPanel.setWidth("100%");
 		mainContent.addComponent(headerPanel);
-		// headerContainer=new VerticalLayout();
-		// mainContent.addComponent(headerContainer);
-
-		// Panel contentContainer = new Panel();
-		// VerticalLayout hlv = new VerticalLayout();
-		// hlv.setMargin(false);
-		// contentContainer.setContent(hlv);
-		// mainContent.addComponent(contentContainer);
-
-		entitiesTabSheet = new TabSheet();
-		// entitiesTabSheet.setSizeFull();
-		entitiesTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
-		// entitiesTabSheet.setImmediate(true);
 
 		userActionsContainer = new CssLayout();
 
-//		mainTabSheet = new TabSheet();
-//		// mainTabSheet.setSizeFull();
-//		// mainTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
-//		// mainTabSheet.setImmediate(true);
-//
-//		entitiesTab = mainTabSheet.addTab(entitiesTabSheet, OpenGroupsResources
-//				.getMessage("metagovernment.tab.caption"), null);
-//		userActionsTab = mainTabSheet.addTab(userActionsContainer,
-//				OpenGroupsResources.getMessage("user.tab.caption"), null);
-//		userActionsTab.setVisible(false);
-
-		// Panel mainTabSheetContainer = new Panel();
-		// mainTabSheetContainer.addComponent(mainTabSheet);
-		// mainTabSheetContainer.addStyleName("gray");
-
-		// mainContent.addComponent(mainTabSheet);
-		mainContent.addComponent(entitiesTabSheet);
-		// mainContent.setExpandRatio(mainTabSheet, 1f);
+		entityContent = new CssLayout();
+		entityContent.setSizeFull();
+		mainContent.addComponent(entityContent);
 
 	}
 
@@ -130,11 +97,8 @@ public class OpenGroupsMainWindow extends Window {
 		this.headerPanel = headerPanel;
 	}
 
-	/**
-	 * @return the entitiesTabSheet
-	 */
-	public TabSheet getEntitiesTabSheet() {
-		return entitiesTabSheet;
+	public CssLayout getEntityContent() {
+		return entityContent;
 	}
 
 	/**

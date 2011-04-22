@@ -16,14 +16,18 @@
 package ro.zg.opengroups.util;
 
 public class HtmlHelper {
-    public static final String NBSP="&nbsp;";
-    public static final String BR="<br/>";
-    
-    public static String wrapAsH(String s, int type) {
-	return "<h"+type+">"+s+"</h"+type+">";
-    }
-    
-    public static String wrapAsA(String url, String text) {
-	return "<a href=\""+url+"\">"+text+"</a>";
-    }
+	public static final String NBSP = "&nbsp;";
+	public static final String BR = "<br/>";
+
+	public static String wrapAsH(String s, int type) {
+		return "<h" + type + ">" + s + "</h" + type + ">";
+	}
+
+	public static String wrapAsA(String url, String text) {
+		return "<a href=\"" + url + "\">" + text + "</a>";
+	}
+	
+	public static String wrapAsA(String url, String text, String target) {
+		return "<a href=\"" + url + "\" target=\""+target+"\">" + text + "</a>";
+	}
 }

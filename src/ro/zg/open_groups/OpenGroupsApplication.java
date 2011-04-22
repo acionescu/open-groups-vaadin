@@ -32,6 +32,7 @@ import ro.zg.opengroups.vo.TabContainer;
 import ro.zg.opengroups.vo.User;
 import ro.zg.util.logging.Logger;
 import ro.zg.util.logging.MasterLogManager;
+import ro.zg.vaadin.util.WindowsManger;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.Terminal;
@@ -55,6 +56,7 @@ import com.vaadin.ui.ComponentContainer.ComponentDetachListener;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.Notification;
 
 public class OpenGroupsApplication extends Application {
@@ -79,22 +81,26 @@ public class OpenGroupsApplication extends Application {
 	private String lastFragment;
 	private long lastFragmentUpdate;
 
+	private static final String VAADIN_WINDOW_SEPARATOR = "_";
+	private static final String MY_WINDOW_SEPARATOR = ":";
+	private WindowsManger windowsManager;
+
 	@Override
 	public void init() {
 		System.out.println("init");
+		windowsManager = new WindowsManger();
 		setTheme("open-groupstheme");
 		appContext = (WebApplicationContext) getContext();
 
 		WebBrowser wb = appContext.getBrowser();
-		
-		// if (wb.getBrowserApplication().contains("Googlebot")) {
-		// setBotClient(true);
-		// } else {
+
 		printUserAgentInfo();
 		initSession();
-		initMainWindow();
-		refreshMainWindow();
-		// }
+		// initMainWindow();
+		// refreshMainWindow();
+
+		Window mainWindow = createWindow("");
+		setMainWindow(mainWindow);
 	}
 
 	private boolean checkOptimalBrowser() {
@@ -163,7 +169,7 @@ public class OpenGroupsApplication extends Application {
 			addWindow(mainWindow);
 			mainWindow.createLayout();
 
-			entitiesTabSheet = mainWindow.getEntitiesTabSheet();
+			// entitiesTabSheet = mainWindow.getEntitiesTabSheet();
 			OpenGroupsUriHandler uriHandler = new OpenGroupsUriHandler(this);
 			mainWindow.addURIHandler(uriHandler);
 			uriUtility = mainWindow.getUriUtility();
@@ -292,7 +298,9 @@ public class OpenGroupsApplication extends Application {
 	}
 
 	public void fullyRefreshCurrentSelectedEntity() {
+		logger.debug("full refresh");
 		Entity selectedEntity = getSelectedEntity();
+		logger.debug("Selected entity: "+selectedEntity);
 		if (selectedEntity != null) {
 			fullyRefreshEntity(selectedEntity);
 		} else {
@@ -434,9 +442,14 @@ public class OpenGroupsApplication extends Application {
 		}
 		e.getState().setDesiredActionsPath(actionPath);
 		e.getState().setCurrentPageForAction("/" + actionPath, pageNumber);
-		openTemporaryTab(e);
-	}
+		// openTemporaryTab(e);
 
+		
+		actionsManager.executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS,
+				e, this, getMainWindow().getEntityContent(), false);
+
+	}
+	
 	public TabContainer addTab(Entity entity, boolean closable) {
 		Panel tabContent = null;
 		/* check if a tab container for this entity already exists */
@@ -578,6 +591,76 @@ public class OpenGroupsApplication extends Application {
 		UsersManager.getInstance().removeUser(currentUser.getUserId());
 		this.currentUser = null;
 		getAppContext().getHttpSession().invalidate();
+	}
+
+	/**
+	 * Opens an entity in a new window
+	 * 
+	 * @param entity
+	 */
+	public void openWindow(Entity entity) {
+		refreshMainWindow();
+		if(entity==null){
+			entity = getRootEntity();
+		}
+		pushSelectedEntity(entity);
+		entity.setEntityContainer(getMainWindow().getEntityContent());
+		logger.debug("Open entity "+entity+" in window "+getMainWindow());
+		actionsManager.executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS,
+				entity, this, getMainWindow().getEntityContent(), false);
+	}
+
+	protected OpenGroupsMainWindow createWindow(String name) {
+		System.out.println("->createWindow(" + name + ")");
+		OpenGroupsMainWindow w = new OpenGroupsMainWindow("Metaguvernare");
+		w.setName(name);
+		w.createLayout();
+
+		OpenGroupsUriHandler uriHandler = new OpenGroupsUriHandler(this);
+		w.addURIHandler(uriHandler);
+		uriUtility = w.getUriUtility();
+		uriUtility.addListener(uriHandler);
+		addCloseListener(w);
+		
+		
+		System.out.println("createWindow(" + name + ") -> " + w);
+		return w;
+	}
+
+	@Override
+	public Window getWindow(String name) {
+		System.out.println("->getWindow(" + name + ")");
+		Window w = super.getWindow(name);
+		if (w == null && !name.contains(VAADIN_WINDOW_SEPARATOR)
+				&& !name.contains(MY_WINDOW_SEPARATOR)
+				&& !name.contains("UIDL")) {
+			Integer nextId = windowsManager.getNextWindowId(name);
+			w = createWindow(name + MY_WINDOW_SEPARATOR + nextId);
+			addWindow(w);
+		}
+		System.out.println("getWindow(" + name + ") -> " + w);
+		return w;
+	}
+
+	private void addCloseListener(final Window w) {
+		w.addListener(new Window.CloseListener() {
+
+			@Override
+			public void windowClose(CloseEvent e) {
+				if (w == getMainWindow()) {
+					// setMainWindow(getWindow(""));
+					return;
+				}
+				removeWindow(w);
+				String[] args = w.getName().split(MY_WINDOW_SEPARATOR);
+				windowsManager.removeWindowId(args[0], new Integer(args[1]));
+				System.out.println("removed " + w.getName());
+			}
+		});
+	}
+
+	public void refreshWindow() {
+
 	}
 
 	/**

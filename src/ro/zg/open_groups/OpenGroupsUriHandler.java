@@ -55,16 +55,14 @@ public class OpenGroupsUriHandler implements URIHandler,
 	}
 
 	private void initFragmentHandlers() {
-		// fragmentHandlers.put("", new FragmentHandler() {
-		//
-		// @Override
-		// public void handleFragment(String[] params) {
-		// /* 1 is the id of the entity */
-		// app.getTemporaryTab(app.getRootEntity()).setRefreshOn(true);
-		// app.openTemporaryTab(app.getRootEntity());
-		//		
-		// }
-		// });
+//		fragmentHandlers.put("", new FragmentHandler() {
+//
+//			@Override
+//			public void handleFragment(String[] params) {
+//				/* 1 is the id of the entity */
+//				app.openWindow(app.getRootEntity());
+//			}
+//		});
 
 		fragmentHandlers.put(UriFragments.SHOW_ENTITY, new FragmentHandler() {
 
@@ -98,8 +96,10 @@ public class OpenGroupsUriHandler implements URIHandler,
 
 	@Override
 	public DownloadStream handleURI(URL context, String relativeUri) {
-		System.out.println("handle uri " + relativeUri);
-		System.out.println("full url: " + app.getURL());
+		if(relativeUri.startsWith("UIDL")){
+			return null;
+		}
+		logger.info("handle uri '" + relativeUri+"'");
 		ActionUri au = getActionUri(relativeUri);
 		UserActionList actionsList = ActionsManager.getInstance()
 				.getGlobalActions(ActionLocations.URI);
@@ -112,15 +112,16 @@ public class OpenGroupsUriHandler implements URIHandler,
 		if (ua != null) {
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("actionUri", au);
+			logger.info("Executing "+ua.getAction()+params);
 			ua.executeHandler(app, params);
 		} else {
 
-			if ("".equals(relativeUri.trim())) {
-				app.fullyRefreshCurrentSelectedEntity();
-			} else {
+//			if ("".equals(relativeUri.trim())) {
+//				app.fullyRefreshCurrentSelectedEntity();
+//			} else {
 				/* assume this is a page refresh */
-				handleFragment(relativeUri);
-			}
+//				handleFragment(relativeUri);
+//			}
 		}
 		return null;
 	}
@@ -151,11 +152,8 @@ public class OpenGroupsUriHandler implements URIHandler,
 		long currentTime = System.currentTimeMillis();
 		long lastTime = app.getLastFragmentUpdate();
 		long dif = (currentTime - lastTime);
-		System.out.println("handle fragment " + fragment + " at " + currentTime
+		logger.debug("handle fragment " + fragment + " at " + currentTime
 				+ " dif " + dif);
-		// if( dif < 2000) {
-		// return;
-		// }
 		app.setLastFragmentUpdate(currentTime);
 		app.setLastFragment(fragment);
 
@@ -173,7 +171,7 @@ public class OpenGroupsUriHandler implements URIHandler,
 			fh.handleFragment(params);
 		} else {
 			// ufu.setFragment(UriFragments.SHOW_ENTITY_FRAGMENT+app.getSelectedEntity().getId(),false);
-			app.setFragmentToCurrentEntity();
+//			app.setFragmentToCurrentEntity();
 			logger.error("No fragment handler found for fragment '" + fragment
 					+ "'");
 		}

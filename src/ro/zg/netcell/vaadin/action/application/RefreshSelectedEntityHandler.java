@@ -20,19 +20,19 @@ import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.opengroups.vo.Entity;
 
-public class RefreshSelectedEntityHandler extends OpenGroupsActionHandler{
+public class RefreshSelectedEntityHandler extends OpenGroupsActionHandler {
 
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = 8606475019005191496L;
+	private static final long serialVersionUID = 8606475019005191496L;
 
-    @Override
-    public void handle(ActionContext actionContext) throws Exception {
-	/* get entity info */
-	OpenGroupsApplication app = actionContext.getApp();
-	Entity selectedEntity = actionContext.getEntity();
-	getModel().refreshEntity(selectedEntity, app.getCurrentUserId());	
-    }
+	@Override
+	public void handle(ActionContext actionContext) throws Exception {
+		/* get entity info */
+		OpenGroupsApplication app = actionContext.getApp();
+		Entity selectedEntity = actionContext.getEntity();
+		getModel().refreshEntity(selectedEntity, app.getCurrentUserId());
+	}
 
 }

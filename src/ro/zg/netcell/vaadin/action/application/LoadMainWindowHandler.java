@@ -25,6 +25,7 @@ import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
+import ro.zg.opengroups.util.HtmlHelper;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.TabContainer;
 import ro.zg.opengroups.vo.User;
@@ -33,6 +34,7 @@ import ro.zg.opengroups.vo.UserActionList;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -48,15 +50,12 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 
 	@Override
 	public void handle(ActionContext actionContext) throws Exception {
-		// initMainWindow(application);
+		System.out.println("load window");
 		buildGuiLogic(actionContext.getApp());
 	}
 
 	private void buildGuiLogic(OpenGroupsApplication application) {
 		addUserHeaderActions(application);
-		addMainRootEntityTab(application);
-		addApplicationEntityTab(application);
-		// addUserTabActions(application);
 	}
 
 	private void addMainRootEntityTab(OpenGroupsApplication app) {
@@ -108,6 +107,8 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 					.getUserActionsContainer());
 		}
 	}
+	
+	
 
 	private void addUserHeaderActions(final OpenGroupsApplication app) {
 		UserActionList actionList = getGlobalActions(ActionLocations.HEADER);
@@ -130,6 +131,11 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 		}
 		HorizontalLayout actionsContainer = new HorizontalLayout();
 		actionsContainer.setSizeUndefined();
+		actionsContainer.setSpacing(true);
+		
+		/* add quick links */
+		actionsContainer.addComponent(getRootEntityLink(app));
+		actionsContainer.addComponent(getMetaEntityLink(app));
 
 		/* get the current user types */
 		List<String> userTypes = UsersManager.getInstance()
@@ -160,5 +166,39 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 				.setComponentAlignment(actionsContainer, Alignment.MIDDLE_RIGHT);
 
 	}
-
+	
+	private Component getRootEntityLink(OpenGroupsApplication app){
+		Entity selectedEntity = app.getRootEntity();
+		if (selectedEntity == null) {
+			selectedEntity = new Entity((Long) getAppConfigManager()
+					.getApplicationConfigParam(
+							ApplicationConfigParam.DEFAULT_ENTITY_ID));
+			String caption = getMessage("metagroup.caption");
+			selectedEntity.setTitle(caption);
+			app.setRootEntity(selectedEntity);
+			selectedEntity.getState().setOpened(true);
+		}
+		return getLinkForEntity(selectedEntity, app);
+	}
+	
+	private Component getMetaEntityLink(OpenGroupsApplication app) {
+		Long entityId = (Long) getAppConfigManager().getApplicationConfigParam(
+				ApplicationConfigParam.APP_ENTITY_ID);
+		if (entityId != null) {
+			Entity entity = new Entity(entityId);
+			String caption = getMessage("app.metagroup.caption");
+			entity.setTitle(caption);
+			entity.getState().setOpened(true);
+			entity.getState().setEntityTypeVisible(true);
+			
+			return getLinkForEntity(entity, app);
+		}
+		return null;
+	}
+	
+	private Component getLinkForEntity(Entity entity, OpenGroupsApplication app){
+		String url = app.getURL().toString()+entity.getId();
+		return new Label(HtmlHelper.wrapAsA(url, entity.getTitle(), "_self"),Label.CONTENT_XHTML);
+	}
+	
 }
