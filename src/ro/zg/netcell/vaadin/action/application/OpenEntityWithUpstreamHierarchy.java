@@ -59,7 +59,7 @@ public class OpenEntityWithUpstreamHierarchy extends BaseListHandler{
 	VerticalLayout entityContainer = new VerticalLayout();
 	container.addComponent(entityContainer);
 //	app.setTargetComponent(entityContainer);
-	getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS, selectedEntity,app,entityContainer,false);
+	getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS, selectedEntity,app,entityContainer,false,actionContext);
     }
     
     private void displayHierarchyList(Entity entity,UserAction ua, OpenGroupsApplication app,ComponentContainer targetContainer, Map<String, Object> params) {

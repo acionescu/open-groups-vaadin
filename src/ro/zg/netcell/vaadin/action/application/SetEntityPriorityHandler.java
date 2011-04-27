@@ -50,7 +50,7 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 	Entity entity = actionContext.getEntity();
 	if (entity.getContent() != null) {
 	    parentContainer.setComponentAlignment(localContainer, Alignment.MIDDLE_RIGHT);
-	    displayCombo(actionContext, localContainer);
+	    displayCombo(actionContext, localContainer,actionContext);
 	} else {
 	    displayLabel(actionContext, localContainer);
 	}
@@ -81,7 +81,7 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 	container.addComponent(new Label(valueString));
     }
 
-    private void displayCombo(final ActionContext actionContext, HorizontalLayout targetContainer) {
+    private void displayCombo(final ActionContext actionContext, HorizontalLayout targetContainer, final ActionContext ac) {
 	long maxPriority = (Long) getAppConfigManager().getApplicationConfigParam(ApplicationConfigParam.MAX_PRIORITY);
 	ComboBox select = new ComboBox();
 	select.setImmediate(true);
@@ -118,7 +118,7 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 		params.put("isRecordCreated", userData.isRecordCreated());
 		executeAction(actionContext, params);
 		userData.setRecordCreated(true);
-		app.refreshEntity(entity);
+		app.refreshEntity(entity,ac);
 	    }
 	});
 

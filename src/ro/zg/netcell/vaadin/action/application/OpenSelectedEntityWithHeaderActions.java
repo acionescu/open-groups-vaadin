@@ -40,7 +40,7 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 	ComponentContainer container = actionContext.getTargetContainer();
 
 	getActionsManager().executeAction(ActionsManager.REFRESH_SELECTED_ENTITY, entity,
-		app, container, false);
+		app, container, false,actionContext);
 	if(app.hasErrors()) {
 	    return;
 	}
@@ -67,7 +67,7 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 	CssLayout entityContainer = new CssLayout();
 	entityContainer.setSizeFull();
 	container.addComponent(entityContainer);
-	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY, entity,app, entityContainer, false);
+	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY, entity,app, entityContainer, false,actionContext);
 	
 	
     }

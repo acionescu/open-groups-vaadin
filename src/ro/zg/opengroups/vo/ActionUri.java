@@ -46,7 +46,12 @@ public class ActionUri {
     public void setParamUri(String paramUri) {
         this.paramUri = paramUri;
     }
-    
-    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+	return "ActionUri [handlerUri=" + handlerUri + ", paramUri=" + paramUri + "]";
+    }
     
 }

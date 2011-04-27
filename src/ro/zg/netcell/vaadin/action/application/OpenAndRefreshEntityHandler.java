@@ -29,9 +29,9 @@ public class OpenAndRefreshEntityHandler extends OpenGroupsActionHandler {
     @Override
     public void handle(ActionContext actionContext) throws Exception {
 
-	getActionsManager().executeAction(ActionsManager.REFRESH_SELECTED_ENTITY, actionContext.getEntity(),actionContext.getApp(),actionContext.getTargetContainer(), false);
+	getActionsManager().executeAction(ActionsManager.REFRESH_SELECTED_ENTITY, actionContext.getEntity(),actionContext.getApp(),actionContext.getTargetContainer(), false,actionContext);
 	
-	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY, actionContext.getEntity(),actionContext.getApp(),actionContext.getTargetContainer(), false);
+	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY, actionContext.getEntity(),actionContext.getApp(),actionContext.getTargetContainer(), false,actionContext);
 
     }
 

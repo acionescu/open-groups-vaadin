@@ -35,15 +35,8 @@ public class OpenEntityInTabHandler extends OpenGroupsActionHandler {
 	OpenGroupsApplication app = actionContext.getApp();
 
 	selectedEntity.getState().setOpened(true);
-	TabContainer tabContainer = app.openTemporaryTab(selectedEntity);
-//	Panel container = (Panel) tabContainer.getContainer();
-	
-//	if (selectedEntity.getId() != app.getSelectedEntity().getId()) {
-//	    app.setSelectedTab(container);
-//	}
-//	else if(tabContainer.isRefreshOn()) {
-//	    app.fullyRefreshEntity(selectedEntity);
-//	}
+//	TabContainer tabContainer = app.openTemporaryTab(selectedEntity);
+
     }
 
 }

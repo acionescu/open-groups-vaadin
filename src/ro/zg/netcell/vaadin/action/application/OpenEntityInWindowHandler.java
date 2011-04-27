@@ -28,7 +28,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
-public class OpenEntityInWindowHandler extends OpenGroupsActionHandler{
+public class OpenEntityInWindowHandler extends OpenGroupsActionHandler {
 
     /**
      * 
@@ -38,22 +38,12 @@ public class OpenEntityInWindowHandler extends OpenGroupsActionHandler{
     @Override
     public void handle(ActionContext actionContext) throws Exception {
 	Entity selectedEntity = actionContext.getEntity();
-	Window w = new Window(selectedEntity.getTitle());
-	w.setModal(true);
 	final OpenGroupsApplication app = actionContext.getApp();
-	OpenGroupsMainWindow mainWindow = app.getMainWindow();
-	centerWindow(w, app);
-	mainWindow.addWindow(w);
-//	application.setTargetComponent(w);
-	
-	w.addListener(new CloseListener() {
-	    @Override
-	    public void windowClose(CloseEvent e) {
-		app.popSelectedEntity();
-		app.refreshCurrentSelectedEntity();
-	    }
-	});
-	getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS,selectedEntity,app,w,false);
+	/* expect the target container to be the window */
+	OpenGroupsMainWindow w = (OpenGroupsMainWindow) actionContext.getTargetContainer();
+	actionContext.setWindow(w);
+	actionContext.setMainEntity(actionContext.getEntity());
+	getActionsManager().executeAction(ActionsManager.LOAD_MAIN_WINDOW, actionContext);
     }
 
 }
