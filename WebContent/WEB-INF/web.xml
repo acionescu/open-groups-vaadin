@@ -20,10 +20,10 @@
       <filter-name>botsFilter</filter-name>
       <url-pattern>/*</url-pattern>
    </filter-mapping>
-   <filter-mapping>
-      <filter-name>addBackSlash</filter-name>
-      <url-pattern>/*</url-pattern>
-   </filter-mapping>
+<!--   <filter-mapping>-->
+<!--      <filter-name>addBackSlash</filter-name>-->
+<!--      <url-pattern>/*</url-pattern>-->
+<!--   </filter-mapping>-->
    <servlet>
       <servlet-name>open_groups</servlet-name>
       <servlet-class>ro.zg.open_groups.OpenGroupsApplicationServlet</servlet-class>

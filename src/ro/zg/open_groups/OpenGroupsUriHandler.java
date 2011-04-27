@@ -59,7 +59,8 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
 	    @Override
 	    public void handleFragment(String[] params) {
 		/* 1 is the id of the entity */
-//		app.setFragmentToEntity(app.getActiveEntity());
+		// app.setFragmentToEntity(app.getActiveEntity());
+		app.openInActiveWindow(app.getRootEntity());
 		app.getActiveWindow().setFragmentToEntity(app.getActiveEntity());
 	    }
 	});
@@ -114,13 +115,13 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
 	    logger.info("Executing " + ua.getAction() + params);
 	    ua.executeHandler(app, params);
 	} else {
-	    
-//	    if ("".equals(relativeUri.trim())) {
-//		app.openInActiveWindow(app.getRootEntity());
-//	    } else {
-//		/* assume this is a page refresh */
-//		handleFragment(relativeUri);
-//	    }
+
+	    // if ("".equals(relativeUri.trim())) {
+	    // app.openInActiveWindow(app.getRootEntity());
+	    // } else {
+	    // /* assume this is a page refresh */
+	    // handleFragment(relativeUri);
+	    // }
 
 	}
 	return null;
@@ -148,7 +149,7 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
 
     }
 
-    private void handleFragment(String fragment) {
+    public void handleFragment(String fragment) {
 	long currentTime = System.currentTimeMillis();
 	long lastTime = app.getLastFragmentUpdate();
 	long dif = (currentTime - lastTime);

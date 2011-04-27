@@ -88,8 +88,9 @@ public class OpenGroupsMainWindow extends Window {
     }
 
     public void setFragmentToEntity(Entity entity) {
-	logger.debug("Update fragment");
-	uriUtility.setFragment(OpenGroupsUtil.getFragmentForEntity(entity), false);
+	String fragment = OpenGroupsUtil.getFragmentForEntity(entity);
+	logger.debug("Update fragment to '"+fragment+"'");
+	uriUtility.setFragment(fragment, false);
     }
 
     /**

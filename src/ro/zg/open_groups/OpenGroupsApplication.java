@@ -87,28 +87,32 @@ public class OpenGroupsApplication extends Application {
 	initSession();
 	// initMainWindow();
 	// refreshMainWindow();
-	
+
 	getContext().addTransactionListener(new TransactionListener() {
-	    
+
 	    @Override
 	    public void transactionStart(Application application, Object transactionData) {
-		HttpServletRequest req = (HttpServletRequest)transactionData;
+		HttpServletRequest req = (HttpServletRequest) transactionData;
 		String fragment = req.getParameter("fr");
-		if(fragment != null) {
-		    logger.debug("Transaction start: '"+fragment+"'");
-		    if("".equals(fragment.trim())) {
-			
+		if (fragment != null) {
+		    fragment = fragment.trim();
+		    OpenGroupsApplication app = (OpenGroupsApplication) application;
+		    String oldFragment=app.getActiveWindow().getUriUtility().getFragment();
+		    logger.debug("Transaction start: new->'" + fragment + "' + old->'"+oldFragment+"'");
+		    if (oldFragment == null) {
+			uriHandler.handleFragment(fragment);
+			app.getActiveWindow().getUriUtility().setFragment(fragment,false);
 		    }
 		}
 	    }
-	    
+
 	    @Override
 	    public void transactionEnd(Application application, Object transactionData) {
 		// TODO Auto-generated method stub
-		
+
 	    }
 	});
-	
+
 	Window mainWindow = getWindow("showEntity");
     }
 
@@ -196,7 +200,6 @@ public class OpenGroupsApplication extends Application {
 
     }
 
-
     public Entity getOpenEntityForId(long id) {
 	return openEntities.get(id);
     }
@@ -210,7 +213,6 @@ public class OpenGroupsApplication extends Application {
 	}
 	return c;
     }
-
 
     public void pushError(Exception e) {
 	errorsStack.push(e);
@@ -312,7 +314,7 @@ public class OpenGroupsApplication extends Application {
 	name = name + MY_WINDOW_SEPARATOR + nextId;
 	System.out.println("->createWindow(" + name + ")");
 	OpenGroupsMainWindow w = new OpenGroupsMainWindow("Metaguvernare");
-//	w.setName(name);
+	// w.setName(name);
 	w.createLayout();
 	System.out.println("createWindow(" + name + ") -> " + w);
 	return w;
@@ -322,12 +324,14 @@ public class OpenGroupsApplication extends Application {
     public Window getWindow(String name) {
 	System.out.println("->getWindow(" + name + ")");
 	Window w = super.getWindow(name);
-	if (w == null && !name.contains("UIDL") /*&& !name.contains(VAADIN_WINDOW_SEPARATOR) && !name.contains(MY_WINDOW_SEPARATOR)
-		 && name.equals("showEntity")*/) {
+	if (w == null && !name.contains("UIDL") /*
+						 * && !name.contains(VAADIN_WINDOW_SEPARATOR) &&
+						 * !name.contains(MY_WINDOW_SEPARATOR) && name.equals("showEntity")
+						 */) {
 	    w = createWindow(name);
 	    initWindow((OpenGroupsMainWindow) w);
 	    setMainWindow(w);
-	    
+
 	}
 	System.out.println("getWindow(" + name + ") -> " + w);
 	if (w != null) {
@@ -360,8 +364,8 @@ public class OpenGroupsApplication extends Application {
 		    return;
 		}
 		removeWindow(w);
-//		String[] args = w.getName().split(MY_WINDOW_SEPARATOR);
-//		windowsManager.removeWindowId(args[0], new Integer(args[1]));
+		// String[] args = w.getName().split(MY_WINDOW_SEPARATOR);
+		// windowsManager.removeWindowId(args[0], new Integer(args[1]));
 		System.out.println("removed " + w.getName());
 	    }
 	});
