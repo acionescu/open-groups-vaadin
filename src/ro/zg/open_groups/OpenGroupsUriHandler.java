@@ -116,12 +116,9 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
 	    ua.executeHandler(app, params);
 	} else {
 
-	    // if ("".equals(relativeUri.trim())) {
-	    // app.openInActiveWindow(app.getRootEntity());
-	    // } else {
-	    // /* assume this is a page refresh */
-	    // handleFragment(relativeUri);
-	    // }
+	    if (!"".equals(relativeUri.trim())) {
+		app.getActiveWindow().getUriUtility().setFragment(relativeUri);
+	    } 
 
 	}
 	return null;
