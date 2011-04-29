@@ -217,8 +217,9 @@ public class UserAction implements Serializable {
 
 	public void executeHandler(OpenGroupsApplication app,
 			Map<String, Object> params) {
-		ActionsManager.getInstance().executeHandler(getActionHandler(),
-				new ActionContext(this, app, null, params));
+		ActionContext ac = new ActionContext(this, app, null, params);
+		ac.setWindow(app.getActiveWindow());
+		ActionsManager.getInstance().executeHandler(getActionHandler(), ac);
 	}
 
 	public boolean allowRead(List<String> userTypes) {
