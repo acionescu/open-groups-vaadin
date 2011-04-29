@@ -49,245 +49,238 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.ProgressIndicator;
 
 public class ActionsManager implements Serializable, ActionErrorHandler {
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 4152642862742183342L;
+    private static final long serialVersionUID = 4152642862742183342L;
 
-	/* constants */
-	public static String GET_POSSIBLE_ACTIONS = "ro.problems.flows.get-actions-by-entity-and-user";
-	private static String GET_ALL_AVAILABLE_ACTIONS = "ro.problems.flows.get-all-available-actions";
-	public static String GET_STATUSES = "ro.problems.flows.get-statuses";
-	public static String GET_TAGS = "ro.problems.flows.get-tags";
+    /* constants */
+    public static String GET_POSSIBLE_ACTIONS = "ro.problems.flows.get-actions-by-entity-and-user";
+    private static String GET_ALL_AVAILABLE_ACTIONS = "ro.problems.flows.get-all-available-actions";
+    public static String GET_STATUSES = "ro.problems.flows.get-statuses";
+    public static String GET_TAGS = "ro.problems.flows.get-tags";
 
-	public static final String LOAD_MAIN_WINDOW = "loadMainWindow";
-	public static final String OPEN_ENTITY_WITH_ACTIONS = "openEntityWithActions";
-	public static final String OPEN_AND_REFRESH_ENTITY = "openAndRefreshEntity";
-	public static final String OPEN_SELECTED_ENTITY = "openSelectedEntity";
-	public static final String OPEN_ENTITY_IN_TAB = "openEntityInTab";
-	public static final String OPEN_ENTITY_IN_WINDOW = "openEntityInWindow";
-	public static final String GET_APPLICATION_CONFIG_PARAMS = "getApplicationConfigParams";
-	public static final String GET_COMPLEX_ENTITY_TYPES = "getComplexEntityTypes";
-	public static final String REFRESH_SELECTED_ENTITY = "refreshSelectedEntity";
-	public static final String OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS = "openEntityWithHeaderActions";
+    public static final String LOAD_MAIN_WINDOW = "loadMainWindow";
+    public static final String OPEN_ENTITY_WITH_ACTIONS = "openEntityWithActions";
+    public static final String OPEN_AND_REFRESH_ENTITY = "openAndRefreshEntity";
+    public static final String OPEN_SELECTED_ENTITY = "openSelectedEntity";
+    public static final String OPEN_ENTITY_IN_TAB = "openEntityInTab";
+    public static final String OPEN_ENTITY_IN_WINDOW = "openEntityInWindow";
+    public static final String GET_APPLICATION_CONFIG_PARAMS = "getApplicationConfigParams";
+    public static final String GET_COMPLEX_ENTITY_TYPES = "getComplexEntityTypes";
+    public static final String REFRESH_SELECTED_ENTITY = "refreshSelectedEntity";
+    public static final String OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS = "openEntityWithHeaderActions";
 
-	public static final String ENTITY_WITH_UPSTREAM_HIERARCHY = "entity.upstream.hierarchy";
+    public static final String ENTITY_WITH_UPSTREAM_HIERARCHY = "entity.upstream.hierarchy";
 
-	private Map<String, OpenGroupsActionHandler> handlers = new HashMap<String, OpenGroupsActionHandler>();
+    private Map<String, OpenGroupsActionHandler> handlers = new HashMap<String, OpenGroupsActionHandler>();
 
-	private ThinClientNetcellDao netcellDao = new ThinClientNetcellDao(
-			"localhost", 2000);
-	private Map<String, EntityDefinitionSummary> flowDefSummaries;
-	private Map<String, UserActionList> actionsMap = new HashMap<String, UserActionList>();
-	private Map<String, UserAction> allActions = new HashMap<String, UserAction>();
+    private ThinClientNetcellDao netcellDao = new ThinClientNetcellDao("localhost", 2000);
+    private Map<String, EntityDefinitionSummary> flowDefSummaries;
+    private Map<String, UserActionList> actionsMap = new HashMap<String, UserActionList>();
+    private Map<String, UserAction> allActions = new HashMap<String, UserAction>();
 
-	private static ActionsManager _instance = new ActionsManager();
-	private ThreadPoolExecutor handlersExecutor = (ThreadPoolExecutor) Executors
-			.newCachedThreadPool();
-	private boolean initialized;
-	private Logger logger = MasterLogManager.getLogger("ACTIONS-LOGGER");
+    private static ActionsManager _instance = new ActionsManager();
+    private ThreadPoolExecutor handlersExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+    private boolean initialized;
+    private Logger logger = MasterLogManager.getLogger("ACTIONS-LOGGER");
 
-	public static ActionsManager getInstance() {
-		return _instance;
+    public static ActionsManager getInstance() {
+	return _instance;
+    }
+
+    private ActionsManager() {
+	init();
+    }
+
+    private void init() {
+	if (!initialized) {
+	    initHandlers();
+	    initialized = getAllAvailableActions();
+	    if (initialized) {
+		System.out.println("ActionsManager initialized.");
+	    } else {
+		System.out.println("Failed to initialize ActionsManager");
+	    }
 	}
+    }
 
-	private ActionsManager() {
-		init();
+    private void initHandlers() {
+	handlers.put(LOAD_MAIN_WINDOW, new LoadMainWindowHandler());
+	handlers.put(OPEN_ENTITY_WITH_ACTIONS, new OpenEntityWithActionsHandler());
+	handlers.put(OPEN_AND_REFRESH_ENTITY, new OpenAndRefreshEntityHandler());
+	handlers.put(OPEN_SELECTED_ENTITY, new OpenSelectedEntityHandler());
+	handlers.put(OPEN_ENTITY_IN_WINDOW, new OpenEntityInWindowHandler());
+	handlers.put(OPEN_ENTITY_IN_TAB, new OpenEntityInTabHandler());
+	handlers.put(REFRESH_SELECTED_ENTITY, new RefreshSelectedEntityHandler());
+	handlers.put(OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS, new OpenSelectedEntityWithHeaderActions());
+    }
+
+    private void getFlowDefSummaries() {
+	try {
+	    flowDefSummaries = netcellDao.getWorkflowDefinitionSummaries();
+	    System.out.println("Retrieved " + flowDefSummaries.size() + " flow summaries");
+	} catch (Exception e) {
+	    System.out.println("Failed to get flows definition summaries");
+	    e.printStackTrace();
 	}
+    }
 
-	private void init() {
-		if (!initialized) {
-			initHandlers();
-			initialized = getAllAvailableActions();
-			if (initialized) {
-				System.out.println("ActionsManager initialized.");
-			} else {
-				System.out.println("Failed to initialize ActionsManager");
-			}
-		}
+    private boolean getAllAvailableActions() {
+	CommandResponse response = netcellDao.execute(GET_ALL_AVAILABLE_ACTIONS, new HashMap<String, Object>());
+	if (response != null) {
+	    GenericNameValueList list = (GenericNameValueList) response.getValue("result");
+
+	    for (int i = 0; i < list.size(); i++) {
+		GenericNameValueContext row = (GenericNameValueContext) list.getValueForIndex(i);
+		UserAction ua = new UserAction(row);
+		// System.out.println(ua.getSourceEntityComplexType() + " "
+		// + ua.getActionName() + " : " + ua.getActionPath());
+		getUserActionList(ua.getSourceEntityActionLocation()).addAction(ua.getActionPath(), ua);
+		allActions.put(ua.getFullActionPath(), ua);
+	    }
+	    return true;
 	}
+	return false;
+    }
 
-	private void initHandlers() {
-		handlers.put(LOAD_MAIN_WINDOW, new LoadMainWindowHandler());
-		handlers.put(OPEN_ENTITY_WITH_ACTIONS,
-				new OpenEntityWithActionsHandler());
-		handlers
-				.put(OPEN_AND_REFRESH_ENTITY, new OpenAndRefreshEntityHandler());
-		handlers.put(OPEN_SELECTED_ENTITY, new OpenSelectedEntityHandler());
-		handlers.put(OPEN_ENTITY_IN_WINDOW, new OpenEntityInWindowHandler());
-		handlers.put(OPEN_ENTITY_IN_TAB, new OpenEntityInTabHandler());
-		handlers.put(REFRESH_SELECTED_ENTITY,
-				new RefreshSelectedEntityHandler());
-		handlers.put(OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS,
-				new OpenSelectedEntityWithHeaderActions());
+    private UserActionList getUserActionList(String key) {
+	UserActionList ual = actionsMap.get(key);
+	if (ual == null) {
+	    ual = new UserActionList();
+	    actionsMap.put(key, ual);
 	}
+	return ual;
+    }
 
-	private void getFlowDefSummaries() {
-		try {
-			flowDefSummaries = netcellDao.getWorkflowDefinitionSummaries();
-			System.out.println("Retrieved " + flowDefSummaries.size()
-					+ " flow summaries");
-		} catch (Exception e) {
-			System.out.println("Failed to get flows definition summaries");
-			e.printStackTrace();
-		}
+    public CommandResponse executeAction(ActionContext actionContext, Map<String, Object> params) {
+	UserAction ua = actionContext.getUserAction();
+	Entity entity = actionContext.getEntity();
+	OpenGroupsApplication app = actionContext.getApp();
+
+	/* check if the action is allowed */
+	List<String> currentUserTypes = UsersManager.getInstance().getCurrentUserTypes(entity, app);
+	boolean actionAllowed = currentUserTypes.contains(ua.getUserType());
+	if (actionAllowed) {
+	    return execute(ua.getAction(), params);
 	}
+	app.showNotification(ua.getUserType() + ".required.to." + ua.getActionName());
+	return null;
+    }
 
-	private boolean getAllAvailableActions() {
-		CommandResponse response = netcellDao.execute(
-				GET_ALL_AVAILABLE_ACTIONS, new HashMap<String, Object>());
-		if (response != null) {
-			GenericNameValueList list = (GenericNameValueList) response
-					.getValue("result");
+    public void executeAction(String actionName, UserAction ua, Entity entity, OpenGroupsApplication app,
+	    ComponentContainer container, boolean runInSeparateThread) {
+	ActionContext ac = new ActionContext(ua, app, entity, container, runInSeparateThread);
+	executeAction(actionName, ac);
+    }
 
-			for (int i = 0; i < list.size(); i++) {
-				GenericNameValueContext row = (GenericNameValueContext) list
-						.getValueForIndex(i);
-				UserAction ua = new UserAction(row);
-//				System.out.println(ua.getSourceEntityComplexType() + " "
-//						+ ua.getActionName() + " : " + ua.getActionPath());
-				getUserActionList(ua.getSourceEntityActionLocation())
-						.addAction(ua.getActionPath(), ua);
-				allActions.put(ua.getFullActionPath(), ua);
-			}
-			return true;
-		}
-		return false;
+    public void executeAction(String actionName, Entity entity, OpenGroupsApplication app,
+	    ComponentContainer container, boolean runInSeparateThread) {
+	ActionContext ac = new ActionContext(null, app, entity, container, runInSeparateThread);
+	executeAction(actionName, ac);
+    }
+
+    public void executeHandler(OpenGroupsActionHandler handler, UserAction ua, Entity entity,
+	    OpenGroupsApplication app, ComponentContainer container, boolean runInSeparateThread) {
+	ActionContext ac = new ActionContext(ua, app, entity, container, runInSeparateThread);
+	executeHandler(handler, ac);
+    }
+    
+    public void executeHandler(OpenGroupsActionHandler handler, UserAction ua, Entity entity,
+	    OpenGroupsApplication app, ComponentContainer container, boolean runInSeparateThread,ActionContext rootContext) {
+	ActionContext ac = new ActionContext(ua, app, entity, container, runInSeparateThread);
+	ac.setMainEntity(rootContext.getMainEntity());
+	ac.setWindow(rootContext.getWindow());
+	if(entity == null) {
+	    ac.setEntity(rootContext.getMainEntity());
 	}
+	executeHandler(handler, ac);
+    }
 
-	private UserActionList getUserActionList(String key) {
-		UserActionList ual = actionsMap.get(key);
-		if (ual == null) {
-			ual = new UserActionList();
-			actionsMap.put(key, ual);
-		}
-		return ual;
+    public void executeAction(String actionName, Entity entity, OpenGroupsApplication app,
+	    ComponentContainer container, boolean runInSeparateThread, ActionContext rootContext) {
+	ActionContext ac = new ActionContext(null, app, entity, container, runInSeparateThread);
+	ac.setMainEntity(rootContext.getMainEntity());
+	ac.setWindow(rootContext.getWindow());
+	if(entity == null) {
+	    ac.setEntity(rootContext.getMainEntity());
 	}
+	executeAction(actionName, ac);
+    }
 
-	public CommandResponse executeAction(ActionContext actionContext,
-			Map<String, Object> params) {
-		UserAction ua = actionContext.getUserAction();
-		Entity entity = actionContext.getEntity();
-		OpenGroupsApplication app = actionContext.getApp();
+    public void executeAction(String actionName, ActionContext ac) {
+	executeHandler(handlers.get(actionName), ac);
+    }
 
-		/* check if the action is allowed */
-		List<String> currentUserTypes = UsersManager.getInstance()
-				.getCurrentUserTypes(entity, app);
-		boolean actionAllowed = currentUserTypes.contains(ua.getUserType());
-		if (actionAllowed) {
-			return execute(ua.getAction(), params);
-		}
-		app.showNotification(ua.getUserType() + ".required.to."
-				+ ua.getActionName());
-		return null;
+    public void executeHandler(OpenGroupsActionHandler handler, ActionContext ac) {
+	if (ac.isRunInThread()) {
+	    // showProgressIndicator(ac.getTargetContainer());
+	    RunnableActionHandler runnableHandler = new RunnableActionHandler(handler, ac, this);
+	    handlersExecutor.execute(runnableHandler);
+	    System.out.println("Active threads: " + handlersExecutor.getActiveCount());
+	} else {
+	    try {
+		handler.handle(ac);
+	    } catch (Exception e) {
+		handleActionError(e, ac.getApp());
+	    }
 	}
+    }
 
-	public void executeAction(String actionName, UserAction ua, Entity entity,
-			OpenGroupsApplication app, ComponentContainer container,
-			boolean runInSeparateThread) {
-		ActionContext ac = new ActionContext(ua, app, entity, container,
-				runInSeparateThread);
-		executeAction(actionName, ac);
+    private void showProgressIndicator(ComponentContainer container) {
+	if (container == null) {
+	    return;
 	}
+	container.removeAllComponents();
+	GridLayout lc = new GridLayout(1, 1);
+	lc.setSizeFull();
+	ProgressIndicator pi = new ProgressIndicator();
+	pi.setIndeterminate(true);
+	lc.addComponent(pi, 0, 0);
+	lc.setComponentAlignment(pi, Alignment.TOP_CENTER);
+	container.addComponent(lc);
+    }
 
-	public void executeAction(String actionName, Entity entity,
-			OpenGroupsApplication app, ComponentContainer container,
-			boolean runInSeparateThread) {
-		ActionContext ac = new ActionContext(null, app, entity, container,
-				runInSeparateThread);
-		executeAction(actionName, ac);
-	}
+    public CommandResponse execute(String actionname, Map<String, Object> params) {
+	logger.info("Executing: " + actionname + " " + params);
+	return netcellDao.execute(actionname, params);
+    }
 
-	public void executeHandler(OpenGroupsActionHandler handler, UserAction ua,
-			Entity entity, OpenGroupsApplication app,
-			ComponentContainer container, boolean runInSeparateThread) {
-		ActionContext ac = new ActionContext(ua, app, entity, container,
-				runInSeparateThread);
-		executeHandler(handler, ac);
-	}
+    /*
+     * protected UserActionList getAvailableActions(User user, OpenGroupsApplication app) { Map<String, Object> params =
+     * new HashMap<String, Object>(); if (user != null) { params.put("userId", user.getUserId()); }
+     * params.put("entityId", app.getSelectedEntity().getId()); CommandResponse response =
+     * netcellDao.execute(GET_POSSIBLE_ACTIONS, params); GenericNameValueList list = (GenericNameValueList)
+     * response.getValue("result"); UserActionList userActionsList = new UserActionList(list); return userActionsList; }
+     * 
+     * public UserActionList getAvailableActions(OpenGroupsApplication app) { User user = (User)
+     * app.getAppContext().getHttpSession().getAttribute("user"); return getAvailableActions(user, app); }
+     */
 
-	public void executeAction(String actionName, ActionContext ac) {
-		executeHandler(handlers.get(actionName), ac);
-	}
+    public UserActionList getAvailableActions(Entity selectedEntity, String actionLocation) {
+	init();
+	String searchValue = selectedEntity.getComplexType() + ":" + actionLocation;
+	return actionsMap.get(searchValue);
 
-	public void executeHandler(OpenGroupsActionHandler handler, ActionContext ac) {
-		if (ac.isRunInThread()) {
-			// showProgressIndicator(ac.getTargetContainer());
-			RunnableActionHandler runnableHandler = new RunnableActionHandler(
-					handler, ac, this);
-			handlersExecutor.execute(runnableHandler);
-			System.out.println("Active threads: "
-					+ handlersExecutor.getActiveCount());
-		} else {
-			try {
-				handler.handle(ac);
-			} catch (Exception e) {
-				handleActionError(e, ac.getApp());
-			}
-		}
-	}
+    }
 
-	private void showProgressIndicator(ComponentContainer container) {
-		if (container == null) {
-			return;
-		}
-		container.removeAllComponents();
-		GridLayout lc = new GridLayout(1, 1);
-		lc.setSizeFull();
-		ProgressIndicator pi = new ProgressIndicator();
-		pi.setIndeterminate(true);
-		lc.addComponent(pi, 0, 0);
-		lc.setComponentAlignment(pi, Alignment.TOP_CENTER);
-		container.addComponent(lc);
-	}
+    public UserActionList getGlobalActions(String actionLocation) {
+	init();
+	String searchValue = "*:" + actionLocation;
+	return actionsMap.get(searchValue);
+    }
 
-	public CommandResponse execute(String actionname, Map<String, Object> params) {
-		logger.info("Executing: " + actionname + " " + params);
-		return netcellDao.execute(actionname, params);
-	}
+    public EntityDefinitionSummary getFlowDefinitionSummary(String flowId) {
+	return flowDefSummaries.get(flowId);
+    }
 
-	/*
-	 * protected UserActionList getAvailableActions(User user,
-	 * OpenGroupsApplication app) { Map<String, Object> params = new
-	 * HashMap<String, Object>(); if (user != null) { params.put("userId",
-	 * user.getUserId()); } params.put("entityId",
-	 * app.getSelectedEntity().getId()); CommandResponse response =
-	 * netcellDao.execute(GET_POSSIBLE_ACTIONS, params); GenericNameValueList
-	 * list = (GenericNameValueList) response.getValue("result"); UserActionList
-	 * userActionsList = new UserActionList(list); return userActionsList; }
-	 * 
-	 * public UserActionList getAvailableActions(OpenGroupsApplication app) {
-	 * User user = (User)
-	 * app.getAppContext().getHttpSession().getAttribute("user"); return
-	 * getAvailableActions(user, app); }
-	 */
+    @Override
+    public void handleActionError(Exception e, OpenGroupsApplication app) {
+	app.pushError(e);
+	e.printStackTrace();
+    }
 
-	public UserActionList getAvailableActions(Entity selectedEntity,
-			String actionLocation) {
-		init();
-		String searchValue = selectedEntity.getComplexType() + ":"
-				+ actionLocation;
-		return actionsMap.get(searchValue);
-
-	}
-
-	public UserActionList getGlobalActions(String actionLocation) {
-		init();
-		String searchValue = "*:" + actionLocation;
-		return actionsMap.get(searchValue);
-	}
-
-	public EntityDefinitionSummary getFlowDefinitionSummary(String flowId) {
-		return flowDefSummaries.get(flowId);
-	}
-
-	@Override
-	public void handleActionError(Exception e, OpenGroupsApplication app) {
-		app.pushError(e);
-		e.printStackTrace();
-	}
-
-	public UserAction getActionByPath(String path) {
-		return allActions.get(path);
-	}
+    public UserAction getActionByPath(String path) {
+	return allActions.get(path);
+    }
 }

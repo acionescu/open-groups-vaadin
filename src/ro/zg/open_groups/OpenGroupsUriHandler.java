@@ -31,158 +31,154 @@ import ro.zg.util.logging.MasterLogManager;
 
 import com.vaadin.terminal.DownloadStream;
 import com.vaadin.terminal.URIHandler;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 import com.vaadin.ui.Window.Notification;
 
-public class OpenGroupsUriHandler implements URIHandler,
-		FragmentChangedListener, Serializable {
+public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener, Serializable {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = -2654694055928915479L;
+    private static final long serialVersionUID = -2654694055928915479L;
 
-	private OpenGroupsApplication app;
-	private Map<String, FragmentHandler> fragmentHandlers = new HashMap<String, FragmentHandler>();
-	private static final Logger logger = MasterLogManager
-			.getLogger("URI_HANDLER");
+    private OpenGroupsApplication app;
+    private Map<String, FragmentHandler> fragmentHandlers = new HashMap<String, FragmentHandler>();
+    private static final Logger logger = MasterLogManager.getLogger("URI_HANDLER");
 
-	public OpenGroupsUriHandler(OpenGroupsApplication app) {
-		this.app = app;
-		initFragmentHandlers();
-	}
+    public OpenGroupsUriHandler(OpenGroupsApplication app) {
+	this.app = app;
+	initFragmentHandlers();
+    }
 
-	private void initFragmentHandlers() {
-//		fragmentHandlers.put("", new FragmentHandler() {
-//
-//			@Override
-//			public void handleFragment(String[] params) {
-//				/* 1 is the id of the entity */
-//				app.openWindow(app.getRootEntity());
-//			}
-//		});
+    private void initFragmentHandlers() {
+	fragmentHandlers.put("", new FragmentHandler() {
 
-		fragmentHandlers.put(UriFragments.SHOW_ENTITY, new FragmentHandler() {
+	    @Override
+	    public void handleFragment(String[] params) {
+		/* 1 is the id of the entity */
+		// app.setFragmentToEntity(app.getActiveEntity());
+		app.openInActiveWindow(app.getRootEntity());
+		app.getActiveWindow().setFragmentToEntity(app.getActiveEntity());
+	    }
+	});
 
-			@Override
-			public void handleFragment(String[] params) {
-				int currentPage = 1;
-				String actionPath = "";
-				int pl = params.length;
-				long id = app.getRootEntity().getId();
-				/* 1 is the id of the entity */
-				/* 2 is the current page */
-				/* >= 3 represent the action path */
-				if (pl > 1) {
-					id = Long.parseLong(params[1]);
-				}
-				if (pl > 2) {
-					currentPage = Integer.parseInt(params[2]);
-				}
-				if (pl > 3) {
-					for (int i = 3; i < params.length; i++) {
-						if (i > 3) {
-							actionPath += "/";
-						}
-						actionPath += params[i];
-					}
-				}
-				app.openEntityById(id, actionPath, currentPage);
+	fragmentHandlers.put(UriFragments.SHOW_ENTITY, new FragmentHandler() {
+
+	    @Override
+	    public void handleFragment(String[] params) {
+		int currentPage = 1;
+		String actionPath = "";
+		int pl = params.length;
+		long id = app.getRootEntity().getId();
+		/* 1 is the id of the entity */
+		/* 2 is the current page */
+		/* >= 3 represent the action path */
+		if (pl > 1) {
+		    id = Long.parseLong(params[1]);
+		}
+		if (pl > 2) {
+		    currentPage = Integer.parseInt(params[2]);
+		}
+		if (pl > 3) {
+		    for (int i = 3; i < params.length; i++) {
+			if (i > 3) {
+			    actionPath += "/";
 			}
-		});
+			actionPath += params[i];
+		    }
+		}
+		app.openEntityById(id, actionPath, currentPage);
+	    }
+	});
+    }
+
+    @Override
+    public DownloadStream handleURI(URL context, String relativeUri) {
+	if (relativeUri.startsWith("UIDL")) {
+	    return null;
 	}
-
-	@Override
-	public DownloadStream handleURI(URL context, String relativeUri) {
-		if(relativeUri.startsWith("UIDL")){
-			return null;
-		}
-		logger.info("handle uri '" + relativeUri+"'");
-		ActionUri au = getActionUri(relativeUri);
-		UserActionList actionsList = ActionsManager.getInstance()
-				.getGlobalActions(ActionLocations.URI);
-		if (actionsList == null) {
-			app.showNotification("generic.error",
-					Notification.TYPE_ERROR_MESSAGE);
-			return null;
-		}
-		UserAction ua = actionsList.getActionByName(au.getHandlerUri() + "/#");
-		if (ua != null) {
-			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("actionUri", au);
-			logger.info("Executing "+ua.getAction()+params);
-			ua.executeHandler(app, params);
-		} else {
-
-//			if ("".equals(relativeUri.trim())) {
-//				app.fullyRefreshCurrentSelectedEntity();
-//			} else {
-				/* assume this is a page refresh */
-//				handleFragment(relativeUri);
-//			}
-		}
-		return null;
+	logger.info("handle uri '" + relativeUri + "'");
+	logger.debug("Active window: " + app.getMainWindow());
+	ActionUri au = getActionUri(relativeUri);
+	UserActionList actionsList = ActionsManager.getInstance().getGlobalActions(ActionLocations.URI);
+	if (actionsList == null) {
+	    app.showNotification("generic.error", Notification.TYPE_ERROR_MESSAGE);
+	    return null;
 	}
+	UserAction ua = actionsList.getActionByName(au.getHandlerUri() + "/#");
+	if (ua != null) {
+	    Map<String, Object> params = new HashMap<String, Object>();
+	    params.put("actionUri", au);
+	    logger.info("Executing " + ua.getAction() + params);
+	    ua.executeHandler(app, params);
+	} else {
 
-	private ActionUri getActionUri(String relativeUri) {
-		ActionUri au = new ActionUri();
-		int index = relativeUri.indexOf("/");
-		if (index < 0) {
-			au.setHandlerUri(relativeUri);
-		} else {
-			au.setHandlerUri(relativeUri.substring(0, index));
-			au.setParamUri(relativeUri.substring(index + 1));
-		}
-
-		return au;
-	}
-
-	@Override
-	public void fragmentChanged(FragmentChangedEvent source) {
-
-		UriFragmentUtility ufu = source.getUriFragmentUtility();
-		String fragment = ufu.getFragment();
-		handleFragment(fragment);
+	    if (!"".equals(relativeUri.trim())) {
+		app.getActiveWindow().getUriUtility().setFragment(relativeUri);
+	    } 
 
 	}
+	return null;
+    }
 
-	private void handleFragment(String fragment) {
-		long currentTime = System.currentTimeMillis();
-		long lastTime = app.getLastFragmentUpdate();
-		long dif = (currentTime - lastTime);
-		logger.debug("handle fragment " + fragment + " at " + currentTime
-				+ " dif " + dif);
-		app.setLastFragmentUpdate(currentTime);
-		app.setLastFragment(fragment);
-
-		FragmentHandler fh = null;
-		String[] params = new String[0];
-		if (fragment != null && !"".equals(fragment.trim())) {
-			params = fragment.split("/");
-			if (params.length > 0) {
-				fh = fragmentHandlers.get(params[0]);
-			}
-		} else {
-			fh = fragmentHandlers.get("");
-		}
-		if (fh != null) {
-			fh.handleFragment(params);
-		} else {
-			// ufu.setFragment(UriFragments.SHOW_ENTITY_FRAGMENT+app.getSelectedEntity().getId(),false);
-//			app.setFragmentToCurrentEntity();
-			logger.error("No fragment handler found for fragment '" + fragment
-					+ "'");
-		}
+    private ActionUri getActionUri(String relativeUri) {
+	ActionUri au = new ActionUri();
+	int index = relativeUri.indexOf("/");
+	if (index < 0) {
+	    au.setHandlerUri(relativeUri);
+	} else {
+	    au.setHandlerUri(relativeUri.substring(0, index));
+	    au.setParamUri(relativeUri.substring(index + 1));
 	}
+
+	return au;
+    }
+
+    @Override
+    public void fragmentChanged(FragmentChangedEvent source) {
+	UriFragmentUtility ufu = source.getUriFragmentUtility();
+	String fragment = ufu.getFragment();
+	logger.debug("Fragment changed: '" + fragment + "'");
+	handleFragment(fragment);
+
+    }
+
+    public void handleFragment(String fragment) {
+	long currentTime = System.currentTimeMillis();
+	long lastTime = app.getLastFragmentUpdate();
+	long dif = (currentTime - lastTime);
+	logger.debug("handle fragment " + fragment + " at " + currentTime + " dif " + dif);
+	app.setLastFragmentUpdate(currentTime);
+	app.setLastFragment(fragment);
+
+	FragmentHandler fh = null;
+	String[] params = new String[0];
+	if (fragment != null && !"".equals(fragment.trim())) {
+	    params = fragment.split("/");
+	    if (params.length > 0) {
+		fh = fragmentHandlers.get(params[0]);
+	    }
+	} else {
+	    fh = fragmentHandlers.get("");
+	}
+	if (fh != null) {
+	    fh.handleFragment(params);
+	} else {
+	    // ufu.setFragment(UriFragments.SHOW_ENTITY_FRAGMENT+app.getSelectedEntity().getId(),false);
+	    // app.setFragmentToCurrentEntity();
+	    logger.error("No fragment handler found for fragment '" + fragment + "'");
+	}
+    }
 }
 
 interface FragmentHandler {
-	/**
-	 * first param is always the name of the command
-	 * 
-	 * @param params
-	 */
-	void handleFragment(String[] params);
+    /**
+     * first param is always the name of the command
+     * 
+     * @param params
+     */
+    void handleFragment(String[] params);
 }

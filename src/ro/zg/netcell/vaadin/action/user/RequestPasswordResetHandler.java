@@ -46,7 +46,7 @@ public class RequestPasswordResetHandler extends UserHandler {
 	Window w = new Window();
 	w.setModal(true);
 	OpenGroupsApplication app = actionContext.getApp();
-	OpenGroupsMainWindow mainWindow = app.getMainWindow();
+	OpenGroupsMainWindow mainWindow = actionContext.getWindow();
 	UserAction ua = actionContext.getUserAction();
 	w.setWidth("400px");
 	w.setHeight("300px");

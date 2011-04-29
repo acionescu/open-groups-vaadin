@@ -16,7 +16,6 @@
 package ro.zg.netcell.vaadin.action.application;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.ActionContext;
@@ -58,7 +57,7 @@ public class EntityListHandler extends BaseListHandler {
     private static final long serialVersionUID = -9150832279012100967L;
 
     @Override
-    public void handle(ActionContext actionContext) throws Exception {
+    public void handle(final ActionContext actionContext) throws Exception {
 
 	final UserAction ua = actionContext.getUserAction();
 	final OpenGroupsApplication app = actionContext.getApp();
@@ -88,7 +87,7 @@ public class EntityListHandler extends BaseListHandler {
 
 	    @Override
 	    public void buttonClick(ClickEvent event) {
-		refreshList(entity, ua, app, listAndPageControlsContainer);
+		refreshList(entity, ua, app, listAndPageControlsContainer,actionContext);
 	    }
 	});
 
@@ -97,16 +96,16 @@ public class EntityListHandler extends BaseListHandler {
 	refreshButtonContainer.setComponentAlignment(refreshButton, Alignment.MIDDLE_RIGHT);
 
 	// if (itemsCount > 0) {
-	ComponentContainer filtersContainer = initFilters(entity, ua, app);
+	ComponentContainer filtersContainer = initFilters(entity, ua, app,actionContext);
 	targetContainer.addComponent(filtersContainer);
 	// }
 	targetContainer.addComponent(listAndPageControlsContainer);
-	int itemsCount = refreshList(entity, ua, app, listAndPageControlsContainer);
+	int itemsCount = refreshList(entity, ua, app, listAndPageControlsContainer,actionContext);
     }
 
-    private int refreshList(Entity entity, UserAction ua, OpenGroupsApplication app, ComponentContainer displayArea) {
+    private int refreshList(Entity entity, UserAction ua, OpenGroupsApplication app, ComponentContainer displayArea, ActionContext ac) {
 	displayArea.removeAllComponents();
-	app.setFragmentToCurrentEntity();
+	ac.getWindow().setFragmentToEntity(entity);
 	
 	EntityList list = getModel().getChildrenListForEntity(entity, ua, app.getCurrentUserId());
 	int listSize = list.getItemsList().size();
@@ -121,12 +120,12 @@ public class EntityListHandler extends BaseListHandler {
 	    // listContainer.addContainerProperty("", CssLayout.class, null);
 	    // displayArea.addComponent(listContainer);
 
-	    displayList(ua, app, displayArea, list);
+	    displayList(ac, app, displayArea, list);
 
 	    /* add page controls */
 	    HorizontalLayout pageControlsContainer = new HorizontalLayout();
 	    pageControlsContainer.setSpacing(true);
-	    refreshPageControls(entity, ua, app, pageControlsContainer);
+	    refreshPageControls(entity, ua, app, pageControlsContainer,ac);
 	    GridLayout gl = new GridLayout(1, 1);
 //	    gl.setSizeFull();
 	    gl.setWidth("100%");
@@ -143,7 +142,7 @@ public class EntityListHandler extends BaseListHandler {
     }
 
     private void refreshPageControls(final Entity entity, final UserAction ua, final OpenGroupsApplication app,
-	    final ComponentContainer container) {
+	    final ComponentContainer container, final ActionContext ac) {
 	final int currentPage = entity.getState().getCurrentPageForCurrentAction();
 	final int itemsPerPage = entity.getState().getItemsPerPage();
 
@@ -224,7 +223,7 @@ public class EntityListHandler extends BaseListHandler {
 	    @Override
 	    public void buttonClick(ClickEvent event) {
 		entity.getState().setCurrentPageForCurrentAction(currentPage - 1);
-		refreshList(entity, ua, app, entity.getState().getLastUsedContainer());
+		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(),ac);
 		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
@@ -234,7 +233,7 @@ public class EntityListHandler extends BaseListHandler {
 	    @Override
 	    public void buttonClick(ClickEvent event) {
 		entity.getState().setCurrentPageForCurrentAction(currentPage + 1);
-		refreshList(entity, ua, app, entity.getState().getLastUsedContainer());
+		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(),ac );
 		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
@@ -246,14 +245,14 @@ public class EntityListHandler extends BaseListHandler {
 		String value = (String) event.getProperty().getValue();
 		String page = value.substring(0, value.indexOf("/"));
 		entity.getState().setCurrentPageForCurrentAction(Integer.parseInt(page));
-		refreshList(entity, ua, app, entity.getState().getLastUsedContainer());
+		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(),ac);
 		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
 
     }
 
-    private ComponentContainer initFilters(Entity entity, UserAction ua, OpenGroupsApplication app) {
+    private ComponentContainer initFilters(Entity entity, UserAction ua, OpenGroupsApplication app, final ActionContext ac) {
 
 	VerticalLayout filtersLayoutWithCaption = new VerticalLayout();
 	filtersLayoutWithCaption.setSizeFull();
@@ -273,26 +272,26 @@ public class EntityListHandler extends BaseListHandler {
 	boolean allowRecursiveList = getAppConfigManager().getComplexEntityBooleanParam(
 		ua.getTargetEntityComplexType(), ComplexEntityParam.ALLOW_RECURSIVE_LIST);
 	if (allowRecursiveList) {
-	    filtersLayout.addComponent(getListByDepthFilter(entity, ua, app));
+	    filtersLayout.addComponent(getListByDepthFilter(entity, ua, app,ac));
 	    hasFilters = true;
 	}
 
 	/* add status filter */
 	if (app.getCurrentUser() != null
 		&& getAppConfigManager().getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_STATUS)) {
-	    filtersLayout.addComponent(getStatusFilter(entity, ua, app));
+	    filtersLayout.addComponent(getStatusFilter(entity, ua, app,ac));
 	    hasFilters = true;
 	}
 
 	/* add global status filter */
 	if (getAppConfigManager().getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_STATUS)) {
-	    filtersLayout.addComponent(getGlobalStatusFilter(entity, ua, app));
+	    filtersLayout.addComponent(getGlobalStatusFilter(entity, ua, app,ac));
 	    hasFilters = true;
 	}
 
 	/* add tag filter */
 	if (getAppConfigManager().getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_TAG)) {
-	    filtersLayout.addComponent(getTagsFilter(entity, ua, app));
+	    filtersLayout.addComponent(getTagsFilter(entity, ua, app,ac));
 	    hasFilters = true;
 	}
 
@@ -311,7 +310,7 @@ public class EntityListHandler extends BaseListHandler {
 	}
 
 	/* add search filter */
-	Component searchFilter = getSearchFilter(entity, ua, app);
+	Component searchFilter = getSearchFilter(entity, ua, app,ac);
 	filtersContainer.addComponent(searchFilter);
 	filtersContainer.setComponentAlignment(searchFilter, Alignment.MIDDLE_RIGHT);
 
@@ -319,7 +318,7 @@ public class EntityListHandler extends BaseListHandler {
     }
 
     private ComponentContainer getListByDepthFilter(final Entity entity, final UserAction ua,
-	    final OpenGroupsApplication app) {
+	    final OpenGroupsApplication app, final ActionContext ac) {
 	ComboBox select = new ComboBox();
 	select.setImmediate(true);
 	select.setNullSelectionAllowed(false);
@@ -349,7 +348,7 @@ public class EntityListHandler extends BaseListHandler {
 	    public void valueChange(ValueChangeEvent event) {
 		entity.getState().resetPageInfoForCurrentAction();
 		selectedEntity.setFilter((FilterOption) event.getProperty().getValue());
-		refreshList(entity, ua, app, selectedEntity.getState().getLastUsedContainer());
+		refreshList(entity, ua, app, selectedEntity.getState().getLastUsedContainer(),ac);
 		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
@@ -363,7 +362,7 @@ public class EntityListHandler extends BaseListHandler {
 
     }
 
-    private ComponentContainer getSearchFilter(final Entity entity, final UserAction ua, final OpenGroupsApplication app) {
+    private ComponentContainer getSearchFilter(final Entity entity, final UserAction ua, final OpenGroupsApplication app, final ActionContext ac) {
 	final ComboBox select = new ComboBox();
 	select.setImmediate(true);
 	select.setNullSelectionAllowed(true);
@@ -409,7 +408,7 @@ public class EntityListHandler extends BaseListHandler {
 		}
 		FilterOption fo = new FilterOption(null, paramName, value);
 		entity.setFilter(fo);
-		refreshList(entity, ua, app, entity.getState().getLastUsedContainer());
+		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(),ac);
 		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
@@ -423,7 +422,7 @@ public class EntityListHandler extends BaseListHandler {
 	return container;
     }
 
-    private ComponentContainer getTagsFilter(final Entity entity, final UserAction ua, final OpenGroupsApplication app) {
+    private ComponentContainer getTagsFilter(final Entity entity, final UserAction ua, final OpenGroupsApplication app, final ActionContext ac) {
 	CommandResponse response = executeAction(ActionsManager.GET_TAGS, new HashMap<String, Object>());
 	GenericNameValueList list = (GenericNameValueList) response.getValue("result");
 
@@ -449,7 +448,7 @@ public class EntityListHandler extends BaseListHandler {
 	    public void valueChange(ValueChangeEvent event) {
 		FilterOption fo = new FilterOption(null, paramName, event.getProperty().getValue());
 		entity.setFilter(fo);
-		refreshList(entity, ua, app, entity.getState().getLastUsedContainer());
+		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(),ac);
 		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
@@ -463,7 +462,7 @@ public class EntityListHandler extends BaseListHandler {
 	return container;
     }
 
-    private ComponentContainer getStatusFilter(final Entity entity, final UserAction ua, final OpenGroupsApplication app) {
+    private ComponentContainer getStatusFilter(final Entity entity, final UserAction ua, final OpenGroupsApplication app, final ActionContext ac) {
 	ComboBox select = getStatusesCombo();
 	final String paramName = "status";
 	String currentFilterValue = (String) entity.getFilterValue(paramName);
@@ -478,7 +477,7 @@ public class EntityListHandler extends BaseListHandler {
 	    public void valueChange(ValueChangeEvent event) {
 		FilterOption fo = new FilterOption(null, paramName, event.getProperty().getValue());
 		entity.setFilter(fo);
-		refreshList(entity, ua, app, entity.getState().getLastUsedContainer());
+		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(),ac);
 		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
@@ -493,7 +492,7 @@ public class EntityListHandler extends BaseListHandler {
     }
 
     private ComponentContainer getGlobalStatusFilter(final Entity entity, final UserAction ua,
-	    final OpenGroupsApplication app) {
+	    final OpenGroupsApplication app, final ActionContext ac) {
 	ComboBox select = getStatusesCombo();
 	final String paramName = "globalStatus";
 	String currentFilterValue = (String) entity.getFilterValue(paramName);
@@ -508,7 +507,7 @@ public class EntityListHandler extends BaseListHandler {
 	    public void valueChange(ValueChangeEvent event) {
 		FilterOption fo = new FilterOption(null, paramName, event.getProperty().getValue());
 		entity.setFilter(fo);
-		refreshList(entity, ua, app, entity.getState().getLastUsedContainer());
+		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(),ac);
 		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});

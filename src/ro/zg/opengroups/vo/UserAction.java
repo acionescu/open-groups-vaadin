@@ -46,7 +46,6 @@ import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.open_groups.user.UsersManager;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.ObjectsUtil;
-import ro.zg.util.parser.ParserException;
 import ro.zg.util.parser.utils.ListMapParser;
 
 import com.vaadin.ui.ComponentContainer;
@@ -201,19 +200,19 @@ public class UserAction implements Serializable {
 
 	public void executeHandler(Entity selectedEntity,
 			OpenGroupsApplication app, ComponentContainer targetContainer,
-			boolean runInSeparateThread) {
+			boolean runInSeparateThread, ActionContext ac) {
 		/* set this actions as active on current selected entity */
 		if (selectedEntity != null) {
 			selectedEntity.getState().setActionActive(actionName);
 		}
 		ActionsManager.getInstance().executeHandler(getActionHandler(), this,
-				selectedEntity, app, targetContainer, runInSeparateThread);
+				selectedEntity, app, targetContainer, runInSeparateThread,ac);
 	}
 
 	public void executeHandler(Entity entity, OpenGroupsApplication app,
-			ComponentContainer targetContainer) {
+			ComponentContainer targetContainer, ActionContext ac) {
 		/* run the handler in a separate thread */
-		executeHandler(entity, app, targetContainer, false);
+		executeHandler(entity, app, targetContainer, false,ac);
 	}
 
 	public void executeHandler(OpenGroupsApplication app,

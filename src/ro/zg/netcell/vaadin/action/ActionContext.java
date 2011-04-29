@@ -18,6 +18,7 @@ package ro.zg.netcell.vaadin.action;
 import java.util.Map;
 
 import ro.zg.open_groups.OpenGroupsApplication;
+import ro.zg.open_groups.gui.OpenGroupsMainWindow;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.UserAction;
 
@@ -30,6 +31,8 @@ public class ActionContext {
     private ComponentContainer targetContainer;
     private boolean runInThread;
     private Map<String,Object> params;
+    private OpenGroupsMainWindow window;
+    private Entity mainEntity;
     
     public ActionContext(UserAction ua, OpenGroupsApplication app, Entity e, ComponentContainer c, boolean rit) {
 	userAction = ua;
@@ -125,6 +128,34 @@ public class ActionContext {
      */
     public void setParams(Map<String, Object> params) {
         this.params = params;
+    }
+
+    /**
+     * @return the window
+     */
+    public OpenGroupsMainWindow getWindow() {
+        return window;
+    }
+
+    /**
+     * @param window the window to set
+     */
+    public void setWindow(OpenGroupsMainWindow window) {
+        this.window = window;
+    }
+
+    /**
+     * @return the mainEntity
+     */
+    public Entity getMainEntity() {
+        return mainEntity;
+    }
+
+    /**
+     * @param mainEntity the mainEntity to set
+     */
+    public void setMainEntity(Entity mainEntity) {
+        this.mainEntity = mainEntity;
     }
     
 }

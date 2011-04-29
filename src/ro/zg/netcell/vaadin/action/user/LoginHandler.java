@@ -28,6 +28,7 @@ import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
 import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.constants.ActionLocations;
+import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.User;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.opengroups.vo.UserActionList;
@@ -59,7 +60,7 @@ public class LoginHandler extends UserHandler{
 	Window w = new Window();
 	w.setModal(true);
 	OpenGroupsApplication app = actionContext.getApp();
-	OpenGroupsMainWindow mainWindow = app.getMainWindow();
+	OpenGroupsMainWindow mainWindow = actionContext.getWindow();
 	UserAction ua = actionContext.getUserAction();
 	w.setWidth("400px");
 	w.setHeight("300px");
@@ -69,7 +70,7 @@ public class LoginHandler extends UserHandler{
 	
 	VerticalLayout layout = new VerticalLayout();
 	layout.setSizeFull();
-	Form form = getLoginForm(actionContext.getUserAction(), app);
+	Form form = getLoginForm(actionContext.getUserAction(), app,actionContext.getWindow(),actionContext.getEntity());
 	w.setContent(layout);
 	layout.addComponent(form);
 	form.setWidth("60%");
@@ -81,11 +82,11 @@ public class LoginHandler extends UserHandler{
 	footerActionsContainer.setMargin(true);
 	layout.addComponent(footerActionsContainer);
 	layout.setComponentAlignment(footerActionsContainer, Alignment.MIDDLE_RIGHT);
-	addFooterActions(footerActionsContainer,app);
+	addFooterActions(footerActionsContainer,app,actionContext);
     }
     
 
-    private Form getLoginForm(final UserAction ua, final OpenGroupsApplication app){
+    private Form getLoginForm(final UserAction ua, final OpenGroupsApplication app, final Window window, final Entity entity){
 			
 	
 	DefaultForm form = ua.generateForm();
@@ -103,7 +104,7 @@ public class LoginHandler extends UserHandler{
 	    @Override
 	    public void onCommit(FormCommitEvent event) {
 		Form form = event.getForm();
-		doLogin(form,ua,app);
+		doLogin(form,ua,app,window, entity);
 	    }
 	});
 	
@@ -111,7 +112,7 @@ public class LoginHandler extends UserHandler{
     }
 
 
-    private void doLogin(Form form, UserAction ua, OpenGroupsApplication app) {
+    private void doLogin(Form form, UserAction ua, OpenGroupsApplication app, Window window, Entity entity) {
 	form.setComponentError(null);
 	Map<String,Object> paramsMap = DataTranslationUtils.getFormFieldsAsMap(form);
 	paramsMap.put("password", UsersManager.getInstance().encrypt(paramsMap.get("password").toString()));
@@ -128,13 +129,14 @@ public class LoginHandler extends UserHandler{
 	GenericNameValueContext userRow = (GenericNameValueContext)list.getValueForIndex(0);
 	User user = getUserFromParamsContext(userRow);
 	/* close the login window */
-	app.getMainWindow().removeWindow(form.getWindow());
-	app.login(user);
+	window.removeWindow(form.getWindow());
+	app.login(user,entity);
     }
     
-    private void addFooterActions(final ComponentContainer container,final OpenGroupsApplication app) {
+    private void addFooterActions(final ComponentContainer container,final OpenGroupsApplication app, final ActionContext ac) {
 	UserActionList actionsList = ActionsManager.getInstance().getGlobalActions(ActionLocations.LOGIN_FOOTER);
 	if(actionsList != null && actionsList.getActions() != null) {
+	    final Window window = ac.getWindow();
 	    for(final UserAction ua : actionsList.getActions().values()) {
 		Button link = new Button(ua.getDisplayName());
 		link.addStyleName(BaseTheme.BUTTON_LINK);
@@ -143,8 +145,8 @@ public class LoginHandler extends UserHandler{
 		    
 		    @Override
 		    public void buttonClick(ClickEvent event) {
-			app.getMainWindow().removeWindow(container.getWindow());
-			ua.executeHandler(null, app, null);
+			window.removeWindow(container.getWindow());
+			ua.executeHandler(null, app, null,ac);
 		    }
 		});
 	    }

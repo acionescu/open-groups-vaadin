@@ -15,6 +15,7 @@
  ******************************************************************************/
 package ro.zg.netcell.vaadin.action.application;
 
+import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.opengroups.constants.ActionLocations;
@@ -32,7 +33,7 @@ public abstract class BaseEntityHandler extends OpenGroupsActionHandler {
     private static final long serialVersionUID = -3654060286201762359L;
 
     protected void displayActionsForSelectedEntity(Entity entity, OpenGroupsApplication application,
-	    ComponentContainer actionsContainer) {
+	    ComponentContainer actionsContainer, ActionContext ac) {
 	// ComponentContainer targetContainer = application.getTargetComponent();
 	/* get available actions for the selected entity */
 	UserActionList availableActions = getAvailableActions(entity, ActionLocations.TAB);
@@ -40,7 +41,7 @@ public abstract class BaseEntityHandler extends OpenGroupsActionHandler {
 	/* display the actions */
 	// application.setTargetComponent(actionsContainer);
 	if (availableActions != null) {
-	    availableActions.executeHandler(entity, application, actionsContainer, false);
+	    availableActions.executeHandler(entity, application, actionsContainer, false,ac);
 	}
 	
     }

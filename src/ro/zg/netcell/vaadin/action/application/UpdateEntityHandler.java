@@ -37,47 +37,47 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-public class UpdateEntityHandler extends OpenGroupsActionHandler{
+public class UpdateEntityHandler extends OpenGroupsActionHandler {
 
     /**
      * 
      */
     private static final long serialVersionUID = -6381955444237800871L;
 
-
     @Override
     public void handle(ActionContext actionContext) throws Exception {
 	ComponentContainer targetContainer = actionContext.getTargetContainer();
 	Entity entity = actionContext.getEntity();
 	targetContainer.removeAllComponents();
-	DefaultForm form = getForm(entity,actionContext.getUserAction(), actionContext.getApp(),targetContainer);
+	DefaultForm form = getForm(entity, actionContext.getUserAction(), actionContext.getApp(), targetContainer,actionContext);
 	targetContainer.addComponent(form);
 
     }
 
-    private DefaultForm getForm(final Entity entity,final UserAction ua, final OpenGroupsApplication application, final ComponentContainer targetContainer) {
+    private DefaultForm getForm(final Entity entity, final UserAction ua, final OpenGroupsApplication application,
+	    final ComponentContainer targetContainer, final ActionContext ac) {
 	final DefaultForm form = ua.generateForm();
 	form.getField("title").setValue(entity.getTitle());
 	form.getField("content").setValue(entity.getContent());
-//	EntityDefinitionSummary actionDef = getActionsManager().getFlowDefinitionSummary(ua.getAction());
-//	List<InputParameter> actionInputParams = actionDef.getInputParameters();
-//	Map<String,Object> values = new HashMap<String, Object>();
-//	Entity selectedEntity = application.getSelectedEntity();
-//	values.put("title", selectedEntity.getTitle());
-//	values.put("content", selectedEntity.getContent());
-//	
-//	List<InputParameter> userInputParams = ua.getUserInputParamsList(actionInputParams,values);
-//	
-//	form.setFormFieldFactory(new DefaultFormFieldFactory(userInputParams));
-//	form.populateFromInputParameterList(userInputParams);
+	// EntityDefinitionSummary actionDef = getActionsManager().getFlowDefinitionSummary(ua.getAction());
+	// List<InputParameter> actionInputParams = actionDef.getInputParameters();
+	// Map<String,Object> values = new HashMap<String, Object>();
+	// Entity selectedEntity = application.getSelectedEntity();
+	// values.put("title", selectedEntity.getTitle());
+	// values.put("content", selectedEntity.getContent());
+	//	
+	// List<InputParameter> userInputParams = ua.getUserInputParamsList(actionInputParams,values);
+	//	
+	// form.setFormFieldFactory(new DefaultFormFieldFactory(userInputParams));
+	// form.populateFromInputParameterList(userInputParams);
 	form.addListener(new FormListener() {
 
 	    @Override
 	    public void onCommit(FormCommitEvent event) {
 
 		Map<String, Object> paramsMap = DataTranslationUtils.getFormFieldsAsMap(event.getForm());
-		Entity selectedEntity = application.getSelectedEntity();
-		
+		Entity selectedEntity = entity;
+
 		paramsMap.put("userId", application.getCurrentUserId());
 		paramsMap.put("entityId", selectedEntity.getId());
 		String complexType = ua.getTargetEntityComplexType();
@@ -87,24 +87,26 @@ public class UpdateEntityHandler extends OpenGroupsActionHandler{
 		CommandResponse response = executeAction(new ActionContext(ua, application, entity), paramsMap);
 		if (response.isSuccessful()) {
 		    if ("titleExists".equals(response.getValue("exit"))) {
-			String message = application.getMessage(ua.getTargetEntityType().toLowerCase()+".already.exists.with.title");
+			String message = application.getMessage(ua.getTargetEntityType().toLowerCase()
+				+ ".already.exists.with.title");
 			form.setComponentError(new UserError(message));
 		    } else {
-			application.refreshCurrentSelectedEntity();
-			displaySuccessfulMessage(entity,ua, application,targetContainer);
+			application.refreshEntity(entity,ac);
+			displaySuccessfulMessage(entity, ua, application, targetContainer,ac);
 		    }
 		}
 		/* refresh after update */
-		application.refreshCurrentSelectedEntity();
+		application.refreshEntity(entity,ac);
 	    }
 	});
 
 	return form;
     }
 
-    private void displaySuccessfulMessage(final Entity entity,final UserAction ua, final OpenGroupsApplication app,final ComponentContainer targetComponent) {
+    private void displaySuccessfulMessage(final Entity entity, final UserAction ua, final OpenGroupsApplication app,
+	    final ComponentContainer targetComponent, final ActionContext ac) {
 	/* store current target component */
-//	final ComponentContainer targetComponent = app.getTargetComponent();
+	// final ComponentContainer targetComponent = app.getTargetComponent();
 	String entityTypeLowerCase = ua.getTargetEntityType().toLowerCase();
 	String createdSuccessfullyMessage = app.getMessage(entityTypeLowerCase + ".updated.successfully");
 	String newUpdateMessage = app.getMessage("new.update");
@@ -113,26 +115,24 @@ public class UpdateEntityHandler extends OpenGroupsActionHandler{
 	container.setSizeFull();
 	container.setSpacing(true);
 	targetComponent.addComponent(container);
-	
+
 	Label success = new Label(createdSuccessfullyMessage);
 	container.addComponent(success);
 
-	
 	Button newUpdate = new Button(newUpdateMessage);
 	container.addComponent(newUpdate);
 	newUpdate.addListener(new ClickListener() {
 
 	    @Override
 	    public void buttonClick(ClickEvent event) {
-//		Entity entity = new Entity(entityId);
-//		app.pushSelectedEntity(entity);
-//		app.executeAction(ActionsManager.OPEN_ENTITY_IN_WINDOW);
-		ua.executeHandler(entity,app,targetComponent);
+		// Entity entity = new Entity(entityId);
+		// app.pushSelectedEntity(entity);
+		// app.executeAction(ActionsManager.OPEN_ENTITY_IN_WINDOW);
+		ua.executeHandler(entity, app, targetComponent,ac);
 	    }
 	});
 
 	targetComponent.removeAllComponents();
     }
-
 
 }

@@ -70,14 +70,14 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 	Entity selectedEntity = actionContext.getEntity();
 	EntityUserData userData = selectedEntity.getUserData();
 	if (userData.getVote() != null) {
-	    showAlreadyVotedFragment(container, selectedEntity,actionContext.getApp(),actionContext.getUserAction());
+	    showAlreadyVotedFragment(container, selectedEntity,actionContext.getApp(),actionContext.getUserAction(),actionContext);
 	} else {
-	    showVotesFragment(container, selectedEntity,actionContext.getApp(),actionContext.getUserAction());
+	    showVotesFragment(container, selectedEntity,actionContext.getApp(),actionContext.getUserAction(),actionContext);
 	}
 
     }
 
-    private void showAlreadyVotedFragment(final ComponentContainer container, final Entity selectedEntity, final OpenGroupsApplication app, final UserAction ua) {
+    private void showAlreadyVotedFragment(final ComponentContainer container, final Entity selectedEntity, final OpenGroupsApplication app, final UserAction ua, final ActionContext ac) {
 	String entityType = selectedEntity.getSimpleType().toLowerCase();
 	String currentUserVote = selectedEntity.getUserData().getVote();
 	String messageKey = entityType + ".already.voted." + currentUserVote;
@@ -91,7 +91,7 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 	    @Override
 	    public void buttonClick(ClickEvent event) {
 		container.removeAllComponents();
-		showVotesFragment(container, selectedEntity,app,ua);
+		showVotesFragment(container, selectedEntity,app,ua,ac);
 	    }
 	});
 	hl.addComponent(changeVoteButton);
@@ -108,7 +108,7 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 		
 		executeAction(new ActionContext(ua, app, selectedEntity), params);
 //		app.refreshCurrentSelectedEntity();
-		app.refreshEntity(selectedEntity);
+		app.refreshEntity(selectedEntity,ac);
 //		try {
 //		    handle(ua, app);
 //		} catch (Exception e) {
@@ -121,18 +121,18 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 	container.addComponent(hl);
     }
 
-    private void showVotesFragment(ComponentContainer container, Entity selectedEntity,final OpenGroupsApplication app, final UserAction ua) {
+    private void showVotesFragment(ComponentContainer container, Entity selectedEntity,final OpenGroupsApplication app, final UserAction ua, final ActionContext ac) {
 	String entityType = selectedEntity.getSimpleType().toLowerCase();
 	List<VoteType> voteTypes = VoteType.valuesList(entityType);
 	HorizontalLayout votesContainer = new HorizontalLayout();
 	votesContainer.setSpacing(true);
 	for (VoteType vt : voteTypes) {
-	    votesContainer.addComponent(getButtonForVoteType(vt, container,selectedEntity,app,ua));
+	    votesContainer.addComponent(getButtonForVoteType(vt, container,selectedEntity,app,ua,ac));
 	}
 	container.addComponent(votesContainer);
     }
 
-    private Button getButtonForVoteType(final VoteType voteType, final ComponentContainer container, final Entity selectedEntity, final OpenGroupsApplication app, final UserAction ua) {
+    private Button getButtonForVoteType(final VoteType voteType, final ComponentContainer container, final Entity selectedEntity, final OpenGroupsApplication app, final UserAction ua, final ActionContext ac) {
 	Button button = new Button(voteType.getCaption());
 	button.addListener(new ClickListener() {
 
@@ -147,7 +147,7 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 		params.put("vote", voteType.getDbValue());
 		executeAction(new ActionContext(ua, app, selectedEntity), params);
 //		app.refreshCurrentSelectedEntity();
-		app.refreshEntity(selectedEntity);
+		app.refreshEntity(selectedEntity,ac);
 //		try {
 //		    handle(ua, app);
 //		} catch (Exception e) {

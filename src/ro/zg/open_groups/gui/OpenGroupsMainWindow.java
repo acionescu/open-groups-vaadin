@@ -15,103 +15,114 @@
  ******************************************************************************/
 package ro.zg.open_groups.gui;
 
+import ro.zg.opengroups.util.OpenGroupsUtil;
+import ro.zg.opengroups.vo.Entity;
+import ro.zg.util.logging.Logger;
+import ro.zg.util.logging.MasterLogManager;
+
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.TabSheet.Tab;
 
 public class OpenGroupsMainWindow extends Window {
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = -8492978667795915161L;
-	private GridLayout headerPanel;
-	private CssLayout userActionsContainer;
-	private Tab userActionsTab;
-	private VerticalLayout mainContent;
-	private CssLayout entityContent;
-	private UriFragmentUtility uriUtility;
+    private static final long serialVersionUID = -8492978667795915161L;
+    private static final Logger logger = MasterLogManager.getLogger("WINDOW");
+    private GridLayout headerPanel;
+    private CssLayout userActionsContainer;
+    private Tab userActionsTab;
+    private VerticalLayout mainContent;
+    private CssLayout entityContent;
+    private UriFragmentUtility uriUtility;
 
-	public OpenGroupsMainWindow(String caption) {
-		super(caption);
-		// createLayout();
-	}
+    public OpenGroupsMainWindow(String caption) {
+	super(caption);
+	// createLayout();
+    }
 
-	public OpenGroupsMainWindow() {
-		// createLayout();
-	}
+    public OpenGroupsMainWindow() {
+	// createLayout();
+    }
 
-	public void createLayout() {
-		// mainContent = new VerticalLayout();
-		// mainContent.setSizeFull();
-		// mainContent.setMargin(true);
-		//		
-		// setContent(mainContent);
+    public void createLayout() {
+	// mainContent = new VerticalLayout();
+	// mainContent.setSizeFull();
+	// mainContent.setMargin(true);
+	//		
+	// setContent(mainContent);
 
-		mainContent = (VerticalLayout) this.getContent();
+	mainContent = (VerticalLayout) this.getContent();
 
-		uriUtility = new UriFragmentUtility();
-		mainContent.addComponent(uriUtility);
+	uriUtility = new UriFragmentUtility();
+	mainContent.addComponent(uriUtility);
 
-		headerPanel = new GridLayout(2, 1);
-		headerPanel.setWidth("100%");
-		mainContent.addComponent(headerPanel);
+	headerPanel = new GridLayout(2, 1);
+	headerPanel.setWidth("100%");
+	mainContent.addComponent(headerPanel);
 
-		userActionsContainer = new CssLayout();
+	userActionsContainer = new CssLayout();
 
-		entityContent = new CssLayout();
-		entityContent.setSizeFull();
-		mainContent.addComponent(entityContent);
+	entityContent = new CssLayout();
+	entityContent.setSizeFull();
+	mainContent.addComponent(entityContent);
 
-	}
+    }
 
-	public void clear() {
-		removeAllComponents();
-		createLayout();
-	}
+    public void clear() {
+	removeAllComponents();
+	createLayout();
+    }
 
-	// public void setHeaderContent(Component c) {
-	// headerContainer.removeAllComponents();
-	// headerContainer.addComponent(c);
-	// }
+    // public void setHeaderContent(Component c) {
+    // headerContainer.removeAllComponents();
+    // headerContainer.addComponent(c);
+    // }
 
-	public void setUserActionsTabVisible(boolean visible) {
-		userActionsTab.setVisible(visible);
-	}
+    public void setUserActionsTabVisible(boolean visible) {
+	userActionsTab.setVisible(visible);
+    }
 
-	/**
-	 * @return the headerPanel
-	 */
-	public GridLayout getHeaderPanel() {
-		return headerPanel;
-	}
+    public void setFragmentToEntity(Entity entity) {
+	String fragment = OpenGroupsUtil.getFragmentForEntity(entity);
+	logger.debug("Update fragment to '"+fragment+"'");
+	uriUtility.setFragment(fragment, false);
+    }
 
-	/**
-	 * @param headerPanel
-	 *            the headerPanel to set
-	 */
-	public void setHeaderPanel(GridLayout headerPanel) {
-		this.headerPanel = headerPanel;
-	}
+    /**
+     * @return the headerPanel
+     */
+    public GridLayout getHeaderPanel() {
+	return headerPanel;
+    }
 
-	public CssLayout getEntityContent() {
-		return entityContent;
-	}
+    /**
+     * @param headerPanel
+     *            the headerPanel to set
+     */
+    public void setHeaderPanel(GridLayout headerPanel) {
+	this.headerPanel = headerPanel;
+    }
 
-	/**
-	 * @return the userActionsContainer
-	 */
-	public CssLayout getUserActionsContainer() {
-		return userActionsContainer;
-	}
+    public CssLayout getEntityContent() {
+	return entityContent;
+    }
 
-	/**
-	 * @return the uriUtility
-	 */
-	public UriFragmentUtility getUriUtility() {
-		return uriUtility;
-	}
+    /**
+     * @return the userActionsContainer
+     */
+    public CssLayout getUserActionsContainer() {
+	return userActionsContainer;
+    }
+
+    /**
+     * @return the uriUtility
+     */
+    public UriFragmentUtility getUriUtility() {
+	return uriUtility;
+    }
 }

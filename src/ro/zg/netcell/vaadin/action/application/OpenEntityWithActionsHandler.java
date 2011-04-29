@@ -54,7 +54,7 @@ public class OpenEntityWithActionsHandler extends BaseEntityHandler{
 //	targetContainer.setExpandRatio(entityContainer, 2f);
 	
 //	sp.setFirstComponent(entityContainer);
-	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS, entity,app,entityContainer,false);
+	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS, entity,app,entityContainer,false,actionContext);
 	if(app.hasErrors()) {
 	    return;
 	}
@@ -75,7 +75,7 @@ public class OpenEntityWithActionsHandler extends BaseEntityHandler{
 	targetContainer.addComponent(actionsContainer);
 //	targetContainer.setExpandRatio(actionsContainer, 1f);
 //	sp.setSecondComponent(actionsContainer);
-	displayActionsForSelectedEntity(entity,app, actionsContainer);
+	displayActionsForSelectedEntity(entity,app, actionsContainer,actionContext);
 //	parent.addComponent(targetContainer);
 	
     }

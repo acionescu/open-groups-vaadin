@@ -152,8 +152,8 @@ public class MirrorSiteUtil {
 
 		// generateFragmentForEntity(out, e);
 		generateEntitySummaryFragment(out, e);
-		out.append(HtmlHelper.BR);
-		out.append(HtmlHelper.BR);
+		out.append(OpenGroupsUtil.BR);
+		out.append(OpenGroupsUtil.BR);
 		getActionFragment(out, e, path);
 	}
 
@@ -201,7 +201,7 @@ public class MirrorSiteUtil {
 			String entityTypeCaption = "("
 					+ getMessage(entity.getComplexType()) + ")";
 			out.append(entityTypeCaption);
-			out.append(HtmlHelper.NBSP);
+			out.append(OpenGroupsUtil.NBSP);
 		}
 
 		/*
@@ -209,16 +209,16 @@ public class MirrorSiteUtil {
 		 * displayed in the recent activity list
 		 */
 		if (state.isOpened() || (subtyesList == null && parentEntityId < 0)) {
-			out.append(HtmlHelper.wrapAsH(entity.getTitle(), 2));
+			out.append(OpenGroupsUtil.wrapAsH(entity.getTitle(), 2));
 		} else if (subtyesList != null) {
-			out.append(HtmlHelper.wrapAsA(getUrlForEntity(entity), entity
+			out.append(OpenGroupsUtil.wrapAsA(getUrlForEntity(entity), entity
 					.getTitle()));
 		} else { /* leaf entity */
 			Entity parentEntity = new Entity(entity.getParentEntityId());
 			parentEntity.getState().setEntityTypeVisible(true);
 			parentEntity.getState().setDesiredActionsPath(
 					entity.getComplexType() + "/LIST/entity.list.newest");
-			out.append(HtmlHelper.wrapAsA(getUrlForEntity(parentEntity), entity
+			out.append(OpenGroupsUtil.wrapAsA(getUrlForEntity(parentEntity), entity
 					.getTitle()));
 		}
 		/* add tags */
@@ -234,14 +234,14 @@ public class MirrorSiteUtil {
 					}
 				}
 				String tagsLabelString = getMessage("tags.label") + tagsList;
-				out.append(HtmlHelper.BR);
+				out.append(OpenGroupsUtil.BR);
 				out.append(tagsLabelString);
 			}
 		}
 
 		Object contentObj = entity.getContent();
 		if (contentObj != null) {
-			out.append(HtmlHelper.BR);
+			out.append(OpenGroupsUtil.BR);
 			out.append(contentObj.toString());
 		}
 
@@ -257,12 +257,12 @@ public class MirrorSiteUtil {
 		if (currentPage > 1) {
 			int prevPage = currentPage - 1;
 			entity.getState().setCurrentPageForCurrentAction(prevPage);
-			out.append(HtmlHelper.wrapAsA(getUrlForEntity(entity), "<"));
+			out.append(OpenGroupsUtil.wrapAsA(getUrlForEntity(entity), "<"));
 		}
 		if (currentPage < totalPages) {
 			int nextPage = currentPage + 1;
 			entity.getState().setCurrentPageForCurrentAction(nextPage);
-			out.append(HtmlHelper.wrapAsA(getUrlForEntity(entity), ">"));
+			out.append(OpenGroupsUtil.wrapAsA(getUrlForEntity(entity), ">"));
 		}
 
 	}

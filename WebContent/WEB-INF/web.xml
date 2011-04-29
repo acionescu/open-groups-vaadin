@@ -4,12 +4,11 @@
    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
    <display-name>open-groups</display-name>
    <context-param>
-      <description>
-		Vaadin production mode</description>
+      <description>Vaadin production mode</description>
       <param-name>productionMode</param-name>
       <param-value>true</param-value>
    </context-param>
-    <filter>
+   <filter>
       <filter-name>addBackSlash</filter-name>
       <filter-class>ro.zg.open_groups.AddBackSlashFilter</filter-class>
    </filter>
@@ -17,14 +16,14 @@
       <filter-name>botsFilter</filter-name>
       <filter-class>ro.zg.open_groups.BotsFilter</filter-class>
    </filter>
-    <filter-mapping>
-      <filter-name>addBackSlash</filter-name>
+   <filter-mapping>
+      <filter-name>botsFilter</filter-name>
       <url-pattern>/*</url-pattern>
    </filter-mapping>
-   <filter-mapping>
-        <filter-name>botsFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+<!--   <filter-mapping>-->
+<!--      <filter-name>addBackSlash</filter-name>-->
+<!--      <url-pattern>/*</url-pattern>-->
+<!--   </filter-mapping>-->
    <servlet>
       <servlet-name>open_groups</servlet-name>
       <servlet-class>ro.zg.open_groups.OpenGroupsApplicationServlet</servlet-class>
@@ -35,10 +34,10 @@
          <param-value>ro.zg.open_groups.OpenGroupsApplication</param-value>
       </init-param>
       <init-param>
-      	<description>
+         <description>
       	Application widgetset</description>
-      	<param-name>widgetset</param-name>
-      	<param-value>ro.zg.open_groups.widgetset.Open_groupsWidgetset</param-value>
+         <param-name>widgetset</param-name>
+         <param-value>ro.zg.open_groups.widgetset.Open_groupsWidgetset</param-value>
       </init-param>
    </servlet>
    <servlet-mapping>

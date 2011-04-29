@@ -15,14 +15,15 @@
  ******************************************************************************/
 package ro.zg.netcell.vaadin.action.application;
 
+import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityList;
-import ro.zg.opengroups.vo.UserAction;
 
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
+
 
 public abstract class BaseListHandler extends BaseEntityHandler {
 
@@ -55,7 +56,7 @@ public abstract class BaseListHandler extends BaseEntityHandler {
 	// }
 	// }
 
-	protected void displayList(UserAction ua, OpenGroupsApplication app,
+	protected void displayList(ActionContext ac, OpenGroupsApplication app,
 			ComponentContainer targetContainer, EntityList list) {
 		ComponentContainer displayArea = targetContainer;
 		// Table displayArea = targetContainer;
@@ -70,7 +71,7 @@ public abstract class BaseListHandler extends BaseEntityHandler {
 			// displayArea.addItem(new Object[] {entityContainer}, null);
 			getActionsManager().executeAction(
 					ActionsManager.OPEN_SELECTED_ENTITY, currentEntity, app,
-					entityContainer, false);
+					entityContainer, false,ac);
 			displayArea.addComponent(entityContainer);
 		}
 	}

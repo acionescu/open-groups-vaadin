@@ -55,7 +55,7 @@ public class OpenHierarchyForEntityHandler extends BaseListHandler{
 	container.removeAllComponents();
 
 //	displayHierarchyList(selectedEntity,ua, app, container,params);
-	displayList(ua, app, container, entityList);
+	displayList(actionContext, app, container, entityList);
 	
     }
 //    private void displayHierarchyList(Entity entity,UserAction ua, OpenGroupsApplication app,ComponentContainer targetContainer, Map<String, Object> params) {

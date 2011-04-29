@@ -47,11 +47,11 @@ public class UpdateUserHandler extends UserHandler{
     public void handle(ActionContext actionContext) throws Exception {
 	ComponentContainer targetContainer = actionContext.getTargetContainer();
 	targetContainer.removeAllComponents();
-	Form form = getUpdateForm(actionContext.getUserAction(), actionContext.getApp(), actionContext.getTargetContainer());
+	Form form = getUpdateForm(actionContext.getUserAction(), actionContext.getApp(), actionContext.getTargetContainer(),actionContext);
 	targetContainer.addComponent(form);
     }
     
-    private Form getUpdateForm(final UserAction ua, final OpenGroupsApplication app, final ComponentContainer container) {
+    private Form getUpdateForm(final UserAction ua, final OpenGroupsApplication app, final ComponentContainer container, final ActionContext ac) {
 	DefaultForm form =  ua.generateForm();
 	User currentUser = app.getCurrentUser();
 //	form.getField("email").setValue(currentUser.getEmail());
@@ -61,14 +61,14 @@ public class UpdateUserHandler extends UserHandler{
 	    @Override
 	    public void onCommit(FormCommitEvent event) {
 		Form form = event.getForm();
-		doUpdate(form,ua,app,container);
+		doUpdate(form,ua,app,container,ac);
 	    }
 	});
 	
 	return form;
     }
     
-    private void doUpdate(Form form, UserAction ua, OpenGroupsApplication app,ComponentContainer container) {
+    private void doUpdate(Form form, UserAction ua, OpenGroupsApplication app,ComponentContainer container, final ActionContext ac) {
 	form.setComponentError(null);
 	User user = app.getCurrentUser();
 	Map<String,Object> paramsMap = DataTranslationUtils.getFormFieldsAsMap(form);
@@ -87,14 +87,14 @@ public class UpdateUserHandler extends UserHandler{
 	}
 	
 	user.setEmail((String)paramsMap.get("email"));
-	showSuccessMessage(app, container, ua);
+	showSuccessMessage(app, container, ua,ac);
     }
 
     private boolean isDataMofified(User u, Map<String,Object> params) {
 	return !u.getEmail().equals(params.get("email"));
     }
     
-    private void showSuccessMessage(final OpenGroupsApplication app, final ComponentContainer container,final UserAction ua) {
+    private void showSuccessMessage(final OpenGroupsApplication app, final ComponentContainer container,final UserAction ua, final ActionContext ac) {
 	container.removeAllComponents();
 	Label msg = new Label(getMessage("user.data.succesfully.updated"));
 	Button button = new Button(getMessage("new.user.data.update"));
@@ -103,7 +103,7 @@ public class UpdateUserHandler extends UserHandler{
 	    
 	    @Override
 	    public void buttonClick(ClickEvent event) {
-		ua.executeHandler(null, app, container);
+		ua.executeHandler(null, app, container,ac);
 	    }
 	});
 	

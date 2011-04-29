@@ -26,6 +26,7 @@ import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
 import ro.zg.open_groups.user.UsersManager;
+import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.User;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.util.data.GenericNameValueContext;
@@ -49,7 +50,7 @@ public class RegisterUserHandler extends UserHandler{
 	Window w = new Window();
 	w.setModal(true);
 	OpenGroupsApplication app = actionContext.getApp();
-	OpenGroupsMainWindow mainWindow = app.getMainWindow();
+	OpenGroupsMainWindow mainWindow = actionContext.getWindow();
 	UserAction ua = actionContext.getUserAction();
 	w.setWidth("400px");
 	w.setHeight("300px");
@@ -59,7 +60,7 @@ public class RegisterUserHandler extends UserHandler{
 	
 	VerticalLayout layout = new VerticalLayout();
 	layout.setSizeFull();
-	Form form = getRegisterForm(actionContext.getUserAction(), app);
+	Form form = getRegisterForm(actionContext.getUserAction(), app, actionContext.getWindow(),actionContext.getEntity());
 	w.setContent(layout);
 	layout.addComponent(form);
 	form.setWidth("60%");
@@ -69,7 +70,7 @@ public class RegisterUserHandler extends UserHandler{
 	
     }
 
-    private Form getRegisterForm(final UserAction ua, final OpenGroupsApplication app) {
+    private Form getRegisterForm(final UserAction ua, final OpenGroupsApplication app, final Window window, final Entity entity) {
 	DefaultForm form =  ua.generateForm();
 	
 	form.addListener(new FormListener() {
@@ -77,14 +78,14 @@ public class RegisterUserHandler extends UserHandler{
 	    @Override
 	    public void onCommit(FormCommitEvent event) {
 		Form form = event.getForm();
-		doRegister(form,ua,app);
+		doRegister(form,ua,app,window,entity);
 	    }
 	});
 	
 	return form;
     }
     
-    private void doRegister(Form form, UserAction ua, OpenGroupsApplication app) {
+    private void doRegister(Form form, UserAction ua, OpenGroupsApplication app, Window window, Entity entity) {
 	form.setComponentError(null);
 	Map<String,Object> paramsMap = DataTranslationUtils.getFormFieldsAsMap(form);
 	String password = (String)paramsMap.get("password");
@@ -112,10 +113,10 @@ public class RegisterUserHandler extends UserHandler{
 	GenericNameValueList list = (GenericNameValueList)response.getValue("result");
 	GenericNameValueContext userRow = (GenericNameValueContext)list.getValueForIndex(0);
 	User user = getUserFromParamsContext(userRow);
-	app.login(user);
+	app.login(user,entity);
 	/* close the login window */
-	app.getMainWindow().removeWindow(form.getWindow());
+	window.removeWindow(form.getWindow());
 	/* refresh main application window */
-	app.refreshMainWindow();
+	app.openInActiveWindow(entity);
     }
 }

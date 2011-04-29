@@ -63,14 +63,15 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 	    return;
 	}
 
-	DefaultForm form = getForm(entity, actionContext.getUserAction(), actionContext.getApp(), targetContainer);
+	DefaultForm form = getForm(entity, actionContext.getUserAction(), actionContext.getApp(), targetContainer,actionContext);
 	targetContainer.addComponent(form);
 
     }
 
     private DefaultForm getForm(final Entity entity, final UserAction ua, final OpenGroupsApplication application,
-	    final ComponentContainer targetComponent) {
+	    final ComponentContainer targetComponent, final ActionContext ac) {
 	final DefaultForm form = ua.generateForm();
+	final Entity parentEntity = ac.getMainEntity();
 	// EntityDefinitionSummary actionDef = getActionsManager().getFlowDefinitionSummary(ua.getAction());
 	// List<InputParameter> actionInputParams = actionDef.getInputParameters();
 	// List<InputParameter> userInputParams = ua.getUserInputParamsList(actionInputParams);
@@ -94,7 +95,7 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 
 		User user = application.getCurrentUser();
 		paramsMap.put("userId", user.getUserId());
-		paramsMap.put("parentId", application.getSelectedEntity().getId());
+		paramsMap.put("parentId", parentEntity.getId());
 		paramsMap.put("entityType", ua.getTargetEntityType());
 
 		String complexType = ua.getTargetEntityComplexType();
@@ -110,11 +111,11 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 			form.setComponentError(new UserError(message));
 		    } else {
 			long entityId = (Long) response.getValue("currentEntityId");
-			displaySuccessfulMessage(entity, ua, application, targetComponent, entityId);
+			displaySuccessfulMessage(entity, ua, application, targetComponent, entityId,ac);
 		    }
 		}
 		/* refresh parent */
-		application.refreshCurrentSelectedEntity();
+		application.refreshEntity(parentEntity,ac);
 	    }
 	});
 
@@ -122,7 +123,7 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
     }
 
     private void displaySuccessfulMessage(final Entity entity, final UserAction ua, final OpenGroupsApplication app,
-	    final ComponentContainer targetComponent, final long entityId) {
+	    final ComponentContainer targetComponent, final long entityId, final ActionContext ac) {
 	/* store current target component */
 	// final ComponentContainer targetComponent = app.getTargetComponent();
 	String entityTypeLowerCase = ua.getTargetEntityType().toLowerCase();
@@ -148,16 +149,17 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 			ua.getTargetEntityComplexType());
 		if (subtypesList != null) {
 		    Entity entity = new Entity(entityId);
-		    getActionsManager().executeAction(ActionsManager.REFRESH_SELECTED_ENTITY, entity, app, null, false);
-		    getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, entity, app, null, false);
+//		    getActionsManager().executeAction(ActionsManager.REFRESH_SELECTED_ENTITY, entity, app, null, false,ac);
+//		    getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, entity, app, null, false,ac);
+		    app.refreshEntity(entity, ac);
 		}
 		/* if no subtypes open the parent entity */
 		else {
-		    Entity parentEntity = app.getSelectedEntity();
+		    Entity parentEntity = ac.getMainEntity();
 		    parentEntity.getState().setEntityTypeVisible(true);
 		    parentEntity.getState().setDesiredActionsPath(ua.getTargetEntityComplexType() + "/LIST");
-		    app.getTemporaryTab(parentEntity).setRefreshOn(true);
-		    getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, parentEntity, app, null, false);
+//		    app.getTemporaryTab(parentEntity).setRefreshOn(true);
+		    getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, parentEntity, app, null, false,ac);
 		}
 	    }
 	});
@@ -170,7 +172,7 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 	    public void buttonClick(ClickEvent event) {
 		/* recall the handle method on this handler */
 		// app.setTargetComponent(targetComponent);
-		ua.executeHandler(entity, app, targetComponent);
+		ua.executeHandler(entity, app, targetComponent,ac);
 	    }
 	});
 

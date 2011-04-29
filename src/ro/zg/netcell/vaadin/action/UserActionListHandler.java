@@ -50,7 +50,7 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 	private static final long serialVersionUID = 8494158542993409953L;
 
 	@Override
-	public void handle(ActionContext actionContext) throws Exception {
+	public void handle(final ActionContext actionContext) throws Exception {
 		ComponentContainer displayArea = actionContext.getTargetContainer();
 		displayArea.setSizeFull();
 		displayArea.removeAllComponents();
@@ -99,7 +99,7 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 				// entity.getState().addCurrentActionToQueue(ua.getActionName());
 				// System.out.println(entity.getState().getCurrentActionTabsQueue());
 				if (ua instanceof UserActionList) {
-					ua.executeHandler(entity, app, selectedTabContent, false);
+					ua.executeHandler(entity, app, selectedTabContent, false,actionContext);
 				} else {
 
 					if (entity != null) {
@@ -109,9 +109,9 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 						entity.getState().setCurrentActionsPath(
 								ua.getFullActionPath());
 						entity.getState().getDesiredActionTabsQueue().clear();
-						app.setFragmentToCurrentEntity();
+						actionContext.getWindow().setFragmentToEntity(entity);
 					}
-					ua.executeHandler(entity, app, selectedTabContent, false);
+					ua.executeHandler(entity, app, selectedTabContent, false,actionContext);
 				}
 
 			}
