@@ -37,8 +37,14 @@
 	background: transparent;
 }
 
+.main-pane {
+	background: white;
+	background-color: white;
+}
+
 .list-container {
-	border-top-style: solid; border-width : thin;
+	border-top-style: solid;
+	border-width: thin;
 	border-color: grey;
 	border-width: thin;
 }

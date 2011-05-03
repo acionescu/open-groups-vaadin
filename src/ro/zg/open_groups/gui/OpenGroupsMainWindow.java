@@ -69,6 +69,7 @@ public class OpenGroupsMainWindow extends Window {
 
 	entityContent = new CssLayout();
 	entityContent.setSizeFull();
+	entityContent.setStyleName("main-pane");
 	mainContent.addComponent(entityContent);
 
     }
