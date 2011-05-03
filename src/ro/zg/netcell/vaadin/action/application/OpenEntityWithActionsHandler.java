@@ -36,48 +36,23 @@ public class OpenEntityWithActionsHandler extends BaseEntityHandler{
 	Entity entity = actionContext.getEntity();
 	OpenGroupsApplication app = actionContext.getApp();
 	
-//	Panel parent = ((Panel)actionContext.getTargetContainer());
-//	parent.removeAllComponents();
-//	
-//	SplitPanel sp = new SplitPanel(SplitPanel.ORIENTATION_VERTICAL);
-//	sp.setSizeFull();
-//	sp.setSplitPosition(50);
-//	parent.setContent(sp);
-	
 	ComponentContainer targetContainer = actionContext.getTargetContainer();
 	targetContainer.removeAllComponents();
+	targetContainer.setSizeFull();
 	/* show the component */
 	CssLayout entityContainer = new CssLayout();
-	/* set current container the entity container */
-//	application.setTargetComponent(entityContainer);
+	entityContainer.setSizeFull();
 	targetContainer.addComponent(entityContainer);
-//	targetContainer.setExpandRatio(entityContainer, 2f);
-	
-//	sp.setFirstComponent(entityContainer);
 	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS, entity,app,entityContainer,false,actionContext);
 	if(app.hasErrors()) {
 	    return;
 	}
-	/* come back to the original container */
-//	application.setTargetComponent(targetContainer);
-	
-//	/* get available actions for the selected entity */
-//	UserActionList availableActions = getAvailableActions(application,ActionLocations.TAB);
-//	/* add the container for the actions to the window */
-//	VerticalLayout actionsContainer = new VerticalLayout();
-//	targetContainer.addComponent(actionsContainer);
-//	/* display the actions */
-////	application.setTargetComponent(actionsContainer);
-//	availableActions.executeHandler(application,actionsContainer,true);
-	
+
 	/* add the container for the actions to the window */
 	CssLayout actionsContainer = new CssLayout();
+	actionsContainer.setSizeFull();
 	targetContainer.addComponent(actionsContainer);
-//	targetContainer.setExpandRatio(actionsContainer, 1f);
-//	sp.setSecondComponent(actionsContainer);
 	displayActionsForSelectedEntity(entity,app, actionsContainer,actionContext);
-//	parent.addComponent(targetContainer);
-	
     }
     
 }

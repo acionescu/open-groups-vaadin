@@ -31,7 +31,6 @@ import ro.zg.util.logging.MasterLogManager;
 
 import com.vaadin.terminal.DownloadStream;
 import com.vaadin.terminal.URIHandler;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
@@ -118,7 +117,7 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
 
 	    if (!"".equals(relativeUri.trim())) {
 		app.getActiveWindow().getUriUtility().setFragment(relativeUri);
-	    } 
+	    }
 
 	}
 	return null;

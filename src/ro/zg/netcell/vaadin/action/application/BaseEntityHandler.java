@@ -39,7 +39,6 @@ public abstract class BaseEntityHandler extends OpenGroupsActionHandler {
 	UserActionList availableActions = getAvailableActions(entity, ActionLocations.TAB);
 	
 	/* display the actions */
-	// application.setTargetComponent(actionsContainer);
 	if (availableActions != null) {
 	    availableActions.executeHandler(entity, application, actionsContainer, false,ac);
 	}

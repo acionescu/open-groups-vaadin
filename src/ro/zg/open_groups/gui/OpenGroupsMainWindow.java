@@ -20,6 +20,7 @@ import ro.zg.opengroups.vo.Entity;
 import ro.zg.util.logging.Logger;
 import ro.zg.util.logging.MasterLogManager;
 
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.UriFragmentUtility;
@@ -55,9 +56,9 @@ public class OpenGroupsMainWindow extends Window {
 	// mainContent.setMargin(true);
 	//		
 	// setContent(mainContent);
-
 	mainContent = (VerticalLayout) this.getContent();
-
+	mainContent.setMargin(false);
+	mainContent.setWidth("100%");
 	uriUtility = new UriFragmentUtility();
 	mainContent.addComponent(uriUtility);
 
@@ -68,8 +69,9 @@ public class OpenGroupsMainWindow extends Window {
 	userActionsContainer = new CssLayout();
 
 	entityContent = new CssLayout();
-	entityContent.setSizeFull();
-	entityContent.setStyleName("main-pane");
+	entityContent.setWidth("100%");
+	entityContent.setMargin(true);
+	entityContent.addStyleName("main-pane");
 	mainContent.addComponent(entityContent);
 
     }
@@ -90,7 +92,7 @@ public class OpenGroupsMainWindow extends Window {
 
     public void setFragmentToEntity(Entity entity) {
 	String fragment = OpenGroupsUtil.getFragmentForEntity(entity);
-	logger.debug("Update fragment to '"+fragment+"'");
+	logger.debug("Update fragment to '" + fragment + "'");
 	uriUtility.setFragment(fragment, false);
     }
 
@@ -109,7 +111,7 @@ public class OpenGroupsMainWindow extends Window {
 	this.headerPanel = headerPanel;
     }
 
-    public CssLayout getEntityContent() {
+    public ComponentContainer getEntityContent() {
 	return entityContent;
     }
 
