@@ -4,55 +4,66 @@ import ro.zg.open_groups.gui.OpenGroupsMainWindow;
 import ro.zg.open_groups.model.OpenGroupsModel;
 
 public class OpenGroupsApplicationState {
-    
-    private Entity rootEntity;
-    private OpenGroupsMainWindow activeWindow;
-    private Entity activeEntity;
-    
-    public OpenGroupsApplicationState() {
-	OpenGroupsModel model = OpenGroupsModel.getInstance();
-	rootEntity = model.getRootEntity();
-	
-    }
 
+	private Entity rootEntity;
+	private OpenGroupsMainWindow activeWindow;
+	private Entity activeEntity;
+	private String currentUri;
 
-    /**
-     * @return the rootEntity
-     */
-    public Entity getRootEntity() {
-        return rootEntity;
-    }
+	public OpenGroupsApplicationState() {
+		OpenGroupsModel model = OpenGroupsModel.getInstance();
+		rootEntity = model.getRootEntity();
 
+	}
 
-    /**
-     * @return the activeWindow
-     */
-    public OpenGroupsMainWindow getActiveWindow() {
-        return activeWindow;
-    }
+	public boolean isRootSelected() {
+		return (activeEntity != null && rootEntity.getId() == activeEntity
+				.getId());
+	}
 
+	/**
+	 * @return the rootEntity
+	 */
+	public Entity getRootEntity() {
+		return rootEntity;
+	}
 
-    /**
-     * @param activeWindow the activeWindow to set
-     */
-    public void setActiveWindow(OpenGroupsMainWindow activeWindow) {
-        this.activeWindow = activeWindow;
-    }
+	/**
+	 * @return the activeWindow
+	 */
+	public OpenGroupsMainWindow getActiveWindow() {
+		return activeWindow;
+	}
 
+	/**
+	 * @param activeWindow
+	 *            the activeWindow to set
+	 */
+	public void setActiveWindow(OpenGroupsMainWindow activeWindow) {
+		this.activeWindow = activeWindow;
+	}
 
-    /**
-     * @return the activeEntity
-     */
-    public Entity getActiveEntity() {
-        return activeEntity;
-    }
+	/**
+	 * @return the activeEntity
+	 */
+	public Entity getActiveEntity() {
+		return activeEntity;
+	}
 
+	/**
+	 * @param activeEntity
+	 *            the activeEntity to set
+	 */
+	public void setActiveEntity(Entity activeEntity) {
+		this.activeEntity = activeEntity;
+	}
 
-    /**
-     * @param activeEntity the activeEntity to set
-     */
-    public void setActiveEntity(Entity activeEntity) {
-        this.activeEntity = activeEntity;
-    }
-    
+	public String getCurrentUri() {
+		return currentUri;
+	}
+
+	public void setCurrentUri(String currentUri) {
+		this.currentUri = currentUri;
+	}
+
 }
