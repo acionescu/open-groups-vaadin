@@ -38,7 +38,7 @@ public class EntityState implements Serializable {
      * 
      */
     private static final long serialVersionUID = 901016127262257178L;
-    public static final int DEFAULT_ITEMS_PER_PAGE = 5;
+    public static final int DEFAULT_ITEMS_PER_PAGE = 7;
 
     private boolean opened;
     private int itemsPerPage = DEFAULT_ITEMS_PER_PAGE;

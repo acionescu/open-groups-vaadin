@@ -65,7 +65,7 @@ public class OpenGroupsUriHandler implements URIHandler,
 				String uri = app.getCurrentUri();
 				if (uri.length() > 0) {
 					parent.handleFragment(uri);
-				} else {
+				} else if(!app.isRootSelected()){
 					app.openInActiveWindow(app.getRootEntity());
 				}
 				app.getActiveWindow()

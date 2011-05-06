@@ -56,8 +56,6 @@ public class OpenGroupsApplication extends Application {
 
 	private WebApplicationContext appContext;
 	private ActionsManager actionsManager = ActionsManager.getInstance();
-	// private Deque<Entity> selectedEntityStack = new ArrayDeque<Entity>();
-	private TabSheet entitiesTabSheet;
 	private Map<Long, TabContainer> tabsForEntities = new HashMap<Long, TabContainer>();
 	private User currentUser;
 	private Map<Long, Entity> openEntities = new HashMap<Long, Entity>();
@@ -342,7 +340,6 @@ public class OpenGroupsApplication extends Application {
 
 	@Override
 	public Window getWindow(String name) {
-		System.out.println("->getWindow(" + name + ")");
 		Window w = super.getWindow(name);
 		if (w == null && !name.contains("UIDL") /*
 												 * &&!name.contains(
@@ -357,7 +354,6 @@ public class OpenGroupsApplication extends Application {
 			setMainWindow(w);
 
 		}
-		System.out.println("getWindow(" + name + ") -> " + w);
 		if (w != null) {
 			appState.setActiveWindow((OpenGroupsMainWindow) w);
 		}

@@ -56,7 +56,7 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 		CssLayout hac = (CssLayout) entity.getHeaderActionContainer(ha.getActionName());
 		if (hac == null) {
 		    hac = new CssLayout();
-//		    hac.setSizeFull();
+		    hac.setSizeFull();
 		    entity.addHeaderActionContainer(ha.getActionName(), hac);
 		    hac.setVisible(false);
 		}

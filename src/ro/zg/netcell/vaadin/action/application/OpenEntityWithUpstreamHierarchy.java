@@ -18,6 +18,7 @@ package ro.zg.netcell.vaadin.action.application;
 import java.util.Map;
 
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import ro.zg.netcell.control.CommandResponse;
@@ -44,7 +45,7 @@ public class OpenEntityWithUpstreamHierarchy extends BaseListHandler{
 	Map<String, Object> params = ua.getActionParams();
 	params.putAll(selectedEntity.getFilterValues());
 	params.put("pageNumber", 1);
-	/* we need bring all the hierarchy and display it on the same page */
+	/* we need to bring all the hierarchy and display it on the same page */
 	params.put("itemsOnPage", 5000);
 	params.put("entityId", selectedEntity.getId());
 	params.put("withContent", true);
@@ -52,13 +53,17 @@ public class OpenEntityWithUpstreamHierarchy extends BaseListHandler{
 	
 	ComponentContainer container = actionContext.getTargetContainer();
 	container.removeAllComponents();
-	VerticalLayout hierarchyContainer = new VerticalLayout();
+	container.setSizeFull();
+//	VerticalLayout hierarchyContainer = new VerticalLayout();
+	CssLayout hierarchyContainer = new CssLayout();
+	hierarchyContainer.setSizeFull();
 	container.addComponent(hierarchyContainer);
-//	app.setTargetComponent(hierarchyContainer);
+
 	displayHierarchyList(selectedEntity,ua, app, hierarchyContainer,params);
-	VerticalLayout entityContainer = new VerticalLayout();
+//	VerticalLayout entityContainer = new VerticalLayout();
+	CssLayout entityContainer = new CssLayout();
 	container.addComponent(entityContainer);
-//	app.setTargetComponent(entityContainer);
+
 	getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS, selectedEntity,app,entityContainer,false,actionContext);
     }
     

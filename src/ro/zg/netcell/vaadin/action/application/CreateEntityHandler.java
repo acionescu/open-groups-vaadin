@@ -151,7 +151,7 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 		    Entity entity = new Entity(entityId);
 //		    getActionsManager().executeAction(ActionsManager.REFRESH_SELECTED_ENTITY, entity, app, null, false,ac);
 //		    getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, entity, app, null, false,ac);
-		    app.refreshEntity(entity, ac);
+		    app.openInActiveWindow(entity);
 		}
 		/* if no subtypes open the parent entity */
 		else {

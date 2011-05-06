@@ -15,15 +15,11 @@
  ******************************************************************************/
 package ro.zg.netcell.vaadin.action.application;
 
-import java.util.Map;
-
-import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityList;
 import ro.zg.opengroups.vo.UserAction;
-import ro.zg.util.data.GenericNameValueList;
 
 import com.vaadin.ui.ComponentContainer;
 

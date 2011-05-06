@@ -46,7 +46,7 @@ public class BotsFilter implements Filter {
 	HttpServletResponse res = (HttpServletResponse) arg1;
 	String userAgent = req.getHeader("User-Agent");
 	
-	boolean isBot = userAgent.contains("Googlebot") || userAgent.contains("Yahoo") || userAgent.contains("WordPress");
+	boolean isBot = userAgent.contains("Googlebot") || userAgent.contains("Yahoo") || userAgent.contains("WordPress") || userAgent.toLowerCase().contains("bot");
 
 	if (isBot) {
 	    System.out.println("Serving bot: "+userAgent);

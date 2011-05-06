@@ -5,11 +5,19 @@
 }
 
 .issue-title {
-	font-size: 16px
+	font-size: 16px;
+}
+
+a:link,a:visited {
+	line-height: inherit;
+	font-weight: normal;
+	color: #1b699f;
+	text-shadow: none;
+	line-height: inherit;
 }
 
 .issue-title .v-button-wrap .v-button-caption {
-	font-size: 16px
+	font-size: 16px;
 }
 
 .with-left-margin {
@@ -38,9 +46,17 @@
 }
 
 .main-pane {
-	
 	background: white;
 	background-color: white;
+}
+
+.header-bar {
+	margin-left: 10px;
+	margin-top: 5px;
+}
+
+.header-actions {
+	margin-right: 20px;
 }
 
 .list-container {

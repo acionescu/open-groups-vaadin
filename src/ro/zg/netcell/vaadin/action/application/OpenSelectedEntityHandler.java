@@ -23,6 +23,7 @@ import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
+import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.constants.ComplexEntityParam;
@@ -99,7 +100,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	if (entity.getState().isEntityTypeVisible()) {
 	    entityTypeCaption = "(" + getMessage(entity.getComplexType()) + ")";
 	    Label etl = new Label(entityTypeCaption);
-	    etl.addStyleName("issue-title");
+	    etl.addStyleName(OpenGroupsStyles.ENTITY_TYPE);
 	    // etl.setSizeFull();
 	    etl.setWidth("100%");
 	    titleContainer.addComponent(etl);
@@ -138,7 +139,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    titleContainer.setExpandRatio(vl, 10f);
 
 	    Label title = new Label(entity.getTitle());
-	    title.setStyleName("issue-title");
+	    title.setStyleName(OpenGroupsStyles.TITLE_LINK);
 	    // title.setSizeFull();
 	    title.setWidth("100%");
 
@@ -169,7 +170,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		// });
 		titleLink = OpenGroupsUtil.getLinkForEntity(entity, app);
 		titleLink.setDescription(entity.getContentPreview());
-		titleLink.addStyleName("issue-title");
+		titleLink.addStyleName(OpenGroupsStyles.TITLE_LINK);
 	    }
 	    /* is a leaf entity in the recent activity list */
 	    else {
@@ -198,7 +199,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		parentEntity.getState().setDesiredActionsPath(entity.getComplexType() + "/LIST");
 		titleLink = OpenGroupsUtil.getLinkForEntity(parentEntity, app, entity.getTitle());
 		titleLink.setDescription(entity.getContentPreview());
-		titleLink.addStyleName("issue-title");
+		titleLink.addStyleName(OpenGroupsStyles.TITLE_LINK);
 	    }
 	    titleContainer.addComponent(titleLink);
 	    titleContainer.setExpandRatio(titleLink, 10f);
@@ -215,7 +216,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    if (parentEntityId == mainEntity.getId()) {
 		String currentMsg = getMessage(mainEntity.getComplexType() + ".current");
 		Label currentEntityLabel = new Label(currentMsg);
-		currentEntityLabel.addStyleName("issue-title");
+//		currentEntityLabel.addStyleName("issue-title");
 		parentInfoContainer.addComponent(currentEntityLabel);
 		// titleContainer.setExpandRatio(currentEntityLabel, 2f);
 	    } else {/* add link to the parent entity */

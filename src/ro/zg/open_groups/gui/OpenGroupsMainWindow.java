@@ -15,6 +15,7 @@
  ******************************************************************************/
 package ro.zg.open_groups.gui;
 
+import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.util.logging.Logger;
@@ -64,6 +65,7 @@ public class OpenGroupsMainWindow extends Window {
 
 	headerPanel = new GridLayout(2, 1);
 	headerPanel.setWidth("100%");
+	headerPanel.addStyleName(OpenGroupsStyles.HEADER_BAR);
 	mainContent.addComponent(headerPanel);
 
 	userActionsContainer = new CssLayout();

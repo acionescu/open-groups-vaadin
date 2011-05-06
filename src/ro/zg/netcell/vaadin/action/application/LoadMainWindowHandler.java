@@ -23,6 +23,7 @@ import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
+import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.open_groups.gui.constants.UriFragments;
 import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.constants.ActionLocations;
@@ -42,6 +43,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 
@@ -52,7 +54,6 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 
     @Override
     public void handle(ActionContext actionContext) throws Exception {
-	System.out.println("load window");
 	buildGuiLogic(actionContext.getApp(),actionContext);
 	getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS, null, actionContext.getApp(), actionContext.getWindow().getEntityContent(),false, actionContext);
     }
@@ -83,8 +84,9 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 	    userArea.setComponentAlignment(userInfo, Alignment.MIDDLE_LEFT);
 	}
 	HorizontalLayout actionsContainer = new HorizontalLayout();
-	actionsContainer.setSizeUndefined();
+//	actionsContainer.setSizeUndefined();
 	actionsContainer.setSpacing(true);
+	actionsContainer.addStyleName(OpenGroupsStyles.HEADER_ACTIONS);
 
 	/* add quick links */
 	actionsContainer.addComponent(getRootEntityLink(app));
@@ -100,6 +102,7 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 		continue;
 	    }
 	    Button actButton = new Button(ua.getDisplayName());
+	    
 	    actButton.addListener(new ClickListener() {
 
 		@Override
