@@ -27,6 +27,7 @@ import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.constants.ComplexEntityParam;
+import ro.zg.opengroups.constants.Defaults;
 import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityState;
@@ -196,7 +197,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		String parentTitle = entity.getParentEntityTitle();
 		Entity parentEntity = new Entity(parentEntityId);
 		parentEntity.setTitle(parentTitle);
-		parentEntity.getState().setDesiredActionsPath(entity.getComplexType() + "/LIST");
+		 
+		parentEntity.getState().setDesiredActionsPath(complexEntityType + Defaults.getDefaultActionForEntityType(complexEntityType));
 		titleLink = OpenGroupsUtil.getLinkForEntity(parentEntity, app, entity.getTitle());
 		titleLink.setDescription(entity.getContentPreview());
 		titleLink.addStyleName(OpenGroupsStyles.TITLE_LINK);

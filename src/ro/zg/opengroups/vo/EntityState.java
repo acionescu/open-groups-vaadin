@@ -38,8 +38,10 @@ public class EntityState implements Serializable {
      * 
      */
     private static final long serialVersionUID = 901016127262257178L;
+    /* to define these constants here is ugly, should be defined in the database, for each entity type */
     public static final int DEFAULT_ITEMS_PER_PAGE = 7;
-
+    public static final String DEFAULT_ACTION = "entity.list.recent.activity";
+    
     private boolean opened;
     private int itemsPerPage = DEFAULT_ITEMS_PER_PAGE;
     private List<String> activeActions = new ArrayList<String>();
@@ -60,7 +62,8 @@ public class EntityState implements Serializable {
     public String getDesiredActionsPath() {
 	StringBuffer path = new StringBuffer();
 	if (desiredActionTabsQueue == null || desiredActionTabsQueue.size() == 0) {
-	    return path.toString();
+//	    return path.toString();
+		desiredActionTabsQueue.add(DEFAULT_ACTION);
 	}
 	for (String act : desiredActionTabsQueue) {
 	    path.append("/").append(act);

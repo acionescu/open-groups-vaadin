@@ -30,7 +30,6 @@ import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
-import ro.zg.opengroups.vo.TabContainer;
 import ro.zg.opengroups.vo.User;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.opengroups.vo.UserActionList;
@@ -43,7 +42,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.BaseTheme;
 
 public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 
@@ -129,7 +127,7 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 	    selectedEntity.setTitle(caption);
 	    selectedEntity.getState().setOpened(true);
 	}
-	return getLinkForEntity(selectedEntity, app);
+	return OpenGroupsUtil.getLinkForEntity(selectedEntity, app);
     }
 
     private Component getMetaEntityLink(OpenGroupsApplication app) {
@@ -141,14 +139,17 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 	    entity.getState().setOpened(true);
 	    entity.getState().setEntityTypeVisible(true);
 
-	    return getLinkForEntity(entity, app);
+	    return OpenGroupsUtil.getLinkForEntity(entity, app);
 	}
 	return null;
     }
 
-    private Component getLinkForEntity(Entity entity, OpenGroupsApplication app) {
-	String url = app.getURL().toString() + "#" + UriFragments.SHOW_ENTITY_FRAGMENT + entity.getId();
-	return new Label(OpenGroupsUtil.wrapAsA(url, entity.getTitle(), "_self"), Label.CONTENT_XHTML);
-    }
+	// private Component getLinkForEntity(Entity entity, OpenGroupsApplication
+	// app) {
+	// String url = app.getURL().toString() + "#" +
+	// UriFragments.SHOW_ENTITY_FRAGMENT + entity.getId();
+	// return new Label(OpenGroupsUtil.wrapAsA(url, entity.getTitle(), "_self"),
+	// Label.CONTENT_XHTML);
+	// }
 
 }

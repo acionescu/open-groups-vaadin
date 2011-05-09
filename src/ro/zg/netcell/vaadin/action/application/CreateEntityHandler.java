@@ -24,10 +24,10 @@ import ro.zg.netcell.vaadin.DefaultForm;
 import ro.zg.netcell.vaadin.DefaultForm.FormCommitEvent;
 import ro.zg.netcell.vaadin.DefaultForm.FormListener;
 import ro.zg.netcell.vaadin.action.ActionContext;
-import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.opengroups.constants.ComplexEntityParam;
+import ro.zg.opengroups.constants.Defaults;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.User;
 import ro.zg.opengroups.vo.UserAction;
@@ -157,7 +157,8 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 		else {
 		    Entity parentEntity = ac.getMainEntity();
 		    parentEntity.getState().setEntityTypeVisible(true);
-		    parentEntity.getState().setDesiredActionsPath(ua.getTargetEntityComplexType() + "/LIST");
+		    String complexEntityType = ua.getTargetEntityComplexType();
+		    parentEntity.getState().setDesiredActionsPath(complexEntityType + Defaults.getDefaultActionForEntityType(complexEntityType));
 //		    app.getTemporaryTab(parentEntity).setRefreshOn(true);
 //		    getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, parentEntity, app, null, false,ac);
 		    app.openInActiveWindow(parentEntity);
