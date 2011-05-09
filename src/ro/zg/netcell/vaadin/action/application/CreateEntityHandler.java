@@ -159,7 +159,8 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 		    parentEntity.getState().setEntityTypeVisible(true);
 		    parentEntity.getState().setDesiredActionsPath(ua.getTargetEntityComplexType() + "/LIST");
 //		    app.getTemporaryTab(parentEntity).setRefreshOn(true);
-		    getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, parentEntity, app, null, false,ac);
+//		    getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, parentEntity, app, null, false,ac);
+		    app.openInActiveWindow(parentEntity);
 		}
 	    }
 	});
