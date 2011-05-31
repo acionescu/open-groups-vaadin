@@ -18,9 +18,12 @@ package ro.zg.netcell.vaadin.action.application;
 import java.util.List;
 import java.util.Map;
 
+import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
+import ro.zg.open_groups.gui.constants.OpenGroupsIconsSet;
+import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.VoteType;
 import ro.zg.opengroups.vo.Entity;
@@ -33,6 +36,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class VoteEntityHandler extends OpenGroupsActionHandler {
 
@@ -70,33 +74,52 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 	Entity selectedEntity = actionContext.getEntity();
 	EntityUserData userData = selectedEntity.getUserData();
 	if (userData.getVote() != null) {
-	    showAlreadyVotedFragment(container, selectedEntity,actionContext.getApp(),actionContext.getUserAction(),actionContext);
+	    showAlreadyVotedFragment(container, selectedEntity, actionContext.getApp(), actionContext.getUserAction(),
+		    actionContext);
 	} else {
-	    showVotesFragment(container, selectedEntity,actionContext.getApp(),actionContext.getUserAction(),actionContext);
+	    showVotesFragment(container, selectedEntity, actionContext.getApp(), actionContext.getUserAction(),
+		    actionContext);
 	}
 
     }
 
-    private void showAlreadyVotedFragment(final ComponentContainer container, final Entity selectedEntity, final OpenGroupsApplication app, final UserAction ua, final ActionContext ac) {
+    private void showAlreadyVotedFragment(final ComponentContainer container, final Entity selectedEntity,
+	    final OpenGroupsApplication app, final UserAction ua, final ActionContext ac) {
 	String entityType = selectedEntity.getSimpleType().toLowerCase();
 	String currentUserVote = selectedEntity.getUserData().getVote();
 	String messageKey = entityType + ".already.voted." + currentUserVote;
 	HorizontalLayout hl = new HorizontalLayout();
+	hl.addStyleName(OpenGroupsStyles.TOP_RIGHT);
 	hl.setSpacing(true);
 	hl.addComponent(new Label(OpenGroupsResources.getMessage(messageKey)));
 
-	Button changeVoteButton = new Button(OpenGroupsResources.getMessage("change.vote"));
+	final VoteType opposedVote = VoteType.opposteVoteForValue(currentUserVote, entityType);
+	
+	Button changeVoteButton = new Button(/*OpenGroupsResources.getMessage("change.vote")*/);
+	changeVoteButton.setCaption(opposedVote.getCaption());
+	changeVoteButton.setIcon(opposedVote.getIcon());
 	changeVoteButton.addListener(new ClickListener() {
 
 	    @Override
 	    public void buttonClick(ClickEvent event) {
-		container.removeAllComponents();
-		showVotesFragment(container, selectedEntity,app,ua,ac);
+//		container.removeAllComponents();
+//		showVotesFragment(container, selectedEntity, app, ua, ac);
+		Map<String, Object> params = ua.getActionParams();
+		params.put("entityId", selectedEntity.getId());
+		params.put("userId", app.getCurrentUserId());
+		params.put("isRecordCreated", selectedEntity.getUserData().isRecordCreated());
+		params.put("vote", opposedVote.getValue());
+		CommandResponse response = executeAction(new ActionContext(ua, app, selectedEntity), params);
+		/* refresh the entity only if the user was actually able to vote */
+		if (response != null) {
+		    app.refreshEntity(selectedEntity, ac);
+		}
 	    }
 	});
 	hl.addComponent(changeVoteButton);
 
 	Button recallVoteButton = new Button(OpenGroupsResources.getMessage("recall.vote"));
+	recallVoteButton.setIcon(OpenGroupsResources.getIcon(OpenGroupsIconsSet.CANCEL, OpenGroupsIconsSet.SMALL));
 	recallVoteButton.addListener(new ClickListener() {
 
 	    @Override
@@ -104,57 +127,53 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 		Map<String, Object> params = ua.getActionParams();
 		params.put("entityId", selectedEntity.getId());
 		params.put("userId", app.getCurrentUserId());
-		params.put("isRecordCreated",true);
-		
-		executeAction(new ActionContext(ua, app, selectedEntity), params);
-//		app.refreshCurrentSelectedEntity();
-		app.refreshEntity(selectedEntity,ac);
-//		try {
-//		    handle(ua, app);
-//		} catch (Exception e) {
-//		    // TODO Auto-generated catch block
-//		    e.printStackTrace();
-//		}
+		params.put("isRecordCreated", true);
+
+		CommandResponse response = executeAction(new ActionContext(ua, app, selectedEntity), params);
+		/* refresh the entity only if the user was actually able to vote */
+		if (response != null) {
+		    app.refreshEntity(selectedEntity, ac);
+		}
 	    }
 	});
 	hl.addComponent(recallVoteButton);
 	container.addComponent(hl);
     }
 
-    private void showVotesFragment(ComponentContainer container, Entity selectedEntity,final OpenGroupsApplication app, final UserAction ua, final ActionContext ac) {
+    private void showVotesFragment(ComponentContainer container, Entity selectedEntity,
+	    final OpenGroupsApplication app, final UserAction ua, final ActionContext ac) {
 	String entityType = selectedEntity.getSimpleType().toLowerCase();
 	List<VoteType> voteTypes = VoteType.valuesList(entityType);
 	HorizontalLayout votesContainer = new HorizontalLayout();
+	votesContainer.addStyleName(OpenGroupsStyles.TOP_RIGHT);
 	votesContainer.setSpacing(true);
 	for (VoteType vt : voteTypes) {
-	    votesContainer.addComponent(getButtonForVoteType(vt, container,selectedEntity,app,ua,ac));
+	    votesContainer.addComponent(getButtonForVoteType(vt, container, selectedEntity, app, ua, ac));
 	}
 	container.addComponent(votesContainer);
     }
 
-    private Button getButtonForVoteType(final VoteType voteType, final ComponentContainer container, final Entity selectedEntity, final OpenGroupsApplication app, final UserAction ua, final ActionContext ac) {
-	Button button = new Button(voteType.getCaption());
+    private Button getButtonForVoteType(final VoteType voteType, final ComponentContainer container,
+	    final Entity selectedEntity, final OpenGroupsApplication app, final UserAction ua, final ActionContext ac) {
+	Button button = new Button();
+	button.setCaption(voteType.getCaption());
+	button.setIcon(voteType.getIcon());
+//	button.setDescription(voteType.getCaption());
 	button.addListener(new ClickListener() {
 
 	    @Override
 	    public void buttonClick(ClickEvent event) {
-		
-		
+
 		Map<String, Object> params = ua.getActionParams();
 		params.put("entityId", selectedEntity.getId());
 		params.put("userId", app.getCurrentUserId());
-		params.put("isRecordCreated",selectedEntity.getUserData().isRecordCreated());
-		params.put("vote", voteType.getDbValue());
-		executeAction(new ActionContext(ua, app, selectedEntity), params);
-//		app.refreshCurrentSelectedEntity();
-		app.refreshEntity(selectedEntity,ac);
-//		try {
-//		    handle(ua, app);
-//		} catch (Exception e) {
-//		    // TODO Auto-generated catch block
-//		    e.printStackTrace();
-//		}
-		
+		params.put("isRecordCreated", selectedEntity.getUserData().isRecordCreated());
+		params.put("vote", voteType.getValue());
+		CommandResponse response = executeAction(new ActionContext(ua, app, selectedEntity), params);
+		/* refresh the entity only if the user was actually able to vote */
+		if (response != null) {
+		    app.refreshEntity(selectedEntity, ac);
+		}
 	    }
 	});
 	return button;

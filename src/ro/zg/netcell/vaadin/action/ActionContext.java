@@ -40,6 +40,7 @@ public class ActionContext {
 	entity = e;
 	targetContainer = c;
 	runInThread = rit;
+	window=app.getActiveWindow();
     }
     
     public ActionContext(UserAction ua, OpenGroupsApplication app, Entity e, ComponentContainer c) {
@@ -53,6 +54,14 @@ public class ActionContext {
     public ActionContext(UserAction ua, OpenGroupsApplication app,Entity e,Map<String,Object> params) {
 	this(ua,app,null);
 	this.params=params;
+    }
+    
+    public ActionContext(OpenGroupsApplication app) {
+	this(null,app,null);
+    }
+    
+    public ActionContext(OpenGroupsApplication app,Map<String,Object> params) {
+	this(null,app,null,params);
     }
     
     /**

@@ -21,12 +21,6 @@ import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
 import ro.zg.opengroups.vo.Entity;
-import ro.zg.opengroups.vo.UserAction;
-
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.Window.CloseListener;
 
 public class OpenEntityInWindowHandler extends OpenGroupsActionHandler {
 
@@ -37,13 +31,16 @@ public class OpenEntityInWindowHandler extends OpenGroupsActionHandler {
 
     @Override
     public void handle(ActionContext actionContext) throws Exception {
-	Entity selectedEntity = actionContext.getEntity();
 	final OpenGroupsApplication app = actionContext.getApp();
 	/* expect the target container to be the window */
 	OpenGroupsMainWindow w = (OpenGroupsMainWindow) actionContext.getTargetContainer();
+
+	Entity entity = actionContext.getEntity();
+	entity.setEntityContainer(w.getEntityContent());
 	actionContext.setWindow(w);
 	actionContext.setMainEntity(actionContext.getEntity());
 	getActionsManager().executeAction(ActionsManager.LOAD_MAIN_WINDOW, actionContext);
+	w.getHierarchyContainer().setSelected(entity.getId());
     }
 
 }

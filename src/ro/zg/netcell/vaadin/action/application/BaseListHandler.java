@@ -18,62 +18,64 @@ package ro.zg.netcell.vaadin.action.application;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.OpenGroupsApplication;
+import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityList;
 
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
-
+import com.vaadin.ui.VerticalLayout;
 
 public abstract class BaseListHandler extends BaseEntityHandler {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = -4051210482883142670L;
+    private static final long serialVersionUID = -4051210482883142670L;
 
-	// protected void displayList(UserAction ua, OpenGroupsApplication app,
-	// ComponentContainer targetContainer,GenericNameValueList list,boolean
-	// showEntityType) {
-	// ComponentContainer displayArea = targetContainer;
-	// // Table displayArea = targetContainer;
-	// displayArea.removeAllComponents();
-	// // displayArea.removeAllItems();
-	// for (int i = 0; i < list.size(); i++) {
-	// GenericNameValueContext row = (GenericNameValueContext)
-	// list.getValueForIndex(i);
-	// Entity currentEntity = new Entity(row);
-	// currentEntity.getState().setEntityTypeVisible(showEntityType);
-	// // Panel entityContainer = new Panel();
-	// CssLayout entityContainer = new CssLayout();
-	// entityContainer.setSizeFull();
-	// currentEntity.setEntityContainer(entityContainer);
-	// displayArea.addComponent(entityContainer);
-	// // displayArea.addItem(new Object[] {entityContainer}, null);
-	// getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY,
-	// currentEntity, app,entityContainer,false);
-	//	   
-	// }
-	// }
+    // protected void displayList(UserAction ua, OpenGroupsApplication app,
+    // ComponentContainer targetContainer,GenericNameValueList list,boolean
+    // showEntityType) {
+    // ComponentContainer displayArea = targetContainer;
+    // // Table displayArea = targetContainer;
+    // displayArea.removeAllComponents();
+    // // displayArea.removeAllItems();
+    // for (int i = 0; i < list.size(); i++) {
+    // GenericNameValueContext row = (GenericNameValueContext)
+    // list.getValueForIndex(i);
+    // Entity currentEntity = new Entity(row);
+    // currentEntity.getState().setEntityTypeVisible(showEntityType);
+    // // Panel entityContainer = new Panel();
+    // CssLayout entityContainer = new CssLayout();
+    // entityContainer.setSizeFull();
+    // currentEntity.setEntityContainer(entityContainer);
+    // displayArea.addComponent(entityContainer);
+    // // displayArea.addItem(new Object[] {entityContainer}, null);
+    // getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY,
+    // currentEntity, app,entityContainer,false);
+    //	   
+    // }
+    // }
 
-	protected void displayList(ActionContext ac, OpenGroupsApplication app,
-			ComponentContainer targetContainer, EntityList list) {
-		ComponentContainer displayArea = targetContainer;
-		// Table displayArea = targetContainer;
-		displayArea.removeAllComponents();
-		// displayArea.removeAllItems();
-		for (Entity currentEntity : list.getItemsList()) {
-			// Panel entityContainer = new Panel();
-			CssLayout entityContainer = new CssLayout();
-//			entityContainer.setSizeFull();
-			currentEntity.setEntityContainer(entityContainer);
-			
-			// displayArea.addItem(new Object[] {entityContainer}, null);
-			getActionsManager().executeAction(
-					ActionsManager.OPEN_SELECTED_ENTITY, currentEntity, app,
-					entityContainer, false,ac);
-			displayArea.addComponent(entityContainer);
-		}
+    protected void displayList(ActionContext ac, OpenGroupsApplication app, ComponentContainer targetContainer,
+	    EntityList list) {
+	ComponentContainer displayArea = targetContainer;
+	// Table displayArea = targetContainer;
+	displayArea.removeAllComponents();
+	// displayArea.removeAllItems();
+	for (Entity currentEntity : list.getItemsList()) {
+	    // VerticalLayout entityContainer = new VerticalLayout();
+	    CssLayout entityContainer = new CssLayout();
+	    entityContainer.setWidth("100%");
+	    // entityContainer.setMargin(true);
+	    entityContainer.addStyleName(OpenGroupsStyles.LIST_ITEM);
+	    currentEntity.setEntityContainer(entityContainer);
+
+	    // displayArea.addItem(new Object[] {entityContainer}, null);
+	    getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY, currentEntity, app, entityContainer,
+		    false, ac);
+	    displayArea.addComponent(entityContainer);
 	}
+    }
 
 }

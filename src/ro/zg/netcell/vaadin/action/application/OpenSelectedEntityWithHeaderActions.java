@@ -18,6 +18,7 @@ package ro.zg.netcell.vaadin.action.application;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.OpenGroupsApplication;
+import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.UserAction;
@@ -46,7 +47,8 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 	}
 
 	container.removeAllComponents();
-	container.setSizeFull();
+//	container.setSizeFull();
+	container.setWidth("100%");
 	UserActionList headerActions = getAvailableActions(entity, ActionLocations.HEADER);
 	if (headerActions != null && headerActions.getActions() != null) {
 	    // HorizontalLayout actionsContainer = new HorizontalLayout();
@@ -56,7 +58,8 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 		CssLayout hac = (CssLayout) entity.getHeaderActionContainer(ha.getActionName());
 		if (hac == null) {
 		    hac = new CssLayout();
-		    hac.setSizeFull();
+		    hac.setWidth("100%");
+		    hac.addStyleName(OpenGroupsStyles.ENTITY_HEADER_ACTION_PANE);
 		    entity.addHeaderActionContainer(ha.getActionName(), hac);
 		    hac.setVisible(false);
 		}
@@ -65,7 +68,8 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 	}
 //	Panel entityContainer = new Panel();
 	CssLayout entityContainer = new CssLayout();
-	entityContainer.setSizeFull();
+//	entityContainer.setSizeFull();
+	entityContainer.setWidth("100%");
 	container.addComponent(entityContainer);
 	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY, entity,app, entityContainer, false,actionContext);
 	

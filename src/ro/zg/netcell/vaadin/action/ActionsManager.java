@@ -31,7 +31,9 @@ import ro.zg.netcell.vaadin.action.application.OpenEntityInWindowHandler;
 import ro.zg.netcell.vaadin.action.application.OpenEntityWithActionsHandler;
 import ro.zg.netcell.vaadin.action.application.OpenSelectedEntityHandler;
 import ro.zg.netcell.vaadin.action.application.OpenSelectedEntityWithHeaderActions;
+import ro.zg.netcell.vaadin.action.application.RefreshCausalHierarchyHandler;
 import ro.zg.netcell.vaadin.action.application.RefreshSelectedEntityHandler;
+import ro.zg.netcell.vaadin.action.application.ShowCausalHierarchyHandler;
 import ro.zg.netcell.vo.definitions.EntityDefinitionSummary;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.user.UsersManager;
@@ -61,6 +63,8 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     public static String GET_TAGS = "ro.problems.flows.get-tags";
 
     public static final String LOAD_MAIN_WINDOW = "loadMainWindow";
+    public static final String SHOW_CAUSAL_HIERARCHY="SHOW_CAUSAL_HIERARCHY";
+    public static final String REFRESH_CAUSAL_HIERARCHY="REFRESH_CAUSAL_HIERARCHY";
     public static final String OPEN_ENTITY_WITH_ACTIONS = "openEntityWithActions";
     public static final String OPEN_AND_REFRESH_ENTITY = "openAndRefreshEntity";
     public static final String OPEN_SELECTED_ENTITY = "openSelectedEntity";
@@ -107,6 +111,8 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 
     private void initHandlers() {
 	handlers.put(LOAD_MAIN_WINDOW, new LoadMainWindowHandler());
+	handlers.put(SHOW_CAUSAL_HIERARCHY, new ShowCausalHierarchyHandler());
+	handlers.put(REFRESH_CAUSAL_HIERARCHY, new RefreshCausalHierarchyHandler());
 	handlers.put(OPEN_ENTITY_WITH_ACTIONS, new OpenEntityWithActionsHandler());
 	handlers.put(OPEN_AND_REFRESH_ENTITY, new OpenAndRefreshEntityHandler());
 	handlers.put(OPEN_SELECTED_ENTITY, new OpenSelectedEntityHandler());

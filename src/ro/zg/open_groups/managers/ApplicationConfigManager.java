@@ -25,6 +25,7 @@ import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
 import ro.zg.util.data.ListMap;
+import ro.zg.util.logging.Logger;
 
 public class ApplicationConfigManager {
     private static ApplicationConfigManager _instance = new ApplicationConfigManager();
@@ -35,7 +36,11 @@ public class ApplicationConfigManager {
 
     private Map<String, Object> applicationConfigParams = new HashMap<String, Object>();
     private Map<String, GenericNameValueContext> complexEntityTypes = new HashMap<String, GenericNameValueContext>();
-    private ListMap<String, String> subtypesRelations = new ListMap<String, String>();
+    private ListMap<String, String> subtypesRelations;
+    /**
+     * the types that can have children
+     */
+    private List<String> nonLeafTypes;
     private boolean initialized;
 
     public static ApplicationConfigManager getInstance() {
@@ -54,6 +59,7 @@ public class ApplicationConfigManager {
 	if (!initialized) {
 	    initialized = loadApplicationConfigParams() && loadComplexEntityTypes() && loadEntitiesTypesRelations();
 	}
+	initNonLeafSubtypes();
     }
 
     private boolean loadApplicationConfigParams() {
@@ -99,6 +105,7 @@ public class ApplicationConfigManager {
     }
 
     private boolean loadEntitiesTypesRelations() {
+	subtypesRelations=new ListMap<String, String>();
 	CommandResponse response = ActionsManager.getInstance().execute(GET_ENTITIES_TYPES_RELATIONS, new HashMap());
 	if (response == null) {
 	    return false;
@@ -109,6 +116,7 @@ public class ApplicationConfigManager {
 	    subtypesRelations.add(row.getValue("source_complex_type").toString(), row.getValue("complex_subtype")
 		    .toString());
 	}
+	
 	return true;
     }
 
@@ -149,6 +157,16 @@ public class ApplicationConfigManager {
 	init();
 	return subtypesRelations.get(complexType);
     }
+    
+    public void initNonLeafSubtypes(){
+	nonLeafTypes = new ArrayList<String>();
+	for(String currentType : subtypesRelations.keySet()) {
+	    List<String> subtypes = subtypesRelations.get(currentType);
+	    if(subtypes != null && subtypes.size() > 0) {
+		nonLeafTypes.add(currentType);
+	    }
+	}
+    }
 
     public List<Long> getIdsForComplexTypes(String paramnName, String value) {
 	init();
@@ -159,6 +177,13 @@ public class ApplicationConfigManager {
 	    }
 	}
 	return ids;
+    }
+
+    /**
+     * @return the nonLeafTypes
+     */
+    public List<String> getNonLeafTypes() {
+        return nonLeafTypes;
     }
 
 }

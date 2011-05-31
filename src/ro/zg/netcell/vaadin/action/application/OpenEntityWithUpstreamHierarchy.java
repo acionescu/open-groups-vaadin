@@ -17,10 +17,6 @@ package ro.zg.netcell.vaadin.action.application;
 
 import java.util.Map;
 
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.VerticalLayout;
-
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
@@ -28,6 +24,9 @@ import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.util.data.GenericNameValueList;
+
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
 
 public class OpenEntityWithUpstreamHierarchy extends BaseListHandler{
 

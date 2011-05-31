@@ -15,6 +15,11 @@
  ******************************************************************************/
 package ro.zg.open_groups.gui;
 
+import ro.zg.open_groups.OpenGroupsApplication;
+import ro.zg.open_groups.gui.components.CausalHierarchyContainer;
+import ro.zg.open_groups.gui.components.logic.CausalHierarchyItemSelectedListener;
+import ro.zg.open_groups.gui.components.logic.CausalHierarchyStartDepthChangedListener;
+import ro.zg.open_groups.gui.components.logic.CausalHierarchyTreeExpandListener;
 import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
@@ -24,6 +29,7 @@ import ro.zg.util.logging.MasterLogManager;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -35,36 +41,42 @@ public class OpenGroupsMainWindow extends Window {
      */
     private static final long serialVersionUID = -8492978667795915161L;
     private static final Logger logger = MasterLogManager.getLogger("WINDOW");
+    
+    private OpenGroupsApplication app;
+    
     private GridLayout headerPanel;
     private CssLayout userActionsContainer;
     private Tab userActionsTab;
     private VerticalLayout mainContent;
     private CssLayout entityContent;
     private UriFragmentUtility uriUtility;
-
-    public OpenGroupsMainWindow(String caption) {
-	super(caption);
-	// createLayout();
-    }
-
-    public OpenGroupsMainWindow() {
-	// createLayout();
+    private CausalHierarchyContainer hierarchyContainer;
+    
+    public OpenGroupsMainWindow(OpenGroupsApplication app, String name) {
+	super.setCaption(name);
+	this.app=app;
+	
+	/* add the uri utility */
+	uriUtility = new UriFragmentUtility();
+	mainContent = (VerticalLayout) this.getContent();
+	mainContent.addComponent(uriUtility);
+	
+	uriUtility.addListener(app.getUriHandler());
+	addURIHandler(app.getUriHandler());
     }
 
     public void createLayout() {
-	// mainContent = new VerticalLayout();
-	// mainContent.setSizeFull();
-	// mainContent.setMargin(true);
-	//		
-	// setContent(mainContent);
-	mainContent = (VerticalLayout) this.getContent();
+//	mainContent = new CssLayout();
 	mainContent.setMargin(false);
-	mainContent.setWidth("100%");
-	uriUtility = new UriFragmentUtility();
-	mainContent.addComponent(uriUtility);
-
+//	this.setContent(mainContent);
+//	mainContent.setWidth("100%");
+	mainContent.setSizeFull();
+//	mainContent.addStyleName(OpenGroupsStyles.MAIN_PANE);
+	
 	headerPanel = new GridLayout(2, 1);
 	headerPanel.setWidth("100%");
+//	headerPanel.setHeight("10%");
+//	headerPanel.setSizeFull();
 	headerPanel.addStyleName(OpenGroupsStyles.HEADER_BAR);
 	mainContent.addComponent(headerPanel);
 
@@ -72,15 +84,52 @@ public class OpenGroupsMainWindow extends Window {
 
 	entityContent = new CssLayout();
 	entityContent.setWidth("100%");
+	entityContent.setHeight("100%");
 	entityContent.setMargin(true);
-	entityContent.addStyleName("main-pane");
-	mainContent.addComponent(entityContent);
+	entityContent.addStyleName(OpenGroupsStyles.ENTITY_PANE);
+	
+	HorizontalLayout frame = new HorizontalLayout();
+	frame.addStyleName(OpenGroupsStyles.FRAME_PANE);
+//	frame.setSizeFull();
+	frame.setWidth("100%");
+	frame.setHeight("100%");
+	
+	hierarchyContainer = new CausalHierarchyContainer();
+	hierarchyContainer.addStyleName(OpenGroupsStyles.HIERARCHY_PANE);
+//	hierarchyContainer.setMargin(false,true,false,false);
+	hierarchyContainer.construct();
+	
+//	hierarchyContainer.setSizeFull();
+	hierarchyContainer.setWidth("100%");
+	hierarchyContainer.setHeight("100%");
+	frame.addComponent(hierarchyContainer);
+	frame.addComponent(entityContent);
+	frame.setExpandRatio(hierarchyContainer, 1);
+	frame.setExpandRatio(entityContent, 3);
+	
+	mainContent.addComponent(frame);
+	
+//	/* footer */
+//	CssLayout footer = new CssLayout();
+//	footer.setWidth("100%");
+//	footer.addComponent(new Label("@Metaguvernare"));
+//	mainContent.addComponent(footer);
+	
+	mainContent.setExpandRatio(frame, 1);
+    }
+    
+    private void initListeners() {
+	
+	CausalHierarchyContainer chc = getHierarchyContainer();
+	chc.setStartDepthChangedListener(app.getHierarchyStartDepthListener());
+	chc.setTreeExpandListener(app.getHierarchyTreeExpandListener());
+	chc.setSelectionChangedListener(app.getHierarchyItemSelectedListener());
 
     }
-
-    public void clear() {
-	removeAllComponents();
+    
+    public void init() {
 	createLayout();
+	initListeners();
     }
 
     // public void setHeaderContent(Component c) {
@@ -93,9 +142,19 @@ public class OpenGroupsMainWindow extends Window {
     }
 
     public void setFragmentToEntity(Entity entity) {
+	if(entity == null) {
+	    return;
+	}
 	String fragment = OpenGroupsUtil.getFragmentForEntity(entity);
 	logger.debug("Update fragment to '" + fragment + "'");
 	uriUtility.setFragment(fragment, false);
+    }
+    
+    public String getFragment() {
+	if(uriUtility != null) {
+	    return uriUtility.getFragment();
+	}
+	return null;
     }
 
     /**
@@ -130,4 +189,12 @@ public class OpenGroupsMainWindow extends Window {
     public UriFragmentUtility getUriUtility() {
 	return uriUtility;
     }
+
+    /**
+     * @return the hierarchyContainer
+     */
+    public CausalHierarchyContainer getHierarchyContainer() {
+        return hierarchyContainer;
+    }
+    
 }

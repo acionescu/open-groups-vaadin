@@ -23,10 +23,16 @@ import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+import com.vaadin.terminal.ThemeResource;
+
+import ro.zg.open_groups.gui.constants.LunaBlueIconsSet;
+import ro.zg.open_groups.gui.constants.OpenGroupsIconsSet;
+
 public class OpenGroupsResources {
     // private static ResourceBundle messagesBundle = ResourceBundle.getBundle("OpenGroupsMessages",new Locale("ro",
     // "RO"));
     private static ResourceBundle messagesBundle;
+    private static OpenGroupsIconsSet iconsSet=new LunaBlueIconsSet("img/luna-blue-icons/png");
     static {
 	try {
 	    String fileName = "OpenGroupsMessages_" + new Locale("ro", "RO") + ".properties";
@@ -40,7 +46,7 @@ public class OpenGroupsResources {
 	    e.printStackTrace();
 	}
     }
-
+    
     public static String getMessage(String key) {
 	try {
 	    return messagesBundle.getString(key);
@@ -54,4 +60,7 @@ public class OpenGroupsResources {
 	return messagesBundle;
     }
 
+    public static ThemeResource getIcon(String name,String size) {
+	return iconsSet.getIcon(name, size);
+    }
 }

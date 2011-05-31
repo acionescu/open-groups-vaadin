@@ -37,7 +37,9 @@ import ro.zg.util.data.GenericNameValueList;
 public class OpenGroupsModel {
 
     private static final String GET_ENTITY_INFO_FLOW = "ro.problems.flows.get-entity-info-by-id";
-
+    private static final String GET_HIERARCHY_MAX_DEPTH = "ro.problems.flows.get-hierarchy-max-depth";
+    private static final String GET_CAUSAL_HIERARCHY="ro.problems.flows.get-entities-list";
+    
     private static OpenGroupsModel instance;
 
     private OpenGroupsModel() {
@@ -136,5 +138,28 @@ public class OpenGroupsModel {
 	list.removeValueForIndex(list.size() - 1);
 	return new EntityList(list, true);
 
+    }
+
+    public long getHierarchyMaxDepth(long rootNodeId) {
+	Map<String, Object> params = new HashMap<String, Object>();
+	params.put("parentId", rootNodeId);
+	CommandResponse response = getActionsManager().execute(GET_HIERARCHY_MAX_DEPTH, params);
+	return Long.parseLong(response.getValue("max_depth").toString());
+    }
+    
+    public EntityList getCausalHierarchy(long rootNodeId, int startDepth, int cacheDepth) {
+	Map<String, Object> params = new HashMap<String, Object>();
+	params.put("parentId", rootNodeId);
+	params.put("startDepth",startDepth);
+	params.put("depth", startDepth+cacheDepth);
+	params.put("withContent", false);
+	params.put("withoutLeafTypes", true);
+	params.put("sortList", "depth");
+	params.put("pageNumber", 1);
+	params.put("itemsOnPage", 5000);
+	
+	CommandResponse response = getActionsManager().execute(GET_CAUSAL_HIERARCHY, params);
+	GenericNameValueList list = (GenericNameValueList) response.getValue("result");
+	return new EntityList(list, false);
     }
 }

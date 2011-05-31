@@ -48,6 +48,17 @@ public class OpenGroupsUtil {
 	anchor.setWidth("100%");
 	return anchor;
     }
+    
+    public static Label getLinkForEntityWithImage(Entity entity, OpenGroupsApplication app, String imagePath) {
+	String url = app.getURL().toString() + "#" + getDesiredFragmentForEntity(entity);
+	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, wrapAsImage(imagePath), "_self"), Label.CONTENT_XHTML);
+	anchor.setWidth("100%");
+	return anchor;
+    }
+    
+    public static String wrapAsImage(String path) {
+	return "<img src=\""+path+"\"/>";
+    }
 
     public static String getFragmentForEntity(Entity entity) {
 	EntityState currentEntityState = entity.getState();

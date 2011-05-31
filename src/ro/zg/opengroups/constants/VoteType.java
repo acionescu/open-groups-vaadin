@@ -19,41 +19,53 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
+import ro.zg.open_groups.gui.constants.OpenGroupsIconsSet;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 
+import com.vaadin.terminal.Resource;
+
 public class VoteType {
-    public static String YES="yes";
-    public static String NO="no";
+    public static String YES="y";
+    public static String NO="n";
     
     private static String[] values = new String[]{YES,NO};
-    private static Map<String,String> dbValues = new HashMap<String, String>();
+    private static Map<String,Resource> valuesIcons=new HashMap<String, Resource>();
     static {
-	dbValues.put(YES,"y");
-	dbValues.put(NO,"n");
+	valuesIcons.put(YES, OpenGroupsResources.getIcon(OpenGroupsIconsSet.VOTE_UP, OpenGroupsIconsSet.SMALL));
+	valuesIcons.put(NO, OpenGroupsResources.getIcon(OpenGroupsIconsSet.VOTE_DOWN, OpenGroupsIconsSet.SMALL));
     }
     
-    private String dbValue;
     private String caption;
+    private Resource icon;
+    private String value;
     
-    private VoteType(String caption, String dbValue) {
-	this.dbValue = dbValue;
+    private VoteType(String value,String caption, Resource icon) {
 	this.caption = caption;
-    }
-    
-    public String getDbValue() {
-	return dbValue;
+	this.icon = icon;
+	this.value=value;
     }
     
     public static List<VoteType> valuesList(String entityType){
 	List<VoteType> list = new ArrayList<VoteType>();
 	for(String voteType : values) {
-	    VoteType vt = new VoteType(getCaptionForEntityType(entityType, voteType), dbValues.get(voteType));
+	    VoteType vt = new VoteType(voteType,getCaptionForEntityType(entityType, voteType), valuesIcons.get(voteType));
 	    list.add(vt);
 	}
 	
 	return list;
+    }
+    
+    public static VoteType opposteVoteForValue(String value,String entityType) {
+	String otherVal = opposedValue(value);
+	return new VoteType(otherVal,getCaptionForEntityType(entityType, otherVal), valuesIcons.get(otherVal));
+    }
+    
+    private static String opposedValue(String value) {
+	if(NO.equals(value)) {
+	    return YES; 
+	}
+	return NO;
     }
     
     private static String getCaptionForEntityType(String entityType, String voteType) {
@@ -68,9 +80,22 @@ public class VoteType {
         return caption;
     }
     
-    
+    /**
+     * @return the icon
+     */
+    public Resource getIcon() {
+        return icon;
+    }
+
     public String toString() {
 	return caption;
+    }
+
+    /**
+     * @return the value
+     */
+    public String getValue() {
+        return value;
     }
     
 }

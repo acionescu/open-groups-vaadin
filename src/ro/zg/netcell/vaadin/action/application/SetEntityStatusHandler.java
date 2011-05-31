@@ -15,6 +15,8 @@
  ******************************************************************************/
 package ro.zg.netcell.vaadin.action.application;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +55,7 @@ public class SetEntityStatusHandler extends OpenGroupsActionHandler {
 	Entity entity = actionContext.getEntity();
 	if (entity.getContent() != null) {
 	    parentContainer.setComponentAlignment(localContainer, Alignment.MIDDLE_RIGHT);
-	    displayCombo(actionContext, localContainer,actionContext);
+	    displayCombo(actionContext, localContainer, actionContext);
 	} else {
 	    displayLabel(actionContext, localContainer);
 	}
@@ -84,7 +86,8 @@ public class SetEntityStatusHandler extends OpenGroupsActionHandler {
 	container.addComponent(statusLabel);
     }
 
-    private void displayCombo(final ActionContext actionContext, HorizontalLayout targetContainer,final ActionContext ac) {
+    private void displayCombo(final ActionContext actionContext, HorizontalLayout targetContainer,
+	    final ActionContext ac) {
 	CommandResponse response = executeAction(ActionsManager.GET_STATUSES, new HashMap<String, Object>());
 	GenericNameValueList list = (GenericNameValueList) response.getValue("result");
 
@@ -97,7 +100,8 @@ public class SetEntityStatusHandler extends OpenGroupsActionHandler {
 	    GenericNameValueContext row = (GenericNameValueContext) list.getValueForIndex(i);
 	    select.addItem(row.getValue("status"));
 	}
-
+	final Collection<?> items = new ArrayList<Object>(select.getItemIds());
+	
 	final Entity entity = actionContext.getEntity();
 	final EntityUserData userData = entity.getUserData();
 	final UserAction ua = actionContext.getUserAction();
@@ -114,22 +118,44 @@ public class SetEntityStatusHandler extends OpenGroupsActionHandler {
 
 		String value = ((String) select.getValue());
 		if (value != null) {
-		    value=value.trim();
+		    value = value.trim();
 		    if ("".equals(value)) {
 			value = null;
 		    }
 		    if (value.length() > 0) {
+			
 			value = value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
 		    }
 		}
+		
+		String currentStatus=userData.getStatus();
+		
+		if(value==null) {
+		    if(currentStatus==null) {
+			return;
+		    }
+		}
+		else if(value.equals(currentStatus)) {
+		    return;
+		}
+		
 		Map<String, Object> params = ua.getActionParams();
 		params.put("entityId", entity.getId());
 		params.put("userId", app.getCurrentUserId());
 		params.put("status", value);
 		params.put("isRecordCreated", userData.isRecordCreated());
-		executeAction(actionContext, params);
-		userData.setRecordCreated(true);
-		app.refreshEntity(entity,ac);
+		CommandResponse resp = executeAction(actionContext, params);
+		if (resp != null) {
+		    userData.setRecordCreated(true);
+		    app.refreshEntity(entity, ac);
+		}
+		else {
+		    /* remove the selected value if not laready contained in the available statuses */
+		    if(!items.contains(value)) {
+			select.removeItem(value.toLowerCase());
+		    }
+		    select.setValue(userData.getStatus());
+		}
 	    }
 	});
 

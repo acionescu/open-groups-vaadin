@@ -58,6 +58,7 @@ public class Entity implements Serializable {
     private String parentEntityTitle;
     private long lastActionId = -1;
     private String lastActionType;
+    private int depth;
 
     private ComponentContainer entityContainer;
     private Map<String, Object> filterValues = new HashMap<String, Object>();
@@ -91,7 +92,7 @@ public class Entity implements Serializable {
 	setComplexType((String) dataMap.getValue("complex_type"));
 	this.title = (String) dataMap.getValue("title");
 	this.content = (String) dataMap.getValue("content");
-	this.contentPreview = (String)dataMap.getValue("content_preview");
+	this.contentPreview = (String) dataMap.getValue("content_preview");
 	this.insertDate = (Timestamp) dataMap.getValue("insert_date");
 	this.subtypesCount = (Integer) dataMap.getValue("subtypes_count");
 	this.proVotes = (Long) dataMap.getValue("pro_votes");
@@ -100,15 +101,13 @@ public class Entity implements Serializable {
 	this.creatorId = (Long) dataMap.getValue("creator_id");
 	if (dataMap.getValue("general_priority") != null) {
 	    this.generalPriority = (Long) dataMap.getValue("general_priority");
-	}
-	else {
-	    this.generalPriority=null;
+	} else {
+	    this.generalPriority = null;
 	}
 	if (dataMap.getValue("general_status") != null) {
 	    this.generalStatus = (String) dataMap.getValue("general_status");
-	}
-	else {
-	    this.generalStatus=null;
+	} else {
+	    this.generalStatus = null;
 	}
 
 	this.userData = new EntityUserData(dataMap);
@@ -117,12 +116,17 @@ public class Entity implements Serializable {
 	this.parentEntityTitle = (String) dataMap.getValue("parent_title");
 	if (this.parentEntityTitle != null) {
 	    this.parentEntityId = (Long) dataMap.getValue("parent_entity_id");
-	    this.lastActionId = (Long) dataMap.getValue("action_type_id");
-	    this.lastActionType = (String) dataMap.getValue("action_type");
+	    if (dataMap.getValue("action_type_id") != null) {
+		this.lastActionId = (Long) dataMap.getValue("action_type_id");
+		this.lastActionType = (String) dataMap.getValue("action_type");
+	    }
 	} else {
 	    this.parentEntityId = -1L;
 	    this.lastActionId = -1;
 	    this.lastActionType = null;
+	}
+	if(dataMap.getValue("depth") != null) {
+	    depth = (Integer)dataMap.getValue("depth");
 	}
     }
 
@@ -476,14 +480,22 @@ public class Entity implements Serializable {
      * @return the contentPreview
      */
     public String getContentPreview() {
-        return contentPreview;
+	return contentPreview;
     }
 
     /**
-     * @param contentPreview the contentPreview to set
+     * @param contentPreview
+     *            the contentPreview to set
      */
     public void setContentPreview(String contentPreview) {
-        this.contentPreview = contentPreview;
+	this.contentPreview = contentPreview;
+    }
+
+    /**
+     * @return the depth
+     */
+    public int getDepth() {
+        return depth;
     }
 
 }

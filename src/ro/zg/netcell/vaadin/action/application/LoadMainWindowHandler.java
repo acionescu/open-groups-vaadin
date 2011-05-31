@@ -24,7 +24,6 @@ import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
 import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
-import ro.zg.open_groups.gui.constants.UriFragments;
 import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
@@ -53,12 +52,12 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
     @Override
     public void handle(ActionContext actionContext) throws Exception {
 	buildGuiLogic(actionContext.getApp(),actionContext);
+	getActionsManager().executeAction(ActionsManager.SHOW_CAUSAL_HIERARCHY, actionContext);
 	getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS, null, actionContext.getApp(), actionContext.getWindow().getEntityContent(),false, actionContext);
     }
 
     private void buildGuiLogic(OpenGroupsApplication application,ActionContext ac) {
 	addUserHeaderActions(application,ac);
-
     }
 
   

@@ -17,6 +17,7 @@ package ro.zg.netcell.vaadin.action.application;
 
 import java.util.Map;
 
+import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
@@ -46,11 +47,11 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 	HorizontalLayout localContainer = new HorizontalLayout();
 	localContainer.setSpacing(true);
 	parentContainer.addComponent(localContainer);
-	
+
 	Entity entity = actionContext.getEntity();
 	if (entity.getContent() != null) {
 	    parentContainer.setComponentAlignment(localContainer, Alignment.MIDDLE_RIGHT);
-	    displayCombo(actionContext, localContainer,actionContext);
+	    displayCombo(actionContext, localContainer, actionContext);
 	} else {
 	    displayLabel(actionContext, localContainer);
 	}
@@ -81,9 +82,10 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 	container.addComponent(new Label(valueString));
     }
 
-    private void displayCombo(final ActionContext actionContext, HorizontalLayout targetContainer, final ActionContext ac) {
+    private void displayCombo(final ActionContext actionContext, HorizontalLayout targetContainer,
+	    final ActionContext ac) {
 	long maxPriority = (Long) getAppConfigManager().getApplicationConfigParam(ApplicationConfigParam.MAX_PRIORITY);
-	ComboBox select = new ComboBox();
+	final ComboBox select = new ComboBox();
 	select.setImmediate(true);
 	select.setWidth("55px");
 
@@ -105,20 +107,38 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 
 	    @Override
 	    public void valueChange(ValueChangeEvent event) {
-		checkUserAllowedToExecuteAction(entity, app, ua);
-		Map<String, Object> params = ua.getActionParams();
+		// boolean actionAllowed = checkUserAllowedToExecuteAction(entity, app, ua);
+		
 		Priority selectedPriority = (Priority) event.getProperty().getValue();
-		params.put("entityId", entity.getId());
-		params.put("userId", app.getCurrentUserId());
 		Long priority = null;
-		if(selectedPriority != null) {
+		if (selectedPriority != null) {
 		    priority = selectedPriority.getPriority();
 		}
+		
+		Long currentPriority = userData.getPriority();
+		
+		if(priority == null) {
+		    if(currentPriority == null) {
+			return;
+		    }
+		}
+		else if(priority.equals(currentPriority)) {
+		    return;
+		}
+		
+		Map<String, Object> params = ua.getActionParams();
+		params.put("entityId", entity.getId());
+		params.put("userId", app.getCurrentUserId());
 		params.put("priority", priority);
 		params.put("isRecordCreated", userData.isRecordCreated());
-		executeAction(actionContext, params);
-		userData.setRecordCreated(true);
-		app.refreshEntity(entity,ac);
+		CommandResponse resp = executeAction(actionContext, params);
+		if (resp != null) {
+		    userData.setRecordCreated(true);
+		    app.refreshEntity(entity, ac);
+		}
+		else {
+		    select.setValue(userData.getPriority());
+		}
 	    }
 	});
 

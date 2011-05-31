@@ -18,6 +18,7 @@ package ro.zg.netcell.vaadin.action.application;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.OpenGroupsApplication;
+import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.opengroups.vo.Entity;
 
 import com.vaadin.ui.ComponentContainer;
@@ -38,10 +39,11 @@ public class OpenEntityWithActionsHandler extends BaseEntityHandler{
 	
 	ComponentContainer targetContainer = actionContext.getTargetContainer();
 	targetContainer.removeAllComponents();
-	targetContainer.setSizeFull();
+//	targetContainer.setSizeFull();
 	/* show the component */
 	CssLayout entityContainer = new CssLayout();
-	entityContainer.setSizeFull();
+//	entityContainer.setSizeFull();
+	entityContainer.setWidth("100%");
 	targetContainer.addComponent(entityContainer);
 	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS, entity,app,entityContainer,false,actionContext);
 	if(app.hasErrors()) {
@@ -50,7 +52,11 @@ public class OpenEntityWithActionsHandler extends BaseEntityHandler{
 
 	/* add the container for the actions to the window */
 	CssLayout actionsContainer = new CssLayout();
-	actionsContainer.setSizeFull();
+//	HorizontalLayout actionsContainer = new HorizontalLayout();
+//	VerticalLayout actionsContainer = new VerticalLayout();
+//	actionsContainer.setSizeFull();
+	actionsContainer.addStyleName(OpenGroupsStyles.USER_ACTIONS_TAB);
+	actionsContainer.setWidth("100%");
 	targetContainer.addComponent(actionsContainer);
 	displayActionsForSelectedEntity(entity,app, actionsContainer,actionContext);
     }

@@ -18,5 +18,5 @@ package ro.zg.open_groups.gui.constants;
 public class IconsPaths {
     public static final String LEFT_ARROW="../runo/icons/16/arrow-left.png";
     public static final String RIGHT_ARROW="../runo/icons/16/arrow-right.png";
-
+    
 }
