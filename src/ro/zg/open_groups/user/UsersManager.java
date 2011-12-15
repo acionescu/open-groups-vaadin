@@ -47,23 +47,22 @@ public class UsersManager {
 	return _instance;
     }
 
-    public List<String> getCurrentUserTypes(Entity selectedEntity,OpenGroupsApplication app) {
-	User u = app.getCurrentUser();
-	List<String> userTypes = new ArrayList<String>();
-	userTypes.add(UserTypes.ANY);
-	if (u == null) {
-	    userTypes.add(UserTypes.GUEST);
-	} else {
-	    userTypes.add(UserTypes.MEMBER);
-//	    Entity selectedEntity = app.getSelectedEntity();
-	    if (selectedEntity != null) {
-		if (u.getUserId() == selectedEntity.getCreatorId()) {
-		    userTypes.add(UserTypes.CREATOR);
-		}
-	    }
-	}
-	return userTypes;
-    }
+//    public List<String> getCurrentUserTypes(Entity selectedEntity,OpenGroupsApplication app) {
+//	User u = app.getCurrentUser();
+//	List<String> userTypes = new ArrayList<String>();
+//	userTypes.add(UserTypes.ANY);
+//	if (u == null) {
+//	    userTypes.add(UserTypes.GUEST);
+//	} else {
+//	    userTypes.add(UserTypes.MEMBER);
+//	    if (selectedEntity != null) {
+//		if (u.getUserId() == selectedEntity.getCreatorId()) {
+//		    userTypes.add(UserTypes.CREATOR);
+//		}
+//	    }
+//	}
+//	return userTypes;
+//    }
 
     public void addUser(User u) {
 	activeUsers.put(u.getUserId(), u);
@@ -81,4 +80,5 @@ public class UsersManager {
     public static void main(String[] args) {
 	System.out.println(UsersManager.getInstance().encrypt("..."));
     }
+    
 }

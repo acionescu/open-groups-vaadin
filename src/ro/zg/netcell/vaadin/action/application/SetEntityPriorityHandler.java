@@ -130,10 +130,9 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 		params.put("entityId", entity.getId());
 		params.put("userId", app.getCurrentUserId());
 		params.put("priority", priority);
-		params.put("isRecordCreated", userData.isRecordCreated());
+		params.put("isRecordCreated", userData.isEntityUserRecordCreated());
 		CommandResponse resp = executeAction(actionContext, params);
 		if (resp != null) {
-		    userData.setRecordCreated(true);
 		    app.refreshEntity(entity, ac);
 		}
 		else {

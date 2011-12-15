@@ -25,6 +25,7 @@ import ro.zg.open_groups.gui.constants.OpenGroupsIconsSet;
 import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ComplexEntityParam;
+import ro.zg.opengroups.constants.TypeRelationConfigParam;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityList;
 import ro.zg.opengroups.vo.FilterOption;
@@ -151,7 +152,7 @@ public class EntityListHandler extends BaseListHandler {
 
     private void refreshPageControls(final Entity entity, final UserAction ua, final OpenGroupsApplication app,
 	    final ComponentContainer container, final ActionContext ac) {
-	final int currentPage = entity.getState().getCurrentPageForCurrentAction();
+	
 	final int itemsPerPage = entity.getState().getItemsPerPage();
 
 	Button prevButton = new Button();
@@ -170,8 +171,10 @@ public class EntityListHandler extends BaseListHandler {
 	    /* let's find out if this list is recursive or not */
 	    boolean isRecursive = false;
 	    /* first check if the target type allows a recursive list in the first place */
-	    if (getAppConfigManager().getComplexEntityBooleanParam(ua.getTargetEntityComplexType(),
-		    ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
+//	    if (getAppConfigManager().getComplexEntityBooleanParam(ua.getTargetEntityComplexType(),
+//		    ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
+	    if(getAppConfigManager().getTypeRelationBooleanConfigParam(
+			ua.getTypeRelationId(), TypeRelationConfigParam.ALLOW_RECURSIVE_LIST)) {
 		/*
 		 * if it does, check if the filter is actually set to display all items, that means the recursion depth
 		 * is undefined or greater than 0
@@ -200,11 +203,7 @@ public class EntityListHandler extends BaseListHandler {
 	 * number of pages
 	 */
 	int numberOfPages = (int) Math.ceil(totalItemsCount / itemsPerPage);
-//	System.out.println("totalItemsCount: "+totalItemsCount);
-//	System.out.println("currentPage: "+currentPage);
-//	System.out.println("number of pages: "+numberOfPages);
-//	System.out.println("recursive subtypes count: "+entity.getRecursiveSubtypeEntitiesCount());
-//	System.out.println("subtypes count: "+entity.getSubtypeEntitiesCount());
+	final int currentPage=entity.getState().getCurrentPageForCurrentAction();
 	
 	/* populate the currentpage combobox with the number of pages */
 	for (int i = 1; i <= numberOfPages; i++) {
@@ -284,8 +283,11 @@ public class EntityListHandler extends BaseListHandler {
 	String complexType = ua.getTargetEntityComplexType();
 
 	/* add depth filter */
-	boolean allowRecursiveList = getAppConfigManager().getComplexEntityBooleanParam(
-		ua.getTargetEntityComplexType(), ComplexEntityParam.ALLOW_RECURSIVE_LIST);
+//	boolean allowRecursiveList = getAppConfigManager().getComplexEntityBooleanParam(
+//		ua.getTargetEntityComplexType(), ComplexEntityParam.ALLOW_RECURSIVE_LIST);
+	boolean allowRecursiveList = getAppConfigManager().getTypeRelationBooleanConfigParam(
+		ua.getTypeRelationId(), TypeRelationConfigParam.ALLOW_RECURSIVE_LIST);
+	
 	if (allowRecursiveList) {
 	    filtersLayout.addComponent(getListByDepthFilter(entity, ua, app, ac));
 	    hasFilters = true;
@@ -366,7 +368,6 @@ public class EntityListHandler extends BaseListHandler {
 		entity.getState().resetPageInfoForCurrentAction();
 		selectedEntity.setFilter((FilterOption) event.getProperty().getValue());
 		refreshList(entity, ua, app, selectedEntity.getState().getLastUsedContainer(), ac);
-		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
 
@@ -427,8 +428,9 @@ public class EntityListHandler extends BaseListHandler {
 		}
 		FilterOption fo = new FilterOption(null, paramName, value);
 		entity.setFilter(fo);
+		/* set current page to 1 */
+		entity.getState().resetPageInfoForCurrentAction();
 		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(), ac);
-		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
 
@@ -467,8 +469,8 @@ public class EntityListHandler extends BaseListHandler {
 	    public void valueChange(ValueChangeEvent event) {
 		FilterOption fo = new FilterOption(null, paramName, event.getProperty().getValue());
 		entity.setFilter(fo);
+		entity.getState().resetPageInfoForCurrentAction();
 		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(), ac);
-		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
 
@@ -495,8 +497,8 @@ public class EntityListHandler extends BaseListHandler {
 	    public void valueChange(ValueChangeEvent event) {
 		FilterOption fo = new FilterOption(null, paramName, event.getProperty().getValue());
 		entity.setFilter(fo);
+		entity.getState().resetPageInfoForCurrentAction();
 		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(), ac);
-		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
 
@@ -523,8 +525,8 @@ public class EntityListHandler extends BaseListHandler {
 	    public void valueChange(ValueChangeEvent event) {
 		FilterOption fo = new FilterOption(null, paramName, event.getProperty().getValue());
 		entity.setFilter(fo);
+		entity.getState().resetPageInfoForCurrentAction();
 		refreshList(entity, ua, app, entity.getState().getLastUsedContainer(), ac);
-		// refreshList(entity, ua, app, entity.getState().getChildrenListContainer());
 	    }
 	});
 

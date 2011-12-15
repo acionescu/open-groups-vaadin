@@ -16,6 +16,7 @@
 package ro.zg.open_groups.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ro.zg.commons.exceptions.ContextAwareException;
@@ -25,9 +26,10 @@ import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
-import ro.zg.opengroups.constants.ComplexEntityParam;
 import ro.zg.opengroups.constants.ExceptionTypes;
+import ro.zg.opengroups.constants.TypeRelationConfigParam;
 import ro.zg.opengroups.vo.Entity;
+import ro.zg.opengroups.vo.EntityLink;
 import ro.zg.opengroups.vo.EntityList;
 import ro.zg.opengroups.vo.Tag;
 import ro.zg.opengroups.vo.UserAction;
@@ -39,6 +41,7 @@ public class OpenGroupsModel {
     private static final String GET_ENTITY_INFO_FLOW = "ro.problems.flows.get-entity-info-by-id";
     private static final String GET_HIERARCHY_MAX_DEPTH = "ro.problems.flows.get-hierarchy-max-depth";
     private static final String GET_CAUSAL_HIERARCHY="ro.problems.flows.get-entities-list";
+    private static final String GET_CAUSES="ro.problems.flows.get-causes";
     
     private static OpenGroupsModel instance;
 
@@ -77,6 +80,7 @@ public class OpenGroupsModel {
 	Map<String, Object> params = new HashMap<String, Object>();
 	params.put("entityId", entity.getId());
 	params.put("userId", userId);
+	params.put("parentLinkId", entity.getSelectedParentLinkId());
 	CommandResponse response = getActionsManager().execute(GET_ENTITY_INFO_FLOW, params);
 	GenericNameValueList result = (GenericNameValueList) response.getValue("result");
 	GenericNameValueContext row = (GenericNameValueContext) result.getValueForIndex(0);
@@ -105,11 +109,14 @@ public class OpenGroupsModel {
 	    params.put("entityType", complexEntityType);
 	    showEntityType = false;
 	}
-	params.put("withContent", getAppConfigManager().getComplexEntityBooleanParam(complexEntityType,
-		ComplexEntityParam.LIST_WITH_CONTENT));
+//	params.put("withContent", getAppConfigManager().getComplexEntityBooleanParam(complexEntityType,
+//		ComplexEntityParam.LIST_WITH_CONTENT));
+	params.put("withContent", getAppConfigManager().getTypeRelationBooleanConfigParam(ua.getTypeRelationId(),
+		TypeRelationConfigParam.LIST_WITH_CONTENT));
 	params.put("userId", userId);
-	if (!getAppConfigManager().getComplexEntityBooleanParam(complexEntityType,
-		ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
+//	if (!getAppConfigManager().getComplexEntityBooleanParam(complexEntityType,
+//		ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
+	if(!getAppConfigManager().getTypeRelationBooleanConfigParam(ua.getTypeRelationId(), TypeRelationConfigParam.ALLOW_RECURSIVE_LIST)) {
 	    params.put("depth", 0);
 	}
 
@@ -161,5 +168,10 @@ public class OpenGroupsModel {
 	CommandResponse response = getActionsManager().execute(GET_CAUSAL_HIERARCHY, params);
 	GenericNameValueList list = (GenericNameValueList) response.getValue("result");
 	return new EntityList(list, false);
+    }
+    
+    public List<EntityLink> getCauses(long entityId) {
+	
+	return null;
     }
 }

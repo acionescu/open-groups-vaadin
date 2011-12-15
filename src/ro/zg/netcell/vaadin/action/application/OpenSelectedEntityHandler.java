@@ -28,10 +28,12 @@ import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.constants.ComplexEntityParam;
 import ro.zg.opengroups.constants.Defaults;
+import ro.zg.opengroups.constants.TypeRelationConfigParam;
 import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityState;
 import ro.zg.opengroups.vo.Tag;
+import ro.zg.opengroups.vo.TypeRelationConfig;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.opengroups.vo.UserActionList;
 import ro.zg.util.date.DateUtil;
@@ -324,18 +326,23 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    Label opposedVotes = FormatingUtils.coloredLabel(entity.getOpposedVotes(), "660000");
 	    votesPane.addComponent(opposedVotes);
 	}
-
-	if (subtyesList != null) {
+	List<TypeRelationConfig> subtypes = getAppConfigManager().getSubtypesForType(entity.getComplexTypeId());
+//	if (subtyesList != null) {
+	if(subtypes != null) {
 	    Map<String, Long> firstLevelSubtypesCount = entity.getSubtypeEntitiesCount();
 	    Map<String, Long> allSubtypesCount = entity.getRecursiveSubtypeEntitiesCount();
 
-	    for (String s : subtyesList) {
-		String subtype = s.toLowerCase();
+//	    for (String s : subtyesList) {
+//		String subtype = s.toLowerCase();
+	    for(TypeRelationConfig trc : subtypes) {
+		String subtype = trc.getTargetComplexType().toLowerCase();
 		String displayName = app.getMessage("subtype." + subtype);
 		String displayString = displayName + ": " + firstLevelSubtypesCount.get(subtype);
 
-		if (getAppConfigManager().getComplexEntityBooleanParam(s, ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
-		    Long recCount = allSubtypesCount.get(subtype);
+//		if (getAppConfigManager().getComplexEntityBooleanParam(s, ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
+		if(getAppConfigManager().getTypeRelationBooleanConfigParam(
+			trc.getId(), TypeRelationConfigParam.ALLOW_RECURSIVE_LIST)) {
+		Long recCount = allSubtypesCount.get(subtype);
 		    if (recCount != null) {
 			displayString += " / " + recCount;
 		    }
@@ -390,6 +397,9 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	currentContainer.addComponent(actionsContainer);
 //	int row = 0;
 	for (UserAction ua : actions.getActions().values()) {
+	    if(!ua.isVisible(ac)) {
+		continue;
+	    }
 //	    HorizontalLayout actionContainer = new HorizontalLayout();
 //	    actionContainer.addStyleName(OpenGroupsStyles.TOP_RIGHT);
 	    CssLayout actionContainer = new CssLayout();

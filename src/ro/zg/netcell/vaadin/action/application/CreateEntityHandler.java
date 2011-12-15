@@ -54,9 +54,10 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 	Entity entity = actionContext.getEntity();
 	targetContainer.removeAllComponents();
 	UserAction ua = actionContext.getUserAction();
-	List<String> currentUserTypes = getCurrentUserTypes(entity, actionContext.getApp());
+//	List<String> currentUserTypes = getCurrentUserTypes(entity, actionContext.getApp());
 
-	if (!currentUserTypes.contains(ua.getUserType())) {
+//	if (!currentUserTypes.contains(ua.getUserType())) {
+	if(!actionContext.isActionVisible()) {
 	    /* current user is not allowed to execute this action */
 	    displayLoginRequired("create." + ua.getTargetEntityComplexType().toLowerCase() + ".login.required",
 		    targetContainer);

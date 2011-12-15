@@ -36,7 +36,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.BaseTheme;
 
 public class VoteEntityHandler extends OpenGroupsActionHandler {
 
@@ -105,9 +104,10 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 //		container.removeAllComponents();
 //		showVotesFragment(container, selectedEntity, app, ua, ac);
 		Map<String, Object> params = ua.getActionParams();
-		params.put("entityId", selectedEntity.getId());
+//		params.put("entityId", selectedEntity.getId());
+		params.put("entityLinkId", selectedEntity.getSelectedParentLinkId());
 		params.put("userId", app.getCurrentUserId());
-		params.put("isRecordCreated", selectedEntity.getUserData().isRecordCreated());
+		params.put("isRecordCreated", selectedEntity.getUserData().isEntityLinkUserRecordCreated());
 		params.put("vote", opposedVote.getValue());
 		CommandResponse response = executeAction(new ActionContext(ua, app, selectedEntity), params);
 		/* refresh the entity only if the user was actually able to vote */
@@ -125,7 +125,8 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 	    @Override
 	    public void buttonClick(ClickEvent event) {
 		Map<String, Object> params = ua.getActionParams();
-		params.put("entityId", selectedEntity.getId());
+//		params.put("entityId", selectedEntity.getId());
+		params.put("entityLinkId", selectedEntity.getSelectedParentLinkId());
 		params.put("userId", app.getCurrentUserId());
 		params.put("isRecordCreated", true);
 
@@ -165,9 +166,10 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 	    public void buttonClick(ClickEvent event) {
 
 		Map<String, Object> params = ua.getActionParams();
-		params.put("entityId", selectedEntity.getId());
+//		params.put("entityId", selectedEntity.getId());
+		params.put("entityLinkId", selectedEntity.getSelectedParentLinkId());
 		params.put("userId", app.getCurrentUserId());
-		params.put("isRecordCreated", selectedEntity.getUserData().isRecordCreated());
+		params.put("isRecordCreated", selectedEntity.getUserData().isEntityLinkUserRecordCreated());
 		params.put("vote", voteType.getValue());
 		CommandResponse response = executeAction(new ActionContext(ua, app, selectedEntity), params);
 		/* refresh the entity only if the user was actually able to vote */

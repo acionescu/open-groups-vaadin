@@ -16,9 +16,9 @@
 package ro.zg.opengroups.vo;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
+import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.UserActionListHandler;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.util.data.GenericNameValueContext;
@@ -102,10 +102,20 @@ public class UserActionList extends UserAction {
 		return ual;
 	}
 
+//	@Override
+//	public boolean allowRead(List<String> userTypes) {
+//		for (UserAction nestedAction : actions.values()) {
+//			if (nestedAction.allowRead(userTypes)) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
+	
 	@Override
-	public boolean allowRead(List<String> userTypes) {
+	public boolean allowRead(ActionContext ac) {
 		for (UserAction nestedAction : actions.values()) {
-			if (nestedAction.allowRead(userTypes)) {
+			if (nestedAction.allowRead(ac)) {
 				return true;
 			}
 		}

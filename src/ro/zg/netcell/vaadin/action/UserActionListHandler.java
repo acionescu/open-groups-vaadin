@@ -115,6 +115,7 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 			entity.getState().setCurrentTabActionContainer(selectedTabContent);
 			entity.getState().setCurrentActionsPath(ua.getFullActionPath());
 			entity.getState().getDesiredActionTabsQueue().clear();
+			entity.getState().resetPageInfoForCurrentAction();
 			actionContext.getWindow().setFragmentToEntity(entity);
 		    }
 		    ua.executeHandler(entity, app, selectedTabContent, false, actionContext);
@@ -125,13 +126,14 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 	});
 	/* add the tabsheet to the target component */
 
-	List<String> currentUserTypes = getCurrentUserTypes(entity, app);
+//	List<String> currentUserTypes = getCurrentUserTypes(entity, app);
 	Map<String, ComponentContainer> actionPathContainers = new HashMap<String, ComponentContainer>();
 	List<UserAction> actionsList = new ArrayList<UserAction>(ual.getActions().values());
 	for (UserAction cua : actionsList) {
 
 	    /* display only the actions that the user is allowed to see */
-	    if (!cua.allowRead(currentUserTypes)) {
+//	    if (!cua.allowRead(currentUserTypes)) {
+	    if(!cua.isVisible(actionContext)) {
 		continue;
 	    }
 

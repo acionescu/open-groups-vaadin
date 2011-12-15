@@ -26,8 +26,6 @@ public class EntityUserData {
     private Timestamp lastVoteUpdate;
     private Timestamp lastPriorityUpdate;
     private Timestamp lastStatusUpdate;
-    private boolean recordCreated;
-    
     
     public EntityUserData() {
 	
@@ -40,8 +38,6 @@ public class EntityUserData {
 	lastVoteUpdate = (Timestamp)dataMap.getValue("last_vote_update");
 	lastPriorityUpdate = (Timestamp)dataMap.getValue("last_priority_update");
 	lastStatusUpdate = (Timestamp)dataMap.getValue("last_status_update");
-	
-	recordCreated = (lastVoteUpdate != null) || (lastPriorityUpdate != null) || (lastStatusUpdate !=null);
     }
     
     /**
@@ -119,8 +115,12 @@ public class EntityUserData {
     /**
      * @return the recordCreated
      */
-    public boolean isRecordCreated() {
-        return recordCreated;
+    public boolean isEntityUserRecordCreated() {
+        return (lastPriorityUpdate != null) || (lastStatusUpdate !=null);
+    }
+    
+    public boolean isEntityLinkUserRecordCreated() {
+	return (lastVoteUpdate != null); 
     }
 
     /**
@@ -135,13 +135,6 @@ public class EntityUserData {
      */
     public void setPriority(Long priority) {
         this.priority = priority;
-    }
-
-    /**
-     * @param recordCreated the recordCreated to set
-     */
-    public void setRecordCreated(boolean recordCreated) {
-        this.recordCreated = recordCreated;
     }
     
 }

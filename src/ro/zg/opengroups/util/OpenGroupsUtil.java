@@ -34,8 +34,8 @@ public class OpenGroupsUtil {
 	return "<a href=\"" + url + "\">" + text + "</a>";
     }
 
-    public static String wrapAsA(String url, String text, String target) {
-	return "<a href=\"" + url + "\" target=\"" + target + "\">" + text + "</a>";
+    public static String wrapAsA(String url, String fragment, String text, String target) {
+	return "<a href=\"" + url+"#"+fragment + "\" target=\"" + target + "\">" + text + "</a>";
     }
 
     public static Label getLinkForEntity(Entity entity, OpenGroupsApplication app) {
@@ -43,15 +43,17 @@ public class OpenGroupsUtil {
     }
 
     public static Label getLinkForEntity(Entity entity, OpenGroupsApplication app, String title) {
-	String url = app.getURL().toString() + "#" + getDesiredFragmentForEntity(entity);
-	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, title, "_self"), Label.CONTENT_XHTML);
+	String url = app.getURL().toString();
+	String fragment = getDesiredFragmentForEntity(entity);
+	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, fragment, title, "_self"), Label.CONTENT_XHTML);
 	anchor.setWidth("100%");
 	return anchor;
     }
     
     public static Label getLinkForEntityWithImage(Entity entity, OpenGroupsApplication app, String imagePath) {
-	String url = app.getURL().toString() + "#" + getDesiredFragmentForEntity(entity);
-	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, wrapAsImage(imagePath), "_self"), Label.CONTENT_XHTML);
+	String url = app.getURL().toString();
+	String fragment = getDesiredFragmentForEntity(entity);
+	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, fragment, wrapAsImage(imagePath), "_self"), Label.CONTENT_XHTML);
 	anchor.setWidth("100%");
 	return anchor;
     }

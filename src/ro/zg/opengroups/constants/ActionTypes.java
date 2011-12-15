@@ -18,4 +18,5 @@ package ro.zg.opengroups.constants;
 public class ActionTypes {
     public static final String CREATE="CREATE";
     public static final String UPDATE="UPDATE";
+    public static final String VOTE="VOTE";
 }

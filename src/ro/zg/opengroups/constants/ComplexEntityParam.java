@@ -21,7 +21,7 @@ public class ComplexEntityParam {
     public static final String SHOW_POST_INFO="show_post_info";
     public static final String ALLOW_DUPLICATE_TITLE="allow_title_duplicates";
     /**
-     * specifies wheater to list only the first level(false) for the target entity type
+     * specifies weather to list only the first level(false) for the target entity type
      * or to bring all the entities of this type found under selected node and its children (true)
      */
     public static final String ALLOW_RECURSIVE_LIST="allow_recursive_list";

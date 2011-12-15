@@ -36,6 +36,7 @@ public class Entity implements Serializable {
     private static final long serialVersionUID = -6835136872340648047L;
 
     private long id;
+    private long complexTypeId;
     private String complexType;
     private String simpleType;
     private String title;
@@ -54,11 +55,14 @@ public class Entity implements Serializable {
     private String generalStatus;
     private List<Tag> tags = new ArrayList<Tag>();
     /* these are populated when the entity is displayed in the recent activity list */
-    private Long parentEntityId = -1L;
+    private Long selectedParentId = -1L;
+    private Long selectedParentLinkId;
     private String parentEntityTitle;
     private long lastActionId = -1;
     private String lastActionType;
     private int depth;
+    /* the minimal depth in the entities_links graph */
+    private int absoluteDepth;
 
     private ComponentContainer entityContainer;
     private Map<String, Object> filterValues = new HashMap<String, Object>();
@@ -90,6 +94,7 @@ public class Entity implements Serializable {
 	// System.out.println(dataMap);
 	this.id = (Long) dataMap.getValue("id");
 	setComplexType((String) dataMap.getValue("complex_type"));
+	this.complexTypeId = (Long) dataMap.getValue("complex_type_id");
 	this.title = (String) dataMap.getValue("title");
 	this.content = (String) dataMap.getValue("content");
 	this.contentPreview = (String) dataMap.getValue("content_preview");
@@ -112,21 +117,30 @@ public class Entity implements Serializable {
 
 	this.userData = new EntityUserData(dataMap);
 	initSubtypeEntitiesInfo(dataMap);
+
 	/* if displayed in the recent activity list */
 	this.parentEntityTitle = (String) dataMap.getValue("parent_title");
 	if (this.parentEntityTitle != null) {
-	    this.parentEntityId = (Long) dataMap.getValue("parent_entity_id");
+	    this.selectedParentId = (Long) dataMap.getValue("selected_parent_id");
+
 	    if (dataMap.getValue("action_type_id") != null) {
 		this.lastActionId = (Long) dataMap.getValue("action_type_id");
 		this.lastActionType = (String) dataMap.getValue("action_type");
 	    }
 	} else {
-	    this.parentEntityId = -1L;
+	    this.selectedParentId = -1L;
 	    this.lastActionId = -1;
 	    this.lastActionType = null;
 	}
-	if(dataMap.getValue("depth") != null) {
-	    depth = (Integer)dataMap.getValue("depth");
+	if (dataMap.getValue("selected_parent_link_id") != null) {
+	    this.selectedParentLinkId = (Long) dataMap.getValue("selected_parent_link_id");
+	}
+
+	if (dataMap.getValue("depth") != null) {
+	    depth = (Integer) dataMap.getValue("depth");
+	}
+	if (dataMap.getValue("absolute_depth") != null) {
+	    absoluteDepth = (Integer) dataMap.getValue("absolute_depth");
 	}
     }
 
@@ -380,10 +394,10 @@ public class Entity implements Serializable {
     }
 
     /**
-     * @return the parentEntityId
+     * @return the selectedParentId
      */
     public Long getParentEntityId() {
-	return parentEntityId;
+	return selectedParentId;
     }
 
     /**
@@ -408,11 +422,11 @@ public class Entity implements Serializable {
     }
 
     /**
-     * @param parentEntityId
-     *            the parentEntityId to set
+     * @param selectedParentId
+     *            the selectedParentId to set
      */
     public void setParentEntityId(long parentEntityId) {
-	this.parentEntityId = parentEntityId;
+	this.selectedParentId = parentEntityId;
     }
 
     /**
@@ -495,7 +509,51 @@ public class Entity implements Serializable {
      * @return the depth
      */
     public int getDepth() {
-        return depth;
+	return depth;
+    }
+
+    /**
+     * @return the complexTypeId
+     */
+    public long getComplexTypeId() {
+	return complexTypeId;
+    }
+
+    /**
+     * @param complexTypeId
+     *            the complexTypeId to set
+     */
+    public void setComplexTypeId(long complexTypeId) {
+	this.complexTypeId = complexTypeId;
+    }
+
+    /**
+     * @return the selectedParentLinkId
+     */
+    public Long getSelectedParentLinkId() {
+	return selectedParentLinkId;
+    }
+
+    /**
+     * @param selectedParentLinkId
+     *            the selectedParentLinkId to set
+     */
+    public void setSelectedParentLinkId(Long selectedParentLinkId) {
+	this.selectedParentLinkId = selectedParentLinkId;
+    }
+
+    /**
+     * @return the absoluteDepth
+     */
+    public int getAbsoluteDepth() {
+        return absoluteDepth;
+    }
+
+    /**
+     * @param absoluteDepth the absoluteDepth to set
+     */
+    public void setAbsoluteDepth(int absoluteDepth) {
+        this.absoluteDepth = absoluteDepth;
     }
 
 }

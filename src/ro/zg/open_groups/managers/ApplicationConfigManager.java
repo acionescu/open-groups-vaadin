@@ -22,10 +22,10 @@ import java.util.Map;
 
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.ActionsManager;
+import ro.zg.opengroups.vo.TypeRelationConfig;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
 import ro.zg.util.data.ListMap;
-import ro.zg.util.logging.Logger;
 
 public class ApplicationConfigManager {
     private static ApplicationConfigManager _instance = new ApplicationConfigManager();
@@ -37,6 +37,8 @@ public class ApplicationConfigManager {
     private Map<String, Object> applicationConfigParams = new HashMap<String, Object>();
     private Map<String, GenericNameValueContext> complexEntityTypes = new HashMap<String, GenericNameValueContext>();
     private ListMap<String, String> subtypesRelations;
+    private Map<Long,TypeRelationConfig> typeRelations;
+    private ListMap<Long, TypeRelationConfig> subtypesForType;
     /**
      * the types that can have children
      */
@@ -106,15 +108,21 @@ public class ApplicationConfigManager {
 
     private boolean loadEntitiesTypesRelations() {
 	subtypesRelations=new ListMap<String, String>();
-	CommandResponse response = ActionsManager.getInstance().execute(GET_ENTITIES_TYPES_RELATIONS, new HashMap());
+	typeRelations=new HashMap<Long, TypeRelationConfig>();
+	subtypesForType=new ListMap<Long, TypeRelationConfig>();
+	CommandResponse response = ActionsManager.getInstance().execute(GET_ENTITIES_TYPES_RELATIONS, new HashMap<String,Object>());
 	if (response == null) {
 	    return false;
 	}
 	GenericNameValueList result = (GenericNameValueList) response.getValue("result");
 	for (int i = 0; i < result.size(); i++) {
 	    GenericNameValueContext row = (GenericNameValueContext) result.getValueForIndex(i);
-	    subtypesRelations.add(row.getValue("source_complex_type").toString(), row.getValue("complex_subtype")
-		    .toString());
+	    TypeRelationConfig erc = new TypeRelationConfig(row);
+//	    subtypesRelations.add(row.getValue("source_complex_type").toString(), row.getValue("complex_subtype")
+//		    .toString());
+	    subtypesRelations.add(erc.getSourceComplexType(),erc.getTargetComplexType());
+	    typeRelations.put(erc.getId(), erc);
+	    subtypesForType.add(erc.getSourceEntityTypeId(),erc);
 	}
 	
 	return true;
@@ -152,10 +160,41 @@ public class ApplicationConfigManager {
 	}
 	return (Boolean) param;
     }
+    
+    public Object getTypeRelationConfigParam(long typeRelationId, String paramName) {
+	TypeRelationConfig trc = typeRelations.get(typeRelationId);
+	Object param = null;
+	if(trc == null) {
+	    /* return generic */
+	    return getComplexEntityParam("*", paramName);
+	}
+	param = trc.getConfigParam(paramName);
+	/* if null check if defined on the target entity id*/
+	if(param == null) {
+	    String targetComplexType=trc.getTargetComplexType();
+	    param = getComplexEntityParam(targetComplexType,paramName);
+	}
+	return param;
+    }
+    
+    public Boolean getTypeRelationBooleanConfigParam(long typeRelationId, String paramName) {
+	Object param = getTypeRelationConfigParam(typeRelationId, paramName);
+	String value = param.toString();
+	if ("y".equals(value)) {
+	    return true;
+	} else if ("n".equals(value)) {
+	    return false;
+	}
+	return (Boolean) param;
+    }
 
     public List<String> getSubtypesForComplexType(String complexType) {
 	init();
 	return subtypesRelations.get(complexType);
+    }
+    
+    public List<TypeRelationConfig> getSubtypesForType(long complexTypeId){
+	return subtypesForType.get(complexTypeId);
     }
     
     public void initNonLeafSubtypes(){

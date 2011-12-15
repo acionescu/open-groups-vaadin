@@ -90,12 +90,13 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 	actionsContainer.addComponent(getMetaEntityLink(app));
 
 	/* get the current user types */
-	List<String> userTypes = UsersManager.getInstance().getCurrentUserTypes(null, app);
+//	List<String> userTypes = UsersManager.getInstance().getCurrentUserTypes(null, app);
 	for (final UserAction ua : userActions) {
 	    /*
 	     * if the current user is not allowed to read/view the current action then skip it
 	     */
-	    if (!ua.allowRead(userTypes)) {
+//	    if (!ua.allowRead(userTypes)) {
+	    if(!ua.isVisible(ac)) {
 		continue;
 	    }
 	    Button actButton = new Button(ua.getDisplayName());

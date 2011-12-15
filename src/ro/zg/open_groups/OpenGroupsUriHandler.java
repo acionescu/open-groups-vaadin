@@ -65,6 +65,9 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
 
 		/* if any uri is present, then this will have precedence */
 		String uri = app.getCurrentUri();
+		if(uri == null) {
+		    uri="";
+		}
 		if (uri.length() > 0) {
 		    parent.handleFragment(uri);
 		} else /* if(!app.isRootSelected()) */{

@@ -93,14 +93,14 @@ public abstract class OpenGroupsActionHandler implements ActionHandler<OpenGroup
 	return ActionsManager.getInstance().execute(action, params);
     }
     
-    public List<String> getCurrentUserTypes(Entity entity, OpenGroupsApplication app){
-	return UsersManager.getInstance().getCurrentUserTypes(entity,app);
-    }
-    
-    public boolean checkUserAllowedToExecuteAction(Entity entity, OpenGroupsApplication app, UserAction ua) {
-	List<String> currentUserTypes = getCurrentUserTypes(entity, app);
-	return currentUserTypes.contains(ua.getUserType());
-    }
+//    public List<String> getCurrentUserTypes(Entity entity, OpenGroupsApplication app){
+//	return UsersManager.getInstance().getCurrentUserTypes(entity,app);
+//    }
+//    
+//    public boolean checkUserAllowedToExecuteAction(Entity entity, OpenGroupsApplication app, UserAction ua) {
+//	List<String> currentUserTypes = getCurrentUserTypes(entity, app);
+//	return currentUserTypes.contains(ua.getUserType());
+//    }
     
     /**
      * @return the userAction

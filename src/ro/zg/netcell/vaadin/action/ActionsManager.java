@@ -17,7 +17,6 @@ package ro.zg.netcell.vaadin.action;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -36,7 +35,6 @@ import ro.zg.netcell.vaadin.action.application.RefreshSelectedEntityHandler;
 import ro.zg.netcell.vaadin.action.application.ShowCausalHierarchyHandler;
 import ro.zg.netcell.vo.definitions.EntityDefinitionSummary;
 import ro.zg.open_groups.OpenGroupsApplication;
-import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.opengroups.vo.UserActionList;
@@ -161,12 +159,13 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 
     public CommandResponse executeAction(ActionContext actionContext, Map<String, Object> params) {
 	UserAction ua = actionContext.getUserAction();
-	Entity entity = actionContext.getEntity();
+//	Entity entity = actionContext.getEntity();
 	OpenGroupsApplication app = actionContext.getApp();
 
 	/* check if the action is allowed */
-	List<String> currentUserTypes = UsersManager.getInstance().getCurrentUserTypes(entity, app);
-	boolean actionAllowed = currentUserTypes.contains(ua.getUserType());
+//	List<String> currentUserTypes = UsersManager.getInstance().getCurrentUserTypes(entity, app);
+//	boolean actionAllowed = currentUserTypes.contains(ua.getUserType());
+	boolean actionAllowed = ua.allowExecute(actionContext);
 	if (actionAllowed) {
 	    return execute(ua.getAction(), params);
 	}
