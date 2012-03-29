@@ -29,9 +29,8 @@ import ro.zg.opengroups.vo.UserAction;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 
 public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
@@ -43,29 +42,34 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 
     @Override
     public void handle(final ActionContext actionContext) throws Exception {
-	HorizontalLayout parentContainer = (HorizontalLayout) actionContext.getTargetContainer();
-	HorizontalLayout localContainer = new HorizontalLayout();
-	localContainer.setSpacing(true);
-	parentContainer.addComponent(localContainer);
+//	CssLayout parentContainer = (CssLayout) actionContext.getTargetContainer();
+	CssLayout localContainer = (CssLayout) actionContext.getTargetContainer();
+//	localContainer.setSpacing(true);
+//	parentContainer.addComponent(localContainer);
 
 	Entity entity = actionContext.getEntity();
 	if (entity.getContent() != null) {
-	    parentContainer.setComponentAlignment(localContainer, Alignment.MIDDLE_RIGHT);
+//	    parentContainer.setComponentAlignment(localContainer, Alignment.MIDDLE_RIGHT);
 	    displayCombo(actionContext, localContainer, actionContext);
 	} else {
 	    displayLabel(actionContext, localContainer);
 	}
 	/* display general priority */
-	localContainer.addComponent(new Label("/"));
+	Label slash = new Label("/");
+	slash.setSizeUndefined();
+	slash.addStyleName("middle-left right-margin-5");
+	localContainer.addComponent(slash);
 	String valueString = "-";
 	if (entity.getGeneralPriority() != null) {
 	    valueString = "#" + entity.getGeneralPriority();
 	}
 	Label generalPriority = new Label(valueString);
+	generalPriority.setSizeUndefined();
+	generalPriority.addStyleName("middle-left");
 	localContainer.addComponent(generalPriority);
     }
 
-    private void displayLabel(ActionContext actionContext, HorizontalLayout container) {
+    private void displayLabel(ActionContext actionContext, CssLayout container) {
 	Entity entity = actionContext.getEntity();
 	EntityUserData userData = entity.getUserData();
 
@@ -76,13 +80,16 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 
 	String priorityCaption = getMessage("priority");
 	Label priorityLabel = new Label(priorityCaption + ":");
-	// priorityLabel.addStyleName("stats-summary");
-	// HorizontalLayout parentContainer = (HorizontalLayout)actionContext.getTargetContainer();
+	priorityLabel.setSizeUndefined();
+	priorityLabel.addStyleName("middle-left right-margin-5");
 	container.addComponent(priorityLabel);
-	container.addComponent(new Label(valueString));
+	Label valueLabel = new Label(valueString);
+	valueLabel.setSizeUndefined();
+	valueLabel.addStyleName("middle-left right-margin-5");
+	container.addComponent(valueLabel);
     }
 
-    private void displayCombo(final ActionContext actionContext, HorizontalLayout targetContainer,
+    private void displayCombo(final ActionContext actionContext, CssLayout targetContainer,
 	    final ActionContext ac) {
 	long maxPriority = (Long) getAppConfigManager().getApplicationConfigParam(ApplicationConfigParam.MAX_PRIORITY);
 	final ComboBox select = new ComboBox();
@@ -141,16 +148,19 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 	    }
 	});
 
-	// GridLayout layout = new GridLayout(1, 1);
-	// layout.setSizeFull();
-	HorizontalLayout container = new HorizontalLayout();
-	container.setSpacing(true);
-	container.addComponent(new Label(getMessage("priority") + ":"));
-	container.addComponent(select);
+	
+//	HorizontalLayout container = new HorizontalLayout();
+//	container.setSpacing(true);
+	Label priorityLabel = new Label(getMessage("priority") + ":");
+	priorityLabel.setSizeUndefined();
+	priorityLabel.addStyleName("middle-left right-margin-5");
+	select.addStyleName("middle-left right-margin-5");
+	targetContainer.addComponent(priorityLabel);
+	targetContainer.addComponent(select);
 	// container.setComponentAlignment(select, Alignment.TOP_LEFT);
 
-	targetContainer.addComponent(container);
-	targetContainer.setComponentAlignment(container, Alignment.MIDDLE_RIGHT);
+//	targetContainer.addComponent(container);
+//	targetContainer.setComponentAlignment(container, Alignment.MIDDLE_RIGHT);
 
 	// targetContainer.addStyleName("stats-summary");
 	// targetContainer.addComponent(layout);

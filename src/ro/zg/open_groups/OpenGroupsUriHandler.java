@@ -15,7 +15,6 @@
  ******************************************************************************/
 package ro.zg.open_groups;
 
-import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
@@ -31,7 +30,6 @@ import ro.zg.util.logging.Logger;
 import ro.zg.util.logging.MasterLogManager;
 
 import com.vaadin.terminal.DownloadStream;
-import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.URIHandler;
 import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
@@ -220,7 +218,7 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
     }
 }
 
-interface FragmentHandler {
+interface FragmentHandler extends Serializable{
     /**
      * first param is always the name of the command
      * 

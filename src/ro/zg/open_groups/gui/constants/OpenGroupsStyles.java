@@ -11,6 +11,8 @@ public class OpenGroupsStyles {
 	public static final String HIERARCHY_PANE="hierarchy-pane";
 	public static final String HORIZONTAL="horizontal";
 	public static final String TOP_RIGHT="top-right";
+	public static final String MIDDLE_LEFT="middle-left";
+	public static final String MIDDLE_RIGHT="middle-right";
 	public static final String HIERARCHY_FILTERS_BAR="hierarchy-filters-bar";
 	public static final String HIERARCHY_TREE="hierarchy-tree";
 	public static final String USER_ACTION_CONTENT_PANE="user-actions-content-pane";

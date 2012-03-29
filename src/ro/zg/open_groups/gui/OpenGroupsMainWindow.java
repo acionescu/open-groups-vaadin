@@ -17,23 +17,21 @@ package ro.zg.open_groups.gui;
 
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.components.CausalHierarchyContainer;
-import ro.zg.open_groups.gui.components.logic.CausalHierarchyItemSelectedListener;
-import ro.zg.open_groups.gui.components.logic.CausalHierarchyStartDepthChangedListener;
-import ro.zg.open_groups.gui.components.logic.CausalHierarchyTreeExpandListener;
 import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.util.logging.Logger;
 import ro.zg.util.logging.MasterLogManager;
 
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.TabSheet.Tab;
 
 public class OpenGroupsMainWindow extends Window {
     /**
@@ -43,8 +41,7 @@ public class OpenGroupsMainWindow extends Window {
     private static final Logger logger = MasterLogManager.getLogger("WINDOW");
     
     private OpenGroupsApplication app;
-    
-    private GridLayout headerPanel;
+    private CssLayout header;
     private CssLayout userActionsContainer;
     private Tab userActionsTab;
     private VerticalLayout mainContent;
@@ -56,10 +53,20 @@ public class OpenGroupsMainWindow extends Window {
 	super.setCaption(name);
 	this.app=app;
 	
+	VerticalLayout winPain = (VerticalLayout)this.getContent();
+	winPain.setSizeFull();
+	winPain.setMargin(false);
+	
 	/* add the uri utility */
 	uriUtility = new UriFragmentUtility();
-	mainContent = (VerticalLayout) this.getContent();
+	mainContent = new VerticalLayout();
 	mainContent.addComponent(uriUtility);
+	
+	mainContent.setWidth("1100px");
+	mainContent.setHeight("100%");
+	
+	winPain.addComponent(mainContent);
+	winPain.setComponentAlignment(mainContent, Alignment.TOP_CENTER);
 	
 	uriUtility.addListener(app.getUriHandler());
 	addURIHandler(app.getUriHandler());
@@ -70,16 +77,13 @@ public class OpenGroupsMainWindow extends Window {
 	mainContent.setMargin(false);
 //	this.setContent(mainContent);
 //	mainContent.setWidth("100%");
-	mainContent.setSizeFull();
+//	mainContent.setSizeFull();
 //	mainContent.addStyleName(OpenGroupsStyles.MAIN_PANE);
 	
-	headerPanel = new GridLayout(2, 1);
-	headerPanel.setWidth("100%");
-//	headerPanel.setHeight("10%");
-//	headerPanel.setSizeFull();
-	headerPanel.addStyleName(OpenGroupsStyles.HEADER_BAR);
-	mainContent.addComponent(headerPanel);
-
+	header = new CssLayout();
+	header.setWidth("100%");
+	mainContent.addComponent(header);
+	
 	userActionsContainer = new CssLayout();
 
 	entityContent = new CssLayout();
@@ -157,20 +161,6 @@ public class OpenGroupsMainWindow extends Window {
 	return null;
     }
 
-    /**
-     * @return the headerPanel
-     */
-    public GridLayout getHeaderPanel() {
-	return headerPanel;
-    }
-
-    /**
-     * @param headerPanel
-     *            the headerPanel to set
-     */
-    public void setHeaderPanel(GridLayout headerPanel) {
-	this.headerPanel = headerPanel;
-    }
 
     public ComponentContainer getEntityContent() {
 	return entityContent;
@@ -195,6 +185,13 @@ public class OpenGroupsMainWindow extends Window {
      */
     public CausalHierarchyContainer getHierarchyContainer() {
         return hierarchyContainer;
+    }
+
+    /**
+     * @return the header
+     */
+    public CssLayout getHeader() {
+        return header;
     }
     
 }

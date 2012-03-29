@@ -33,9 +33,8 @@ import ro.zg.util.data.GenericNameValueList;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 
 public class SetEntityStatusHandler extends OpenGroupsActionHandler {
@@ -47,31 +46,36 @@ public class SetEntityStatusHandler extends OpenGroupsActionHandler {
 
     @Override
     public void handle(final ActionContext actionContext) throws Exception {
-	HorizontalLayout parentContainer = (HorizontalLayout) actionContext.getTargetContainer();
-	HorizontalLayout localContainer = new HorizontalLayout();
-	localContainer.setSpacing(true);
-	parentContainer.addComponent(localContainer);
+	// HorizontalLayout parentContainer = (HorizontalLayout) actionContext.getTargetContainer();
+	CssLayout localContainer = (CssLayout) actionContext.getTargetContainer();
+	// localContainer.setSpacing(true);
+	// parentContainer.addComponent(localContainer);
 
 	Entity entity = actionContext.getEntity();
 	if (entity.getContent() != null) {
-	    parentContainer.setComponentAlignment(localContainer, Alignment.MIDDLE_RIGHT);
+	    // parentContainer.setComponentAlignment(localContainer, Alignment.MIDDLE_RIGHT);
 	    displayCombo(actionContext, localContainer, actionContext);
 	} else {
 	    displayLabel(actionContext, localContainer);
 	}
 
 	/* display most used status */
-	localContainer.addComponent(new Label("/"));
+
+	Label slash = new Label("/");
+	slash.setSizeUndefined();
+	slash.addStyleName("middle-left right-margin-5");
+	localContainer.addComponent(slash);
 	String valueString = "-";
 	if (entity.getGeneralStatus() != null) {
 	    valueString = entity.getGeneralStatus();
 	}
 	Label generalStatus = new Label(valueString);
-	generalStatus.setSizeFull();
+	generalStatus.setSizeUndefined();
+	generalStatus.addStyleName("middle-left");
 	localContainer.addComponent(generalStatus);
     }
 
-    private void displayLabel(ActionContext actionContext, HorizontalLayout container) {
+    private void displayLabel(ActionContext actionContext, CssLayout container) {
 	Entity entity = actionContext.getEntity();
 	EntityUserData userData = entity.getUserData();
 
@@ -81,13 +85,13 @@ public class SetEntityStatusHandler extends OpenGroupsActionHandler {
 	}
 	String statusCaption = getMessage("status");
 	Label statusLabel = new Label(statusCaption + valueString);
-	statusLabel.addStyleName("stats-summary");
+	statusLabel.setSizeUndefined();
+	statusLabel.addStyleName("middle-left right-margin-5");
 	// actionContext.getTargetContainer().addComponent(statusLabel);
 	container.addComponent(statusLabel);
     }
 
-    private void displayCombo(final ActionContext actionContext, HorizontalLayout targetContainer,
-	    final ActionContext ac) {
+    private void displayCombo(final ActionContext actionContext, CssLayout targetContainer, final ActionContext ac) {
 	CommandResponse response = executeAction(ActionsManager.GET_STATUSES, new HashMap<String, Object>());
 	GenericNameValueList list = (GenericNameValueList) response.getValue("result");
 
@@ -101,7 +105,7 @@ public class SetEntityStatusHandler extends OpenGroupsActionHandler {
 	    select.addItem(row.getValue("status"));
 	}
 	final Collection<?> items = new ArrayList<Object>(select.getItemIds());
-	
+
 	final Entity entity = actionContext.getEntity();
 	final EntityUserData userData = entity.getUserData();
 	final UserAction ua = actionContext.getUserAction();
@@ -123,22 +127,21 @@ public class SetEntityStatusHandler extends OpenGroupsActionHandler {
 			value = null;
 		    }
 		    if (value.length() > 0) {
-			
+
 			value = value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
 		    }
 		}
-		
-		String currentStatus=userData.getStatus();
-		
-		if(value==null) {
-		    if(currentStatus==null) {
+
+		String currentStatus = userData.getStatus();
+
+		if (value == null) {
+		    if (currentStatus == null) {
 			return;
 		    }
-		}
-		else if(value.equals(currentStatus)) {
+		} else if (value.equals(currentStatus)) {
 		    return;
 		}
-		
+
 		Map<String, Object> params = ua.getActionParams();
 		params.put("entityId", entity.getId());
 		params.put("userId", app.getCurrentUserId());
@@ -147,10 +150,9 @@ public class SetEntityStatusHandler extends OpenGroupsActionHandler {
 		CommandResponse resp = executeAction(actionContext, params);
 		if (resp != null) {
 		    app.refreshEntity(entity, ac);
-		}
-		else {
+		} else {
 		    /* remove the selected value if not laready contained in the available statuses */
-		    if(!items.contains(value)) {
+		    if (!items.contains(value)) {
 			select.removeItem(value.toLowerCase());
 		    }
 		    select.setValue(userData.getStatus());
@@ -160,12 +162,17 @@ public class SetEntityStatusHandler extends OpenGroupsActionHandler {
 
 	// GridLayout layout = new GridLayout(1, 1);
 	// layout.setSizeFull();
-	HorizontalLayout container = new HorizontalLayout();
-	container.setSpacing(true);
-	container.addComponent(new Label(getMessage("status") + ":"));
-	container.addComponent(select);
+	// HorizontalLayout container = new HorizontalLayout();
+	// container.setSpacing(true);
 
-	targetContainer.addComponent(container);
+	Label statusLabel = new Label(getMessage("status") + ":");
+	statusLabel.setSizeUndefined();
+	statusLabel.addStyleName("middle-left right-margin-5");
+	select.addStyleName("middle-left right-margin-5");
+	targetContainer.addComponent(statusLabel);
+	targetContainer.addComponent(select);
+
+	// targetContainer.addComponent(container);
 	// targetContainer.setComponentAlignment(container, Alignment.MIDDLE_RIGHT);
 
 	// ComponentContainer parentContainer = actionContext.getTargetContainer();

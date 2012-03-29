@@ -36,6 +36,7 @@ import ro.zg.opengroups.vo.UserActionList;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -70,24 +71,20 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 	Collection<UserAction> userActions = actionList.getActions().values();
 	OpenGroupsMainWindow window = ac.getWindow();
 	User user = app.getCurrentUser();
-	GridLayout userArea = window.getHeaderPanel();
-	userArea.removeAllComponents();
+	
+	
+	CssLayout header = window.getHeader();
+	header.removeAllComponents();
+	
 
 	if (user != null) {
 	    Label userInfo = new Label(app.getMessage("login.user.info") + ": " + user.getUsername());
-	    // userInfo.setSizeFull();
-	    userArea.addComponent(userInfo, 0, 0);
-	    userArea.setColumnExpandRatio(0, 1f);
-	    userArea.setComponentAlignment(userInfo, Alignment.MIDDLE_LEFT);
+	    userInfo.setSizeUndefined();
+	    header.addComponent(userInfo);
+	    userInfo.addStyleName("top-left");
+	    
 	}
-	HorizontalLayout actionsContainer = new HorizontalLayout();
-//	actionsContainer.setSizeUndefined();
-	actionsContainer.setSpacing(true);
-	actionsContainer.addStyleName(OpenGroupsStyles.HEADER_ACTIONS);
 
-	/* add quick links */
-	actionsContainer.addComponent(getRootEntityLink(app));
-	actionsContainer.addComponent(getMetaEntityLink(app));
 
 	/* get the current user types */
 //	List<String> userTypes = UsersManager.getInstance().getCurrentUserTypes(null, app);
@@ -110,12 +107,21 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 		}
 	    });
 
-	    actionsContainer.addComponent(actButton);
+	    header.addComponent(actButton);
+	    actButton.addStyleName("top-right");
+	    
 	}
-	userArea.addComponent(actionsContainer, 1, 0);
-	userArea.setColumnExpandRatio(1, 1f);
-	userArea.setComponentAlignment(actionsContainer, Alignment.MIDDLE_RIGHT);
+	
+	Component rootLink = getRootEntityLink(app);
+	Component metaLink =  getMetaEntityLink(app);
+	rootLink.setSizeUndefined();
+	metaLink.setSizeUndefined();
 
+	/* add quick links */
+	header.addComponent(rootLink);
+	header.addComponent(metaLink);
+	rootLink.addStyleName("top-right");
+	metaLink.addStyleName("top-right");
     }
 
     private Component getRootEntityLink(OpenGroupsApplication app) {

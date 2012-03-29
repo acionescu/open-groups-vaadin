@@ -5,15 +5,18 @@
 }
 
 .issue-title {
-	font-size: 16px;
+	font-size: 20px;
+	color: #0a497f;
 }
 
+.list-issue-title {
+	font-size: 16px;
+}
 
 .v-tabsheet-tabs-minimal .v-tabsheet-tabitemcell-selected-first .v-tabsheet-tabitem-selected
 	{
 	border-left: none;
 }
-
 
 /*
 .v-tabsheet-tabs-minimal .v-tabsheet-tabitem-selected {
@@ -58,6 +61,49 @@ a:link,a:visited {
 	position: relative;
 	top: 0px;
 	float: right;
+	margin-left: 5px;
+}
+
+.top-left {
+	position: relative;
+	top: 0px;
+	float: left;
+}
+
+.middle-left {
+	position: relative;
+	float: left;
+	vertical-align: middle;
+}
+
+.middle {
+	vertical-align: middle;
+}
+
+.middle-right {
+	position: relative;
+	float: right;
+	vertical-align: middle;
+}
+
+.right-margin-5 {
+	margin-right: 5px;
+}
+
+.right-margin-10 {
+	margin-right: 10px;
+}
+
+.left-margin-10 {
+	margin-left: 10px;
+}
+
+.left-margin-20 {
+	margin-left: 20px;
+}
+
+.right-margin-20 {
+	margin-right: 20px;
 }
 
 .v-panel-content-text-content>div {
@@ -131,7 +177,6 @@ a:link,a:visited {
 	border-width: 1px;
 	border-color: #cccccc;
 	*/
-	
 	margin: 1px;
 	/*background-color: #dddddd;*/
 }

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package ro.zg.netcell.vaadin.action;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,11 @@ import ro.zg.opengroups.vo.UserAction;
 
 import com.vaadin.ui.ComponentContainer;
 
-public class ActionContext {
+public class ActionContext implements Serializable{
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -404614270962547099L;
     private UserAction userAction;
     private OpenGroupsApplication app;
     private Entity entity;
