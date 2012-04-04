@@ -1,5 +1,7 @@
 package ro.zg.opengroups.vo;
 
+import ro.zg.util.data.GenericNameValueContext;
+
 public class EntityLink {
     private long linkId;
     private long entityId;
@@ -13,7 +15,19 @@ public class EntityLink {
 	this.parentTitle=parentTitle;
     }
     
-    
+    public EntityLink(GenericNameValueContext context) {
+	Object linkIdObj = context.getValue("entity_link_id") ;
+	if(linkIdObj != null) {
+	    linkId = Long.parseLong(linkIdObj.toString());
+	}
+	
+	Object parentIdObj = context.getValue("parent_id");
+	if(parentIdObj != null) {
+	    parentId = Long.parseLong(parentIdObj.toString());
+	}
+	
+	parentTitle = (String)context.getValue("title");
+    }
     
     
     /**
@@ -63,6 +77,55 @@ public class EntityLink {
      */
     public void setParentTitle(String parentTitle) {
         this.parentTitle = parentTitle;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + (int) (entityId ^ (entityId >>> 32));
+	result = prime * result + (int) (linkId ^ (linkId >>> 32));
+	result = prime * result + (int) (parentId ^ (parentId >>> 32));
+	result = prime * result + ((parentTitle == null) ? 0 : parentTitle.hashCode());
+	return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+	if (this == obj)
+	    return true;
+	if (obj == null)
+	    return false;
+	if (getClass() != obj.getClass())
+	    return false;
+	EntityLink other = (EntityLink) obj;
+	if (entityId != other.entityId)
+	    return false;
+	if (linkId != other.linkId)
+	    return false;
+	if (parentId != other.parentId)
+	    return false;
+	if (parentTitle == null) {
+	    if (other.parentTitle != null)
+		return false;
+	} else if (!parentTitle.equals(other.parentTitle))
+	    return false;
+	return true;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+	return "EntityLink [linkId=" + linkId + ", entityId=" + entityId + ", parentId=" + parentId + ", parentTitle="
+		+ parentTitle + "]";
     }
     
     

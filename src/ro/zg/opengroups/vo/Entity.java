@@ -63,6 +63,7 @@ public class Entity implements Serializable {
     private int depth;
     /* the minimal depth in the entities_links graph */
     private int absoluteDepth;
+    private List<EntityLink> causes = new ArrayList<EntityLink>();
 
     private ComponentContainer entityContainer;
     private Map<String, Object> filterValues = new HashMap<String, Object>();
@@ -554,6 +555,20 @@ public class Entity implements Serializable {
      */
     public void setAbsoluteDepth(int absoluteDepth) {
         this.absoluteDepth = absoluteDepth;
+    }
+
+    /**
+     * @return the causes
+     */
+    public List<EntityLink> getCauses() {
+        return causes;
+    }
+
+    /**
+     * @param causes the causes to set
+     */
+    public void setCauses(List<EntityLink> causes) {
+        this.causes = causes;
     }
 
 }

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package ro.zg.open_groups.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +36,14 @@ import ro.zg.opengroups.vo.Tag;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
+import ro.zg.util.logging.MasterLogManager;
 
 public class OpenGroupsModel {
 
     private static final String GET_ENTITY_INFO_FLOW = "ro.problems.flows.get-entity-info-by-id";
     private static final String GET_HIERARCHY_MAX_DEPTH = "ro.problems.flows.get-hierarchy-max-depth";
     private static final String GET_CAUSAL_HIERARCHY="ro.problems.flows.get-entities-list";
-    private static final String GET_CAUSES="ro.problems.flows.get-causes";
+    private static final String GET_CAUSES="ro.problems.flows.get-all-causes-for-entity";
     
     private static OpenGroupsModel instance;
 
@@ -82,6 +84,7 @@ public class OpenGroupsModel {
 	params.put("userId", userId);
 	params.put("parentLinkId", entity.getSelectedParentLinkId());
 	CommandResponse response = getActionsManager().execute(GET_ENTITY_INFO_FLOW, params);
+	System.out.println(response);
 	GenericNameValueList result = (GenericNameValueList) response.getValue("result");
 	GenericNameValueContext row = (GenericNameValueContext) result.getValueForIndex(0);
 	// selectedEntity.setComplexType(row.getValue("complex_type").toString());
@@ -170,8 +173,26 @@ public class OpenGroupsModel {
 	return new EntityList(list, false);
     }
     
-    public List<EntityLink> getCauses(long entityId) {
+    public void populateCauses(Entity entity) {
+	Map<String, Object> params = new HashMap<String, Object>();
+	params.put("entityId",entity.getId());
 	
-	return null;
+	CommandResponse response = getActionsManager().execute(GET_CAUSES, params);
+	
+	if(!response.isSuccessful()) {
+	    MasterLogManager.getLogger("OPEN-GROUPS").error("Failed to get causes for entity "+entity.getId()+". Error code: "+response.getResponseCode());
+	    return;
+	}
+	
+	GenericNameValueList list = (GenericNameValueList) response.getValue("result");
+	
+	if(list != null) {
+	    List<EntityLink> causes = new ArrayList<EntityLink>();
+	    for(int i=0;i< list.size();i++) {
+		GenericNameValueContext context = (GenericNameValueContext)list.getValueForIndex(i);
+		causes.add(new EntityLink(context));
+	    }
+	    entity.setCauses(causes);
+	}
     }
 }
