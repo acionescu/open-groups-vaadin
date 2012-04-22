@@ -27,15 +27,16 @@ import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.VoteType;
 import ro.zg.opengroups.vo.Entity;
+import ro.zg.opengroups.vo.EntityLink;
 import ro.zg.opengroups.vo.EntityUserData;
 import ro.zg.opengroups.vo.UserAction;
 
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 public class VoteEntityHandler extends OpenGroupsActionHandler {
 
@@ -105,7 +106,7 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 //		showVotesFragment(container, selectedEntity, app, ua, ac);
 		Map<String, Object> params = ua.getActionParams();
 //		params.put("entityId", selectedEntity.getId());
-		params.put("entityLinkId", selectedEntity.getSelectedParentLinkId());
+		params.put("entityLinkId", selectedEntity.getSelectedCause().getLinkId());
 		params.put("userId", app.getCurrentUserId());
 		params.put("isRecordCreated", selectedEntity.getUserData().isEntityLinkUserRecordCreated());
 		params.put("vote", opposedVote.getValue());
@@ -124,9 +125,12 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 
 	    @Override
 	    public void buttonClick(ClickEvent event) {
+		EntityLink selectedCause = selectedEntity.getSelectedCause();
+		
+		
 		Map<String, Object> params = ua.getActionParams();
-//		params.put("entityId", selectedEntity.getId());
-		params.put("entityLinkId", selectedEntity.getSelectedParentLinkId());
+		
+		params.put("entityLinkId", selectedCause.getLinkId());
 		params.put("userId", app.getCurrentUserId());
 		params.put("isRecordCreated", true);
 
@@ -167,7 +171,7 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 
 		Map<String, Object> params = ua.getActionParams();
 //		params.put("entityId", selectedEntity.getId());
-		params.put("entityLinkId", selectedEntity.getSelectedParentLinkId());
+		params.put("entityLinkId", selectedEntity.getSelectedCause().getLinkId());
 		params.put("userId", app.getCurrentUserId());
 		params.put("isRecordCreated", selectedEntity.getUserData().isEntityLinkUserRecordCreated());
 		params.put("vote", voteType.getValue());

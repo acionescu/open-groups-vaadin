@@ -23,10 +23,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.ui.ComponentContainer;
-
 import ro.zg.util.data.GenericNameValue;
 import ro.zg.util.data.GenericNameValueContext;
+
+import com.vaadin.ui.ComponentContainer;
 
 public class Entity implements Serializable {
 
@@ -55,9 +55,10 @@ public class Entity implements Serializable {
     private String generalStatus;
     private List<Tag> tags = new ArrayList<Tag>();
     /* these are populated when the entity is displayed in the recent activity list */
-    private Long selectedParentId = -1L;
-    private Long selectedParentLinkId;
-    private String parentEntityTitle;
+    // private Long selectedParentId = -1L;
+    // private Long selectedParentLinkId;
+    // private String parentEntityTitle;
+    private EntityLink selectedCause;
     private long lastActionId = -1;
     private String lastActionType;
     private int depth;
@@ -120,22 +121,23 @@ public class Entity implements Serializable {
 	initSubtypeEntitiesInfo(dataMap);
 
 	/* if displayed in the recent activity list */
-	this.parentEntityTitle = (String) dataMap.getValue("parent_title");
-	if (this.parentEntityTitle != null) {
-	    this.selectedParentId = (Long) dataMap.getValue("selected_parent_id");
+	String parentEntityTitle = (String) dataMap.getValue("parent_title");
+	if (parentEntityTitle != null) {
+	    this.selectedCause = new EntityLink((Long) dataMap.getValue("selected_parent_link_id"), this.id,
+		    (Long) dataMap.getValue("selected_parent_id"), parentEntityTitle);
 
 	    if (dataMap.getValue("action_type_id") != null) {
 		this.lastActionId = (Long) dataMap.getValue("action_type_id");
 		this.lastActionType = (String) dataMap.getValue("action_type");
 	    }
 	} else {
-	    this.selectedParentId = -1L;
+	    this.selectedCause = null;
 	    this.lastActionId = -1;
 	    this.lastActionType = null;
 	}
-	if (dataMap.getValue("selected_parent_link_id") != null) {
-	    this.selectedParentLinkId = (Long) dataMap.getValue("selected_parent_link_id");
-	}
+	// if (dataMap.getValue("selected_parent_link_id") != null) {
+	//
+	// }
 
 	if (dataMap.getValue("depth") != null) {
 	    depth = (Integer) dataMap.getValue("depth");
@@ -395,20 +397,6 @@ public class Entity implements Serializable {
     }
 
     /**
-     * @return the selectedParentId
-     */
-    public Long getParentEntityId() {
-	return selectedParentId;
-    }
-
-    /**
-     * @return the parentEntityTitle
-     */
-    public String getParentEntityTitle() {
-	return parentEntityTitle;
-    }
-
-    /**
      * @return the lastActionId
      */
     public long getLastActionId() {
@@ -420,22 +408,6 @@ public class Entity implements Serializable {
      */
     public String getLastActionType() {
 	return lastActionType;
-    }
-
-    /**
-     * @param selectedParentId
-     *            the selectedParentId to set
-     */
-    public void setParentEntityId(long parentEntityId) {
-	this.selectedParentId = parentEntityId;
-    }
-
-    /**
-     * @param parentEntityTitle
-     *            the parentEntityTitle to set
-     */
-    public void setParentEntityTitle(String parentEntityTitle) {
-	this.parentEntityTitle = parentEntityTitle;
     }
 
     /**
@@ -529,46 +501,47 @@ public class Entity implements Serializable {
     }
 
     /**
-     * @return the selectedParentLinkId
-     */
-    public Long getSelectedParentLinkId() {
-	return selectedParentLinkId;
-    }
-
-    /**
-     * @param selectedParentLinkId
-     *            the selectedParentLinkId to set
-     */
-    public void setSelectedParentLinkId(Long selectedParentLinkId) {
-	this.selectedParentLinkId = selectedParentLinkId;
-    }
-
-    /**
      * @return the absoluteDepth
      */
     public int getAbsoluteDepth() {
-        return absoluteDepth;
+	return absoluteDepth;
     }
 
     /**
-     * @param absoluteDepth the absoluteDepth to set
+     * @param absoluteDepth
+     *            the absoluteDepth to set
      */
     public void setAbsoluteDepth(int absoluteDepth) {
-        this.absoluteDepth = absoluteDepth;
+	this.absoluteDepth = absoluteDepth;
     }
 
     /**
      * @return the causes
      */
     public List<EntityLink> getCauses() {
-        return causes;
+	return causes;
     }
 
     /**
-     * @param causes the causes to set
+     * @param causes
+     *            the causes to set
      */
     public void setCauses(List<EntityLink> causes) {
-        this.causes = causes;
+	this.causes = causes;
+    }
+
+    /**
+     * @return the selectedCause
+     */
+    public EntityLink getSelectedCause() {
+        return selectedCause;
+    }
+
+    /**
+     * @param selectedCause the selectedCause to set
+     */
+    public void setSelectedCause(EntityLink selectedCause) {
+        this.selectedCause = selectedCause;
     }
 
 }

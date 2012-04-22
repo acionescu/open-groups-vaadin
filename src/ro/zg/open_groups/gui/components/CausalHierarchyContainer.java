@@ -145,7 +145,7 @@ public class CausalHierarchyContainer extends VerticalLayout {
 	    hierarchyTree.removeAllItems();
 	}
 	for (Entity e : hierarchyList.getItemsList()) {
-	    long parentId = e.getParentEntityId();
+	    long parentId = e.getSelectedCause().getParentId();
 	    long currentId = e.getId();
 	    /* add this node */
 	    Item currentItem = hierarchyTree.addItem(currentId);

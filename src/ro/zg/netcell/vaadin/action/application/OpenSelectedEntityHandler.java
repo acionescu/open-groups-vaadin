@@ -31,6 +31,7 @@ import ro.zg.opengroups.constants.Defaults;
 import ro.zg.opengroups.constants.TypeRelationConfigParam;
 import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
+import ro.zg.opengroups.vo.EntityLink;
 import ro.zg.opengroups.vo.EntityState;
 import ro.zg.opengroups.vo.Tag;
 import ro.zg.opengroups.vo.TypeRelationConfig;
@@ -65,6 +66,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	// container.setMargin(false);
 	final OpenGroupsApplication app = actionContext.getApp();
 	final Entity entity = actionContext.getEntity();
+	
 	EntityState entityState = entity.getState();
 	boolean isOpened = entityState.isOpened();
 	String complexEntityType = entity.getComplexType();
@@ -141,16 +143,11 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	}
 	
 
-	final Long parentEntityId = entity.getParentEntityId();
+	EntityLink selectedCause = entity.getSelectedCause();
 	/* display title */
-	/* if the entity is opened or it is a leaf entity, and it is not displayed in the recent activity list */
-	if (isOpened || (subtyesList == null && parentEntityId < 0)) {
-//	    CssLayout vl = new CssLayout();
-//	    vl.setWidth("100%");
-//	    vl.addStyleName("middle");
-//	    headerContainer.addComponent(vl);
-	    // titleContainer.setComponentAlignment(vl, Alignment.MIDDLE_LEFT);
-	    // titleContainer.setExpandRatio(vl, 10f);
+	/* if the entity is open or it is a leaf entity, and it is not displayed in the recent activity list */
+	if (isOpened || (subtyesList == null && selectedCause == null)) {
+	    System.out.println("opening entity with cause: "+entity.getSelectedCause());
 
 	    Label title = new Label(entity.getTitle());
 	    title.addStyleName(OpenGroupsStyles.TITLE_LINK);
@@ -184,8 +181,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    }
 	    /* is a leaf entity in the recent activity list */
 	    else {
-		String parentTitle = entity.getParentEntityTitle();
-		Entity parentEntity = new Entity(parentEntityId);
+		String parentTitle = selectedCause.getParentTitle();
+		Entity parentEntity = new Entity(selectedCause.getParentId());
 		parentEntity.setTitle(parentTitle);
 
 		parentEntity.getState().setDesiredActionsPath(
@@ -203,7 +200,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	}
 
 	/* add parent link */
-	if (parentEntityId > 0) {
+	if (selectedCause != null && !isOpened && entity.getContent()==null) {
 //	    CssLayout parentInfoContainer = new CssLayout();
 //	    parentInfoContainer.addStyleName(OpenGroupsStyles.TOP_RIGHT);
 //	    headerContainer.addComponent(parentInfoContainer);
@@ -211,7 +208,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    // headerContainer.setComponentAlignment(parentInfoContainer, Alignment.TOP_RIGHT);
 	    /* if parent entity is the current selected entity, say it */
 	    Entity mainEntity = actionContext.getMainEntity();
-	    if (parentEntityId == mainEntity.getId()) {
+	    if (selectedCause.getParentId() == mainEntity.getId()) {
 //		String currentMsg = getMessage(mainEntity.getComplexType() + ".current");
 //		Label currentEntityLabel = new Label(currentMsg);
 //		currentEntityLabel.setSizeUndefined();
@@ -219,8 +216,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 //		headerContainer.addComponent(currentEntityLabel);
 		// titleContainer.setExpandRatio(currentEntityLabel, 2f);
 	    } else {/* add link to the parent entity */
-		String parentTitle = entity.getParentEntityTitle();
-		final Entity parentEntity = new Entity(parentEntityId);
+		String parentTitle = selectedCause.getParentTitle();
+		final Entity parentEntity = new Entity(selectedCause.getParentId());
 		parentEntity.setTitle(parentTitle);
 		// Button parentLink = new Button(getMessage("parent"));
 		// parentLink.setDescription(parentTitle);

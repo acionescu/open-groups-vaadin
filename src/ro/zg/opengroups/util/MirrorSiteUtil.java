@@ -32,6 +32,7 @@ import ro.zg.open_groups.model.OpenGroupsModel;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.vo.Entity;
+import ro.zg.opengroups.vo.EntityLink;
 import ro.zg.opengroups.vo.EntityList;
 import ro.zg.opengroups.vo.EntityState;
 import ro.zg.opengroups.vo.Tag;
@@ -192,7 +193,8 @@ public class MirrorSiteUtil {
 
 	private void generateEntitySummaryFragment(PrintWriter out, Entity entity) {
 		EntityState state = entity.getState();
-		Long parentEntityId = entity.getParentEntityId();
+		EntityLink selectedCause =entity.getSelectedCause();
+		
 		String complexEntityType = entity.getComplexType();
 		List<String> subtyesList = getAppConfigManager()
 				.getSubtypesForComplexType(complexEntityType);
@@ -208,13 +210,13 @@ public class MirrorSiteUtil {
 		 * if the entity is opened or it is a leaf entity, and it is not
 		 * displayed in the recent activity list
 		 */
-		if (state.isOpened() || (subtyesList == null && parentEntityId < 0)) {
+		if (state.isOpened() || (subtyesList == null && selectedCause== null)) {
 			out.append(OpenGroupsUtil.wrapAsH(entity.getTitle(), 2));
 		} else if (subtyesList != null) {
 			out.append(OpenGroupsUtil.wrapAsA(getUrlForEntity(entity), entity
 					.getTitle()));
 		} else { /* leaf entity */
-			Entity parentEntity = new Entity(entity.getParentEntityId());
+			Entity parentEntity = new Entity(selectedCause.getParentId());
 			parentEntity.getState().setEntityTypeVisible(true);
 			parentEntity.getState().setDesiredActionsPath(
 					entity.getComplexType() + "/LIST/entity.list.newest");

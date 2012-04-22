@@ -221,7 +221,7 @@ public class UserAction implements Serializable {
     private boolean arePreconditionsMet(ActionContext ac) {
 	if (ActionTypes.VOTE.equals(actionType)) {
 	    Entity e = ac.getEntity();
-	    return (e.getSelectedParentLinkId() != null || e.getAbsoluteDepth()==0);
+	    return (e.getSelectedCause() != null || e.getAbsoluteDepth()==0);
 	}
 	return true;
     }

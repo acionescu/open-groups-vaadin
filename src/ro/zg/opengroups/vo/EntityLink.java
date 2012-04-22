@@ -3,9 +3,9 @@ package ro.zg.opengroups.vo;
 import ro.zg.util.data.GenericNameValueContext;
 
 public class EntityLink {
-    private long linkId;
-    private long entityId;
-    private long parentId;
+    private long linkId=-1;
+    private long entityId=-1;
+    private long parentId=-1;
     private String parentTitle;
     
     public EntityLink(long linkId, long entityId, long parentId, String parentTitle) {

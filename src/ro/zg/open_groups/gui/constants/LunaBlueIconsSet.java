@@ -24,6 +24,9 @@ public class LunaBlueIconsSet extends OpenGroupsIconsSet{
 	
 	addIcon(UPSTREAM_HIERARCHY_OFF, "download.png");
 	addIcon(UPSTREAM_HIERARCHY_ON, "next.png");
+	
+	addIcon(SHOW_CAUSE_OFF, "next.png");
+	addIcon(SHOW_CAUSE_ON, "up.png");
     }
 
 }

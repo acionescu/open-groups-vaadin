@@ -145,12 +145,12 @@ a:link,a:visited {
 }
 
 .header-bar {
-	padding-left: 10px;
 	padding-top: 5px;
 	background-color: #ffffff;
-	border-bottom-style: solid;
-	border-color: #dddddd;
-	border-width: thin;
+/* 	border-bottom-style: solid; */
+/* 	border-color: #dddddd; */
+/* 	border-width: thin; */
+	margin-bottom: 5px;
 }
 
 .header-actions {

@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import ro.zg.netcell.vaadin.action.constants.ActionConstants;
+
 import com.vaadin.terminal.ThemeResource;
 
 public class OpenGroupsIconsSet {
@@ -31,6 +33,9 @@ public class OpenGroupsIconsSet {
     
     public static final String UPSTREAM_HIERARCHY_ON="entity.upstream.hierarchy.on";
     public static final String UPSTREAM_HIERARCHY_OFF="entity.upstream.hierarchy.off";
+    
+    public static final String SHOW_CAUSE_ON= ActionConstants.SHOW_CAUSE+".on";
+    public static final String SHOW_CAUSE_OFF=ActionConstants.SHOW_CAUSE+".off";
     
     public static final String SMALL="small";
     public static final String LARGE="large";

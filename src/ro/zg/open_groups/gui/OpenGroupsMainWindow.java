@@ -65,6 +65,7 @@ public class OpenGroupsMainWindow extends Window {
 	mainContent.setWidth("1100px");
 	mainContent.setHeight("100%");
 	
+	
 	winPain.addComponent(mainContent);
 	winPain.setComponentAlignment(mainContent, Alignment.TOP_CENTER);
 	

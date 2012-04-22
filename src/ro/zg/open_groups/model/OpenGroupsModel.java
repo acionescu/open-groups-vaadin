@@ -82,9 +82,11 @@ public class OpenGroupsModel {
 	Map<String, Object> params = new HashMap<String, Object>();
 	params.put("entityId", entity.getId());
 	params.put("userId", userId);
-	params.put("parentLinkId", entity.getSelectedParentLinkId());
+	EntityLink selectedCause = entity.getSelectedCause();
+	if(selectedCause != null) {
+	params.put("parentLinkId", selectedCause.getLinkId());
+	}
 	CommandResponse response = getActionsManager().execute(GET_ENTITY_INFO_FLOW, params);
-	System.out.println(response);
 	GenericNameValueList result = (GenericNameValueList) response.getValue("result");
 	GenericNameValueContext row = (GenericNameValueContext) result.getValueForIndex(0);
 	// selectedEntity.setComplexType(row.getValue("complex_type").toString());
@@ -95,6 +97,7 @@ public class OpenGroupsModel {
 	    throw new ContextAwareException(ExceptionTypes.NO_SUCH_ENTITY, ec);
 	}
 	entity.update(row);
+	entity.setSelectedCause(selectedCause);
 	GenericNameValueList tagsResult = (GenericNameValueList) response.getValue("tags");
 	entity.setTags(Tag.getTagsList(tagsResult));
 
