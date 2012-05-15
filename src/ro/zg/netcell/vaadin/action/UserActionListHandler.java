@@ -27,8 +27,11 @@ import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.opengroups.vo.UserActionList;
 
+import com.vaadin.ui.AbstractComponentContainer;
+import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
@@ -58,9 +61,8 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 
 	final TabSheet actionsTabSheet = new TabSheet();
 	actionsTabSheet.addStyleName(Reindeer.TABSHEET_MINIMAL);
-//	actionsTabSheet.addStyleName(OpenGroupsStyles.USER_ACTIONS_TABSHEET);
-	actionsTabSheet.setWidth("100%");
-	
+//	actionsTabSheet.addStyleName(OpenGroupsStyles.USER_ACTION_CONTENT_PANE);
+	actionsTabSheet.addStyleName(OpenGroupsStyles.USER_ACTIONS_TABSHEET);
 //	final CssLayout contentArea = new CssLayout();
 //	contentArea.setWidth("100%");
 //	contentArea.setStyleName(OpenGroupsStyles.USER_ACTION_CONTENT_PANE);
@@ -73,7 +75,7 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 	    public void selectedTabChange(SelectedTabChangeEvent event) {
 		TabSheet tabSheet = event.getTabSheet();
 
-		CssLayout selectedTabContent = (CssLayout) tabSheet.getSelectedTab();
+		AbstractComponentContainer selectedTabContent = (AbstractComponentContainer) tabSheet.getSelectedTab();
 		UserAction ua = (UserAction) selectedTabContent.getData();
 		if (entity != null) {
 		    Deque<String> desiredActionsQueue = entity.getState().getDesiredActionTabsQueue();
@@ -99,16 +101,16 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 //		    selectedTabContent.removeStyleName(OpenGroupsStyles.USER_ACTION_CONTENT_PANE);
 //		    contentArea.setWidth("100%");
 //		    contentArea.setMargin(false);
-		    selectedTabContent.setMargin(false);
+//		    selectedTabContent.setMargin(false);
 		    
 		    ua.executeHandler(entity, app, selectedTabContent, false, actionContext);
 		    
 		} else {
-		    selectedTabContent.addStyleName(OpenGroupsStyles.USER_ACTION_CONTENT_PANE);
+//		    selectedTabContent.addStyleName(OpenGroupsStyles.USER_ACTION_CONTENT_PANE);
 //		    contentArea.setWidth("99.5%");
 //		    contentArea.setMargin(true);
-		    selectedTabContent.setMargin(true);
-		    
+//		    selectedTabContent.setMargin(true);
+//		    selectedTabContent.setWidth("100%");
 		    if (entity != null) {
 			entity.getState().setCurrentTabAction(ua);
 			entity.getState().setCurrentTabActionContainer(selectedTabContent);
@@ -137,19 +139,19 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 	    }
 
 	    CssLayout tabContent = new CssLayout();
-	    
-	    tabContent.setWidth("100%");
 	    if (cua instanceof UserActionList) {
 //		tabContent.setMargin(false);
 //		contentArea.setMargin(false);
+//		tabContent.addStyleName(OpenGroupsStyles.USER_ACTION_CONTENT_PANE);
+//		tabContent.setWidth("100%");
 
 	    } else {
 //		tabContent.addStyleName(OpenGroupsStyles.USER_ACTION_CONTENT_PANE);
-//		tabContent.setMargin(true);
+		tabContent.setMargin(true);
 //		contentArea.addStyleName(OpenGroupsStyles.USER_ACTION_CONTENT_PANE);
 //		contentArea.setMargin(true);
 	    }
-
+	    tabContent.addStyleName(OpenGroupsStyles.USER_ACTION_CONTENT_PANE);
 	    actionPathContainers.put(cua.getActionName(), tabContent);
 	    tabContent.setData(cua);
 	    actionsTabSheet.addTab(tabContent, cua.getDisplayName(), null);

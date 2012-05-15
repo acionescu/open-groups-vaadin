@@ -16,15 +16,13 @@
 package ro.zg.netcell.vaadin.action.application;
 
 import java.util.Collection;
-import java.util.List;
 
+import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
-import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
-import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.util.OpenGroupsUtil;
@@ -33,15 +31,12 @@ import ro.zg.opengroups.vo.User;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.opengroups.vo.UserActionList;
 
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
 
 public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 
@@ -57,13 +52,13 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 	getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS, null, actionContext.getApp(), actionContext.getWindow().getEntityContent(),false, actionContext);
     }
 
-    private void buildGuiLogic(OpenGroupsApplication application,ActionContext ac) {
+    private void buildGuiLogic(OpenGroupsApplication application,ActionContext ac) throws ContextAwareException {
 	addUserHeaderActions(application,ac);
     }
 
   
 
-    private void addUserHeaderActions(final OpenGroupsApplication app, final ActionContext ac) {
+    private void addUserHeaderActions(final OpenGroupsApplication app, final ActionContext ac) throws ContextAwareException {
 	UserActionList actionList = getGlobalActions(ActionLocations.HEADER);
 	if (actionList == null) {
 	    return;
@@ -124,22 +119,20 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 	metaLink.addStyleName("top-right");
     }
 
-    private Component getRootEntityLink(OpenGroupsApplication app) {
+    private Component getRootEntityLink(OpenGroupsApplication app) throws ContextAwareException {
 	Entity selectedEntity = app.getRootEntity();
 	if (selectedEntity == null) {
-	    selectedEntity = new Entity((Long) getAppConfigManager().getApplicationConfigParam(
-		    ApplicationConfigParam.DEFAULT_ENTITY_ID));
-	    String caption = getMessage("metagroup.caption");
-	    selectedEntity.setTitle(caption);
+	    selectedEntity = getModel().getRootEntity();
 	    selectedEntity.getState().setOpened(true);
 	}
 	return OpenGroupsUtil.getLinkForEntity(selectedEntity, app);
     }
 
-    private Component getMetaEntityLink(OpenGroupsApplication app) {
+    private Component getMetaEntityLink(OpenGroupsApplication app) throws ContextAwareException {
 	Long entityId = (Long) getAppConfigManager().getApplicationConfigParam(ApplicationConfigParam.APP_ENTITY_ID);
 	if (entityId != null) {
 	    Entity entity = new Entity(entityId);
+//	    getModel().refreshEntity(entity, null);
 	    String caption = getMessage("app.metagroup.caption");
 	    entity.setTitle(caption);
 	    entity.getState().setOpened(true);

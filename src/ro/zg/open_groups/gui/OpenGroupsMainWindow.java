@@ -22,11 +22,12 @@ import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.util.logging.Logger;
 import ro.zg.util.logging.MasterLogManager;
+import sun.awt.HorizBagLayout;
 
+import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.UriFragmentUtility;
@@ -44,8 +45,8 @@ public class OpenGroupsMainWindow extends Window {
     private CssLayout header;
     private CssLayout userActionsContainer;
     private Tab userActionsTab;
-    private VerticalLayout mainContent;
-    private CssLayout entityContent;
+    private CssLayout mainContent;
+    private AbstractLayout entityContent;
     private UriFragmentUtility uriUtility;
     private CausalHierarchyContainer hierarchyContainer;
     
@@ -53,21 +54,26 @@ public class OpenGroupsMainWindow extends Window {
 	super.setCaption(name);
 	this.app=app;
 	
-	VerticalLayout winPain = (VerticalLayout)this.getContent();
-	winPain.setSizeFull();
-	winPain.setMargin(false);
+//	CssLayout winPain = new CssLayout();
+//	winPain.setSizeFull();
+//	winPain.setMargin(false);
+//	this.setContent(winPain);
 	
 	/* add the uri utility */
 	uriUtility = new UriFragmentUtility();
-	mainContent = new VerticalLayout();
+	uriUtility.setWidth("0px");
+	uriUtility.setHeight("0px");
+//	mainContent = new VerticalLayout();
+	mainContent=new CssLayout();
 	mainContent.addComponent(uriUtility);
+//	mainContent.setExpandRatio(uriUtility, 0.0f);
 	
-	mainContent.setWidth("1100px");
+	mainContent.setWidth("90%");
 	mainContent.setHeight("100%");
+	this.setContent(mainContent);
 	
-	
-	winPain.addComponent(mainContent);
-	winPain.setComponentAlignment(mainContent, Alignment.TOP_CENTER);
+//	winPain.addComponent(mainContent);
+//	winPain.setComponentAlignment(mainContent, Alignment.TOP_CENTER);
 	
 	uriUtility.addListener(app.getUriHandler());
 	addURIHandler(app.getUriHandler());
@@ -79,40 +85,55 @@ public class OpenGroupsMainWindow extends Window {
 //	this.setContent(mainContent);
 //	mainContent.setWidth("100%");
 //	mainContent.setSizeFull();
-//	mainContent.addStyleName(OpenGroupsStyles.MAIN_PANE);
+	mainContent.addStyleName(OpenGroupsStyles.MAIN_PANE);
 	
 	header = new CssLayout();
 	header.setWidth("100%");
 	mainContent.addComponent(header);
 	
+	
 	userActionsContainer = new CssLayout();
+	
+	CssLayout entityFrame = new CssLayout();
+	entityFrame.setHeight("96%");
+//	entityFrame.setWidth("100%");
+	entityFrame.addStyleName("entity-frame");
+	entityFrame.setMargin(true);
 
 	entityContent = new CssLayout();
-	entityContent.setWidth("100%");
-	entityContent.setHeight("100%");
-	entityContent.setMargin(true);
+//	entityContent.setWidth("100%");
+//	entityContent.setHeight("100%");
+//	entityContent.setMargin(true);
+//	entityFrame.addStyleName(OpenGroupsStyles.ENTITY_PANE);
 	entityContent.addStyleName(OpenGroupsStyles.ENTITY_PANE);
 	
-	HorizontalLayout frame = new HorizontalLayout();
-	frame.addStyleName(OpenGroupsStyles.FRAME_PANE);
-//	frame.setSizeFull();
+	entityFrame.addComponent(entityContent);
+	
+	CssLayout frame = new CssLayout();
 	frame.setWidth("100%");
 	frame.setHeight("100%");
+	frame.addStyleName(OpenGroupsStyles.FRAME_PANE);
+//	HorizontalLayout frame = new HorizontalLayout();
+//	frame.setSizeFull();
 	
 	hierarchyContainer = new CausalHierarchyContainer();
 	hierarchyContainer.addStyleName(OpenGroupsStyles.HIERARCHY_PANE);
+	hierarchyContainer.setWidth("350px");
+	hierarchyContainer.setHeight("96%");
 //	hierarchyContainer.setMargin(false,true,false,false);
 	hierarchyContainer.construct();
 	
 //	hierarchyContainer.setSizeFull();
-	hierarchyContainer.setWidth("100%");
-	hierarchyContainer.setHeight("100%");
+	
 	frame.addComponent(hierarchyContainer);
-	frame.addComponent(entityContent);
-	frame.setExpandRatio(hierarchyContainer, 1);
-	frame.setExpandRatio(entityContent, 3);
+	frame.addComponent(entityFrame);
+//	frame.setExpandRatio(hierarchyContainer, 1);
+//	frame.setExpandRatio(entityContent, 3);
 	
 	mainContent.addComponent(frame);
+//	mainContent.setExpandRatio(frame, 1f);
+	
+//	frame.setExpandRatio(entityFrame, 1f);
 	
 //	/* footer */
 //	CssLayout footer = new CssLayout();
@@ -120,7 +141,7 @@ public class OpenGroupsMainWindow extends Window {
 //	footer.addComponent(new Label("@Metaguvernare"));
 //	mainContent.addComponent(footer);
 	
-	mainContent.setExpandRatio(frame, 1);
+//	mainContent.setExpandRatio(frame, 1);
     }
     
     private void initListeners() {

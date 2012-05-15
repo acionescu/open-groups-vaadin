@@ -51,18 +51,20 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 	OpenGroupsApplication app = actionContext.getApp();
 	Entity entity = actionContext.getEntity();
 	ComponentContainer container = actionContext.getTargetContainer();
+	
+	getModel().populateCauses(entity);
 
 	getActionsManager().executeAction(ActionsManager.REFRESH_SELECTED_ENTITY, entity, app, container, false,
 		actionContext);
 
-	getModel().populateCauses(entity);
+	
 
 	if (app.hasErrors()) {
 	    return;
 	}
 
 	container.removeAllComponents();
-	container.setWidth("100%");
+//	container.setWidth("100%");
 
 	if (app.getRootEntity().getId() != entity.getId()) {
 
@@ -75,8 +77,9 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 
 	// Panel entityContainer = new Panel();
 	CssLayout entityContainer = new CssLayout();
+	entityContainer.addStyleName("entity-container");
 	// entityContainer.setSizeFull();
-	entityContainer.setWidth("100%");
+//	entityContainer.setWidth("100%");
 	container.addComponent(entityContainer);
 	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY, entity, app, entityContainer, false,
 		actionContext);
@@ -111,7 +114,7 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 
     private ComponentContainer createHeaderContainer() {
 	CssLayout hac = new CssLayout();
-	hac.setWidth("100%");
+//	hac.setWidth("100%");
 	hac.addStyleName(OpenGroupsStyles.ENTITY_HEADER_ACTION_PANE);
 	hac.setVisible(false);
 	return hac;
@@ -128,7 +131,7 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 	}
 
 	CssLayout causesContainer = new CssLayout();
-	causesContainer.setWidth("100%");
+//	causesContainer.setWidth("100%");
 	causesContainer.addStyleName(OpenGroupsStyles.HEADER_BAR);
 	container.addComponent(causesContainer);
 
@@ -138,7 +141,7 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 	showCauseButton.addStyleName("middle-right left-margin-10");
 	causesContainer.addComponent(showCauseButton);
 
-	causesCombo.setWidth("90%");
+//	causesCombo.setWidth("90%");
 	causesCombo.addStyleName("middle-left");
 	causesContainer.addComponent(causesCombo);
 
@@ -180,7 +183,7 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 
 	}
 
-	causesCombo.setDescription("bla bla bla");
+//	causesCombo.setDescription("bla bla bla");
 	
 	return causesCombo;
     }

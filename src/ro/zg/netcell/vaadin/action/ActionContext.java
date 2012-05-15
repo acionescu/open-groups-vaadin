@@ -99,6 +99,10 @@ public class ActionContext implements Serializable{
 	return userAction.isVisible(this);
     }
 
+    public boolean isActionAllowed(){
+	return isUserTypePresent(userAction.getUserType());
+    }
+    
     /* getters/setters */
 
     /**

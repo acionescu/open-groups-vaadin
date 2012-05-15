@@ -54,7 +54,10 @@ public class Entity implements Serializable {
     private Long generalPriority;
     private String generalStatus;
     private List<Tag> tags = new ArrayList<Tag>();
-    /* these are populated when the entity is displayed in the recent activity list */
+    /*
+     * these are populated when the entity is displayed in the recent activity
+     * list
+     */
     // private Long selectedParentId = -1L;
     // private Long selectedParentLinkId;
     // private String parentEntityTitle;
@@ -92,6 +95,13 @@ public class Entity implements Serializable {
 	update(dataMap);
     }
 
+    public Entity(GenericNameValueContext dataMap, Entity parent) {
+	this(dataMap);
+	if (parent != null) {
+	    updateSelectedCause(dataMap, parent);
+	}
+    }
+
     public void update(GenericNameValueContext dataMap) {
 	// System.out.println(dataMap);
 	this.id = (Long) dataMap.getValue("id");
@@ -123,8 +133,10 @@ public class Entity implements Serializable {
 	/* if displayed in the recent activity list */
 	String parentEntityTitle = (String) dataMap.getValue("parent_title");
 	if (parentEntityTitle != null) {
-	    this.selectedCause = new EntityLink((Long) dataMap.getValue("selected_parent_link_id"), this.id,
-		    (Long) dataMap.getValue("selected_parent_id"), parentEntityTitle);
+	    this.selectedCause = new EntityLink(
+		    (Long) dataMap.getValue("selected_parent_link_id"),
+		    this.id, (Long) dataMap.getValue("selected_parent_id"),
+		    parentEntityTitle);
 
 	    if (dataMap.getValue("action_type_id") != null) {
 		this.lastActionId = (Long) dataMap.getValue("action_type_id");
@@ -147,6 +159,13 @@ public class Entity implements Serializable {
 	}
     }
 
+    private void updateSelectedCause(GenericNameValueContext dataMap,
+	    Entity parent) {
+	this.selectedCause = new EntityLink(
+		(Long) dataMap.getValue("selected_parent_link_id"), this.id,
+		parent.getId(), parent.getTitle());
+    }
+
     public void setFilter(FilterOption fo) {
 	filters.put(fo.getParamName(), fo);
 	filterValues.put(fo.getParamName(), fo.getValue());
@@ -165,7 +184,8 @@ public class Entity implements Serializable {
 	filterValues.clear();
     }
 
-    public void addHeaderActionContainer(String actionName, ComponentContainer container) {
+    public void addHeaderActionContainer(String actionName,
+	    ComponentContainer container) {
 	headerActionsContainers.put(actionName, container);
     }
 
@@ -183,13 +203,15 @@ public class Entity implements Serializable {
 	    int index = name.indexOf(suffix);
 	    if (index > 0) {
 		String subtype = name.substring(0, index);
-		subtypeEntitiesCount.put(subtype, (Long) dataMap.getValue(name));
+		subtypeEntitiesCount
+			.put(subtype, (Long) dataMap.getValue(name));
 	    }
 	    /* get all subtypes count */
 	    index = name.indexOf(recursiveSuffinx);
 	    if (index > 0) {
 		String subtype = name.substring(0, index);
-		recursiveSubtypeEntitiesCount.put(subtype, (Long) dataMap.getValue(name));
+		recursiveSubtypeEntitiesCount.put(subtype,
+			(Long) dataMap.getValue(name));
 	    }
 	}
     }
@@ -385,7 +407,8 @@ public class Entity implements Serializable {
      * @param headerActionLinksContainer
      *            the headerActionLinksContainer to set
      */
-    public void setHeaderActionLinksContainer(ComponentContainer headerActionLinksContainer) {
+    public void setHeaderActionLinksContainer(
+	    ComponentContainer headerActionLinksContainer) {
 	this.headerActionLinksContainer = headerActionLinksContainer;
     }
 
@@ -534,14 +557,15 @@ public class Entity implements Serializable {
      * @return the selectedCause
      */
     public EntityLink getSelectedCause() {
-        return selectedCause;
+	return selectedCause;
     }
 
     /**
-     * @param selectedCause the selectedCause to set
+     * @param selectedCause
+     *            the selectedCause to set
      */
     public void setSelectedCause(EntityLink selectedCause) {
-        this.selectedCause = selectedCause;
+	this.selectedCause = selectedCause;
     }
 
 }

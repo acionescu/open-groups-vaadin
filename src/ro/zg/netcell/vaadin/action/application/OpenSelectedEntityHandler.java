@@ -74,12 +74,10 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
 	// Panel currentContainer = (Panel) container;
 	ComponentContainer currentContainer = container;
-	currentContainer.setWidth("100%");
 	entity.setEntityContainer(container);
 
 	CssLayout headerContainer = new CssLayout();
-//	 headerContainer.setSizeFull();
-	headerContainer.setWidth("100%");
+	headerContainer.addStyleName("entity-header-container");
 	currentContainer.addComponent(headerContainer);
 
 //	CssLayout titleContainer = new CssLayout();
@@ -151,7 +149,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
 	    Label title = new Label(entity.getTitle());
 	    title.addStyleName(OpenGroupsStyles.TITLE_LINK);
-	    title.addStyleName("top-left");
+//	    title.addStyleName("top-left");
 	    // title.setSizeFull();
 	    title.setWidth("80%");
 //	    title.setHeight("100%");
@@ -192,7 +190,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		titleLink.addStyleName("list-issue-title");
 		
 	    }
-	    titleLink.setWidth("75%");
+//	    titleLink.setWidth("75%");
 	    titleLink.addStyleName("top-left");
 	    headerContainer.addComponent(titleLink);
 	    // titleContainer.setExpandRatio(titleLink, 10f);
@@ -295,8 +293,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	}
 
 	CssLayout statusPane = new CssLayout();
-	// statusPane.setSizeFull();
-	statusPane.setWidth("100%");
+	statusPane.addStyleName("entity-status-pane");
+
 	currentContainer.addComponent(statusPane);
 
 	if (getAppConfigManager().getComplexEntityBooleanParam(complexEntityType, ComplexEntityParam.SHOW_POST_INFO)) {
@@ -307,8 +305,9 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	}
 
 	CssLayout statsSummaryPane = new CssLayout();
+	statsSummaryPane.addStyleName("entity-stats-summary-pane");
 	// statsSummaryPane.setSizeFull();
-	statsSummaryPane.setWidth("100%");
+//	statsSummaryPane.setWidth("100%");
 
 	currentContainer.addComponent(statsSummaryPane);
 
@@ -391,18 +390,19 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	if (contentObj != null) {
 	    // content.setSizeFull();
 	    Panel contentContainer = new Panel();
+//	    CssLayout contentContainer = new CssLayout();
 	    contentContainer.addStyleName("text-content");
 	    currentContainer.addComponent(contentContainer);
-	    // contentContainer.setWidth("100%");
 
 	    Label content = new Label(contentObj.toString());
 	    content.setContentMode(Label.CONTENT_XHTML);
+//	    content.addStyleName("text-label");
 	    contentContainer.addComponent(content);
 
 	    /* if the content is visible, display footer actions */
 	    displayFooterActions(entity, app, currentContainer, actionContext);
 	}
-
+	
     }
 
     private void displayFooterActions(Entity entity, OpenGroupsApplication app, ComponentContainer currentContainer,
@@ -415,7 +415,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	// GridLayout actionsContainer = new GridLayout(1, actions.getActions().size());
 	CssLayout actionsContainer = new CssLayout();
 
-	actionsContainer.setWidth("100%");
+//	actionsContainer.setWidth("100%");
 	currentContainer.addComponent(actionsContainer);
 	// int row = 0;
 	for (UserAction ua : actions.getActions().values()) {

@@ -36,18 +36,14 @@ import ro.zg.util.data.GenericNameValueList;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class EntityListHandler extends BaseListHandler {
@@ -65,7 +61,8 @@ public class EntityListHandler extends BaseListHandler {
 
 	ComponentContainer targetContainer = actionContext.getTargetContainer();
 	targetContainer.removeAllComponents();
-
+	targetContainer.addStyleName(OpenGroupsStyles.LIST_ACTIONS_CONTAINER);
+	
 	final Entity entity = actionContext.getEntity();
 	/* reset filters */
 	entity.resetFilters();
@@ -73,23 +70,24 @@ public class EntityListHandler extends BaseListHandler {
 	// Panel listContainer = new Panel();
 	// ((VerticalLayout)listContainer.getContent()).setMargin(false);
 
-	HorizontalLayout refreshButtonContainer = new HorizontalLayout();
+	CssLayout refreshButtonContainer = new CssLayout();
 	// refreshButtonContainer.setSizeFull();
-	refreshButtonContainer.setWidth("100%");
-	refreshButtonContainer.addStyleName(OpenGroupsStyles.LIST_ACTIONS_CONTAINER);
+//	refreshButtonContainer.setWidth("100%");
+	refreshButtonContainer.addStyleName(OpenGroupsStyles.LIST_REFRESH_BAR);
+	
 	// final VerticalLayout listContainer = new VerticalLayout();
 
-	// final CssLayout listAndPageControlsContainer = new CssLayout();
-	final VerticalLayout listAndPageControlsContainer = new VerticalLayout();
+	 final CssLayout listAndPageControlsContainer = new CssLayout();
+//	final VerticalLayout listAndPageControlsContainer = new VerticalLayout();
 
 	listAndPageControlsContainer.addStyleName("list-container");
 	// listAndPageControlsContainer.setSizeFull();
-	listAndPageControlsContainer.setWidth("100%");
+//	listAndPageControlsContainer.setWidth("100%");
 
 	Button refreshButton = new Button();
 	refreshButton.setDescription(getMessage("refresh.list"));
 	refreshButton.setIcon(OpenGroupsResources.getIcon(OpenGroupsIconsSet.REFRESH, OpenGroupsIconsSet.MEDIUM));
-	refreshButton.addStyleName(BaseTheme.BUTTON_LINK);
+	refreshButton.addStyleName(BaseTheme.BUTTON_LINK+ " middle-right");
 	refreshButton.addListener(new ClickListener() {
 
 	    @Override
@@ -100,14 +98,11 @@ public class EntityListHandler extends BaseListHandler {
 
 	targetContainer.addComponent(refreshButtonContainer);
 	refreshButtonContainer.addComponent(refreshButton);
-	refreshButtonContainer.setComponentAlignment(refreshButton, Alignment.MIDDLE_RIGHT);
 
-	// if (itemsCount > 0) {
 	ComponentContainer filtersContainer = initFilters(entity, ua, app, actionContext);
 	targetContainer.addComponent(filtersContainer);
-	// }
+	
 	targetContainer.addComponent(listAndPageControlsContainer);
-
 	int itemsCount = refreshList(entity, ua, app, listAndPageControlsContainer, actionContext);
     }
 
@@ -132,15 +127,12 @@ public class EntityListHandler extends BaseListHandler {
 	    displayList(ac, app, displayArea, list);
 
 	    /* add page controls */
-	    HorizontalLayout pageControlsContainer = new HorizontalLayout();
-	    pageControlsContainer.setSpacing(true);
+	    CssLayout pageControlsContainer = new CssLayout();
+	    pageControlsContainer.addStyleName("middle-right");
+//	    pageControlsContainer.setSpacing(true);
 	    refreshPageControls(entity, ua, app, pageControlsContainer, ac);
-	    GridLayout gl = new GridLayout(1, 1);
-	    // gl.setSizeFull();
-	    gl.setWidth("100%");
-	    displayArea.addComponent(gl);
-	    gl.addComponent(pageControlsContainer, 0, 0);
-	    gl.setComponentAlignment(pageControlsContainer, Alignment.MIDDLE_RIGHT);
+	    displayArea.addComponent(pageControlsContainer);
+
 	}
 
 	/* set current target component as lastUsedContainer on selected entity */
@@ -224,6 +216,10 @@ public class EntityListHandler extends BaseListHandler {
 	    nextButton.setEnabled(false);
 	}
 
+	prevButton.addStyleName("middle-left right-margin-10");
+	currentPageSelect.addStyleName("middle-left right-margin-10");
+	nextButton.addStyleName("middle-left");
+	
 	container.addComponent(prevButton);
 	container.addComponent(currentPageSelect);
 	container.addComponent(nextButton);
@@ -274,9 +270,10 @@ public class EntityListHandler extends BaseListHandler {
 	// filtersLayoutWithCaption.addComponent(filterLabel);
 
 	boolean hasFilters = false;
-	HorizontalLayout filtersLayout = new HorizontalLayout();
-	filtersLayout.setWidth("100%");
-	filtersLayout.setSpacing(true);
+	CssLayout filtersLayout = new CssLayout();
+	filtersLayout.addStyleName(OpenGroupsStyles.LIST_FILTERS_BAR);
+//	filtersLayout.setWidth("100%");
+//	filtersLayout.setSpacing(true);
 
 	// filtersLayoutWithCaption.addComponent(filtersLayout);
 
@@ -289,51 +286,63 @@ public class EntityListHandler extends BaseListHandler {
 		ua.getTypeRelationId(), TypeRelationConfigParam.ALLOW_RECURSIVE_LIST);
 	
 	if (allowRecursiveList) {
-	    filtersLayout.addComponent(getListByDepthFilter(entity, ua, app, ac));
+	    ComponentContainer listByDepthFilter = getListByDepthFilter(entity, ua, app, ac);
+	    listByDepthFilter.addStyleName("middle-left right-margin-10");
+	    filtersLayout.addComponent(listByDepthFilter);
 	    hasFilters = true;
 	}
 
 	/* add status filter */
 	if (app.getCurrentUser() != null
 		&& getAppConfigManager().getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_STATUS)) {
-	    filtersLayout.addComponent(getStatusFilter(entity, ua, app, ac));
+	    ComponentContainer statusFilter = getStatusFilter(entity, ua, app, ac);
+	    statusFilter.addStyleName("middle-left right-margin-10");
+	    filtersLayout.addComponent(statusFilter);
 	    hasFilters = true;
 	}
 
 	/* add global status filter */
 	if (getAppConfigManager().getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_STATUS)) {
-	    filtersLayout.addComponent(getGlobalStatusFilter(entity, ua, app, ac));
+	    ComponentContainer globalStatusFilter = getGlobalStatusFilter(entity, ua, app, ac);
+	    globalStatusFilter.addStyleName("middle-left right-margin-10");
+	    filtersLayout.addComponent(globalStatusFilter);
 	    hasFilters = true;
 	}
 
 	/* add tag filter */
 	if (getAppConfigManager().getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_TAG)) {
-	    filtersLayout.addComponent(getTagsFilter(entity, ua, app, ac));
+	    ComponentContainer tagsFilter = getTagsFilter(entity, ua, app, ac);
+	    tagsFilter.addStyleName("middle-left right-margin-10");
+	    filtersLayout.addComponent(tagsFilter);
 	    hasFilters = true;
 	}
 
-	GridLayout filtersContainer = new GridLayout(1, 1);
-	if (hasFilters) {
-	    filtersContainer = new GridLayout(2, 1);
-	}
-	filtersContainer.setMargin(false);
-	// filtersContainer.setSizeFull();
-	filtersContainer.setWidth("100%");
-	filtersContainer.setSpacing(true);
-	filtersContainer.addStyleName(OpenGroupsStyles.LIST_FILTERS_BAR);
-
-	if (hasFilters) {
-	    filtersContainer.addComponent(filtersLayout, 0, 0);
-	    filtersContainer.setColumnExpandRatio(0, 1f);
-	    filtersContainer.setComponentAlignment(filtersLayout, Alignment.MIDDLE_LEFT);
-	}
+//	GridLayout filtersContainer = new GridLayout(1, 1);
+//	if (hasFilters) {
+//	    filtersContainer = new GridLayout(2, 1);
+//	}
+//	filtersContainer.setMargin(false);
+//	// filtersContainer.setSizeFull();
+//	filtersContainer.setWidth("100%");
+//	filtersContainer.setSpacing(true);
+//	filtersContainer.addStyleName(OpenGroupsStyles.LIST_FILTERS_BAR);
+//
+//	if (hasFilters) {
+//	    filtersContainer.addComponent(filtersLayout, 0, 0);
+//	    filtersContainer.setColumnExpandRatio(0, 1f);
+//	    filtersContainer.setComponentAlignment(filtersLayout, Alignment.MIDDLE_LEFT);
+//	}
 
 	/* add search filter */
 	Component searchFilter = getSearchFilter(entity, ua, app, ac);
-	filtersContainer.addComponent(searchFilter);
-	filtersContainer.setComponentAlignment(searchFilter, Alignment.MIDDLE_RIGHT);
-
-	return filtersContainer;
+	searchFilter.addStyleName("middle-right");
+//	filtersContainer.addComponent(searchFilter);
+//	filtersContainer.setComponentAlignment(searchFilter, Alignment.MIDDLE_RIGHT);
+//
+//	return filtersContainer;
+	
+	filtersLayout.addComponent(searchFilter);
+	return filtersLayout;
     }
 
     private ComponentContainer getListByDepthFilter(final Entity entity, final UserAction ua,

@@ -46,7 +46,7 @@ public class OpenGroupsUtil {
 	String url = app.getURL().toString();
 	String fragment = getDesiredFragmentForEntity(entity);
 	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, fragment, title, "_self"), Label.CONTENT_XHTML);
-	anchor.setWidth("100%");
+	anchor.setWidth("80%");
 	return anchor;
     }
     
@@ -54,7 +54,7 @@ public class OpenGroupsUtil {
 	String url = app.getURL().toString();
 	String fragment = getDesiredFragmentForEntity(entity);
 	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, fragment, wrapAsImage(imagePath), "_self"), Label.CONTENT_XHTML);
-	anchor.setWidth("100%");
+	anchor.setWidth("80%");
 	return anchor;
     }
     

@@ -25,4 +25,5 @@ public class OpenGroupsStyles {
 	public static final String ENTITY_HEADER_ACTION_PANE="entity-header-action-pane";
 	public static final String USER_ACTIONS_TABSHEET="user-actions-tabsheet";
 	public static final String HIERARCHY_TITLE_BAR="hierarchy-title-bar";
+	public static final String LIST_REFRESH_BAR="list-refresh-bar";
 }

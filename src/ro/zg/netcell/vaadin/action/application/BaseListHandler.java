@@ -66,15 +66,15 @@ public abstract class BaseListHandler extends BaseEntityHandler {
 	for (Entity currentEntity : list.getItemsList()) {
 	    // VerticalLayout entityContainer = new VerticalLayout();
 	    CssLayout entityContainer = new CssLayout();
-	    entityContainer.setWidth("100%");
+//	    entityContainer.setWidth("100%");
 	    // entityContainer.setMargin(true);
 	    entityContainer.addStyleName(OpenGroupsStyles.LIST_ITEM);
 	    currentEntity.setEntityContainer(entityContainer);
-
+	    displayArea.addComponent(entityContainer);
 	    // displayArea.addItem(new Object[] {entityContainer}, null);
 	    getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY, currentEntity, app, entityContainer,
 		    false, ac);
-	    displayArea.addComponent(entityContainer);
+	    
 	}
     }
 

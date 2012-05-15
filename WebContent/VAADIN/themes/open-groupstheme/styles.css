@@ -7,10 +7,14 @@
 .issue-title {
 	font-size: 20px;
 	color: #0a497f;
+	float: left;
+	width: 80%;
 }
 
 .list-issue-title {
 	font-size: 16px;
+	width: 80%;
+	float: left;
 }
 
 .v-tabsheet-tabs-minimal .v-tabsheet-tabitemcell-selected-first .v-tabsheet-tabitem-selected
@@ -54,11 +58,33 @@ a:link,a:visited {
 .v-panel .v-panel-content-text-content {
 	max-height: 200px;
 	overflow-x: hidden !important;
+	overflow-y: auto !important;
 	background-color: #eeeeee;
+	width: 100%;
+}
+
+/* .text-content { */
+/* 	max-height: 200px; */
+/* 	overflow-x: hidden !important; */
+/* 	overflow-y: auto !important; */
+/* 	background-color: #eeeeee; */
+/* 	width: 100%; */
+/* /* 	margin-rigth: 40px; */
+* /
+	/* /* 	padding-right: 40px; */   * /
+	/* /* 	padding-left: 20px; */   * /
+	/* 	white-space: normal; */
+	/* } */  
+
+.text-label>div {
+	width: 96%;
+	margin-left: auto;
+	margin-right: auto;
+	height: 100%;
 }
 
 .top-right {
-	position: relative;
+/* 	position: relative; */
 	top: 0px;
 	float: right;
 	margin-left: 5px;
@@ -116,14 +142,36 @@ a:link,a:visited {
 }
 
 .main-pane {
-	padding-bottom: 50px;
+	margin-left: auto;
+	margin-right: auto;
+	height: 100%;
 }
 
-.entity-pane {
-	border-left-style: solid;
-	border-width: thin;
-	border-color: #dddddd;
-	overflow: auto;
+.entity-frame { /* 	width: 100%; */
+	/* 	margin-left: -100%; */
+	/* 	float: left; */
+	overflow-y: scroll !important;
+}
+
+.entity-pane { /* 	border-left-style: solid; */
+	/* 	border-width: thin; */
+	/* 	border-color: #dddddd; */
+	/* 	padding-left: 10px; */
+	/* 	margin-left: 350px; */
+/* 	padding-left: 10px; */
+/* 	padding-right: 10px; */
+/* 	margin-bottom: 30px; */
+	background-color: white;
+/* 	width: 98%; */
+
+}
+
+.entity-with-header-actions {
+	width: 100%;
+}
+
+.entity-container {
+	width: 100%;
 }
 
 .entity-header-action-pane {
@@ -133,23 +181,39 @@ a:link,a:visited {
 .frame-pane {
 	background-color: white;
 	height: 100%;
+	width: 100%;
+/* 	float: left; */
 }
 
 .hierarchy-pane {
-	background-color: white;
+	
+	width: 350px;
+	height: 100%;
+	float: left;
+	
+}
+
+.hierarchy-tree-container{
+	background-color: #eeeeee;
+	overflow: auto !important;
+	width:100%;
+	height: 100%;
 }
 
 .hierarchy-tree {
-	overflow: auto;
-	background-color: #eeeeee;
+	overflow: visible !important;
 }
+
+/* .v-tree-node span { */
+/*     white-space: normal; */
+/* } */
 
 .header-bar {
 	padding-top: 5px;
 	background-color: #ffffff;
-/* 	border-bottom-style: solid; */
-/* 	border-color: #dddddd; */
-/* 	border-width: thin; */
+	/* 	border-bottom-style: solid; */
+	/* 	border-color: #dddddd; */
+	/* 	border-width: thin; */
 	margin-bottom: 5px;
 }
 
@@ -191,28 +255,47 @@ a:link,a:visited {
 	background-color: #dddddd;
 }
 
-.user-actions-content-pane { /*border: thin solid #dddddd;*/
+.v-tabsheet-minimal .v-tabsheet-content-user-actions-tabsheet {
+	/*border: thin solid #dddddd;*/
 	background-color: #ffffff;
+	width: 100% !important;
+	/* 	overflow: hidden !important; */
+}
+
+.v-tabsheet-tabsheetpanel>div {
+	width: 100% !important;
+	overflow: hidden !important;
+	/* 	padding-bottom: 5px; */
+	/* 	margin-bottom: 20px; */
+	/* 	padding-right: 5px; */
+	
+}
+
+.user-actions-content-pane { /*border: thin solid #dddddd;*/
+	/* 	background-color: #eeeeee; */
+/* 	width: 100%; */
+	/* 	overflow: visible !important; */
 }
 
 .user-actions-tab {
 	border: 1px solid #dddddd;
 	margin-top: 10px;
-	padding: 0px;
-	margin-left: 0px;
+	width: 99.8%;
 }
 
-.user-actions-tabsheet {
-	padding: 0;
-	margin: 0;
-	position: relative;
-	left: 0px;
-}
-
+/* .user-actions-tabsheet { */
+/* 	padding: 0; */
+/* 	margin: 0; */
+/* 	position: relative; */
+/* 	left: 0px; */
+/* } */
 .list-container {
 	border-top-style: solid;
 	border-width: thin;
 	border-color: #dddddd;
+	width: 100%;
+	/* 	margin-right: 10px; */
+	/* 	margin-bottom: 10px; */
 }
 
 .list-filters-bar { /*
@@ -228,8 +311,7 @@ a:link,a:visited {
 	border-bottom-style: solid;
 	border-width: thin;
 	border-color: #dddddd;
-	padding-bottom: 5px;
-	margin-bottom: 5px;
+	width: 100%;
 }
 
 .list-item {
@@ -237,8 +319,21 @@ a:link,a:visited {
 	border-bottom-style: solid;
 	border-color: #dddddd;
 	margin-top: 20px;
+	width: 100%;
 }
 
-.list-refresh-bar {
-	border: thin solid #dddddd;
+.list-refresh-bar { /* 	border: thin solid #dddddd; */
+	width: 100%;
+}
+
+.entity-header-container {
+	width: 100%;
+}
+
+.entity-status-pane {
+	width: 100%;
+}
+
+.entity-stats-summary-pane {
+	width: 100%;
 }

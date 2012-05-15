@@ -24,6 +24,7 @@ import ro.zg.netcell.vaadin.DefaultForm;
 import ro.zg.netcell.vaadin.DefaultForm.FormCommitEvent;
 import ro.zg.netcell.vaadin.DefaultForm.FormListener;
 import ro.zg.netcell.vaadin.action.ActionContext;
+import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.opengroups.constants.ComplexEntityParam;
@@ -57,7 +58,7 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 //	List<String> currentUserTypes = getCurrentUserTypes(entity, actionContext.getApp());
 
 //	if (!currentUserTypes.contains(ua.getUserType())) {
-	if(!actionContext.isActionVisible()) {
+	if(!actionContext.isActionAllowed()) {
 	    /* current user is not allowed to execute this action */
 	    displayLoginRequired("create." + ua.getTargetEntityComplexType().toLowerCase() + ".login.required",
 		    targetContainer);
@@ -183,7 +184,9 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 
 	targetComponent.removeAllComponents();
 	targetComponent.addComponent(container);
-
+	
+	/* refresh hierarchy tree */
+	ActionsManager.getInstance().executeAction(ActionsManager.REFRESH_CAUSAL_HIERARCHY, ac);
     }
 
     private void displayLoginRequired(String messageKey, ComponentContainer targetContainer) {

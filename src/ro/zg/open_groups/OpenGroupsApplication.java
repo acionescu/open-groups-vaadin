@@ -80,7 +80,11 @@ public class OpenGroupsApplication extends Application {
     public void init() {
 	System.out.println("init");
 	windowsManager = new WindowsManger();
-	appState = new OpenGroupsApplicationState();
+	try {
+	    appState = new OpenGroupsApplicationState();
+	} catch (ContextAwareException e) {
+	   handleErrors();
+	}
 	setTheme("open-groupstheme");
 	appContext = (WebApplicationContext) getContext();
 	uriHandler = new OpenGroupsUriHandler(this);

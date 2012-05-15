@@ -1,5 +1,6 @@
 package ro.zg.opengroups.vo;
 
+import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
 import ro.zg.open_groups.model.OpenGroupsModel;
 
@@ -10,7 +11,7 @@ public class OpenGroupsApplicationState {
 	private Entity activeEntity;
 	private String currentUri;
 
-	public OpenGroupsApplicationState() {
+	public OpenGroupsApplicationState() throws ContextAwareException {
 		OpenGroupsModel model = OpenGroupsModel.getInstance();
 		rootEntity = model.getRootEntity();
 

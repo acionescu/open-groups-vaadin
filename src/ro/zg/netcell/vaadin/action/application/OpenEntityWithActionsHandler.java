@@ -43,7 +43,9 @@ public class OpenEntityWithActionsHandler extends BaseEntityHandler{
 	/* show the component */
 	CssLayout entityContainer = new CssLayout();
 //	entityContainer.setSizeFull();
-	entityContainer.setWidth("100%");
+//	entityContainer.setWidth("100%");
+//	entityContainer.addStyleName("right-margin-20");
+	entityContainer.addStyleName("entity-with-header-actions");
 	targetContainer.addComponent(entityContainer);
 	getActionsManager().executeAction(ActionsManager.OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS, entity,app,entityContainer,false,actionContext);
 	if(app.hasErrors()) {
@@ -56,7 +58,8 @@ public class OpenEntityWithActionsHandler extends BaseEntityHandler{
 //	VerticalLayout actionsContainer = new VerticalLayout();
 //	actionsContainer.setSizeFull();
 	actionsContainer.addStyleName(OpenGroupsStyles.USER_ACTIONS_TAB);
-	actionsContainer.setWidth("100%");
+//	actionsContainer.setWidth("100%");
+//	actionsContainer.addStyleName("right-margin-20");
 	targetContainer.addComponent(actionsContainer);
 	displayActionsForSelectedEntity(entity,app, actionsContainer,actionContext);
     }

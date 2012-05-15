@@ -14,16 +14,17 @@ import ro.zg.opengroups.vo.EntityList;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Tree.CollapseEvent;
 import com.vaadin.ui.Tree.CollapseListener;
 import com.vaadin.ui.Tree.ExpandListener;
 
-public class CausalHierarchyContainer extends VerticalLayout {
+public class CausalHierarchyContainer extends CssLayout {
 
     /**
      * 
@@ -39,7 +40,7 @@ public class CausalHierarchyContainer extends VerticalLayout {
      * values
      */
     private int startDepth = -1;
-    private long maxDepth = 0;
+    private long maxDepth = -1;
     private int cacheDepth = 0;
     private Object selection;
 
@@ -47,9 +48,11 @@ public class CausalHierarchyContainer extends VerticalLayout {
 	/* start depth combo */
 	CssLayout startDepthContainer = new CssLayout();
 	startDepthContainer.setWidth("100%");
-	startDepthContainer.addStyleName(OpenGroupsStyles.HIERARCHY_FILTERS_BAR);
+	startDepthContainer
+		.addStyleName(OpenGroupsStyles.HIERARCHY_FILTERS_BAR);
 
-	Label startDepthLabel = new Label(OpenGroupsResources.getMessage("hierarchy.start.depth"));
+	Label startDepthLabel = new Label(
+		OpenGroupsResources.getMessage("hierarchy.start.depth"));
 	startDepthLabel.setSizeUndefined();
 	startDepthLabel.addStyleName(OpenGroupsStyles.HORIZONTAL);
 
@@ -64,25 +67,23 @@ public class CausalHierarchyContainer extends VerticalLayout {
 	startDepthContainer.addComponent(startDepthLabel);
 	startDepthContainer.addComponent(startDepthSelect);
 
-//	CssLayout hierarchyTitleBar = new CssLayout();
-//	hierarchyTitleBar.setWidth("100%");
-//	hierarchyTitleBar.addStyleName(OpenGroupsStyles.HIERARCHY_TITLE_BAR);
-//	Label title = new Label("Ierarhie cauzală");
-//	title.addStyleName(OpenGroupsStyles.TITLE_LINK);
-//	hierarchyTitleBar.addComponent(title);
+	// CssLayout hierarchyTitleBar = new CssLayout();
+	// hierarchyTitleBar.setWidth("100%");
+	// hierarchyTitleBar.addStyleName(OpenGroupsStyles.HIERARCHY_TITLE_BAR);
+	// Label title = new Label("Ierarhie cauzală");
+	// title.addStyleName(OpenGroupsStyles.TITLE_LINK);
+	// hierarchyTitleBar.addComponent(title);
 
-//	addComponent(hierarchyTitleBar);
+	// addComponent(hierarchyTitleBar);
 	addComponent(startDepthContainer);
 
 	/* the tree */
 	hierarchyTree = new Tree();
+	hierarchyTree.addStyleName(OpenGroupsStyles.HIERARCHY_TREE);
 	hierarchyTree.setMultiSelect(false);
 	hierarchyTree.setImmediate(true);
 	hierarchyTree.setNullSelectionAllowed(true);
-	hierarchyTree.addStyleName(OpenGroupsStyles.HIERARCHY_TREE);
-	// hierarchyTree.setSizeFull();
-	hierarchyTree.setWidth("100%");
-	hierarchyTree.setHeight("99.6%");
+	hierarchyTree.setSizeUndefined();
 	hierarchyTree.setContainerDataSource(new HierarchicalContainer());
 	hierarchyTree.addContainerProperty("depth", Integer.class, null);
 	hierarchyTree.addListener(new CollapseListener() {
@@ -95,18 +96,18 @@ public class CausalHierarchyContainer extends VerticalLayout {
 	    }
 	});
 
-	// CssLayout treeContainer = new CssLayout();
-	// treeContainer.setWidth("100%");
-	// treeContainer.setHeight("99.6%");
-	// treeContainer.setMargin(true);
-	// treeContainer.addStyleName(OpenGroupsStyles.HIERARCHY_TREE);
-	// treeContainer.addComponent(hierarchyTree);
-	addComponent(hierarchyTree);
-	setExpandRatio(hierarchyTree, 1);
+	CssLayout treeContainer = new CssLayout();
+	treeContainer.addStyleName("hierarchy-tree-container");
+	treeContainer.setWidth("100%");
+	treeContainer.setHeight("95.8%");
+	treeContainer.addComponent(hierarchyTree);
+	addComponent(treeContainer);
+	// setExpandRatio(hierarchyTree, 1);
     }
 
     private void removeSubhierarchy(Object parentId) {
-	List<Object> subhierarchy = getSubhierarchy(parentId, new ArrayList<Object>());
+	List<Object> subhierarchy = getSubhierarchy(parentId,
+		new ArrayList<Object>());
 	for (Object itemId : subhierarchy) {
 	    hierarchyTree.removeItem(itemId);
 	}
@@ -144,14 +145,24 @@ public class CausalHierarchyContainer extends VerticalLayout {
 	if (refresh) {
 	    hierarchyTree.removeAllItems();
 	}
+	final Map tootips = new java.util.Hashtable();
 	for (Entity e : hierarchyList.getItemsList()) {
 	    long parentId = e.getSelectedCause().getParentId();
 	    long currentId = e.getId();
 	    /* add this node */
 	    Item currentItem = hierarchyTree.addItem(currentId);
 	    hierarchyTree.setItemCaption(currentId, e.getTitle());
-	    hierarchyTree.setItemIcon(currentId, OpenGroupsResources.getIcon(e.getComplexType().toLowerCase(),
-		    OpenGroupsIconsSet.SMALL));
+	    hierarchyTree.setItemIcon(currentId, OpenGroupsResources.getIcon(e
+		    .getComplexType().toLowerCase(), OpenGroupsIconsSet.SMALL));
+	    tootips.put(currentId, e.getContentPreview());
+	    hierarchyTree.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
+	        
+	        @Override
+	        public String generateDescription(Component source, Object itemId,
+	    	    Object propertyId) {
+	    	return (String)tootips.get(itemId);
+	        }
+	    });
 	    boolean hasNonLeafChildren = hasNonLeafChildren(e);
 	    hierarchyTree.setChildrenAllowed(currentId, hasNonLeafChildren);
 	    if (hasNonLeafChildren) {
@@ -166,7 +177,8 @@ public class CausalHierarchyContainer extends VerticalLayout {
 		hierarchyTree.setParent(currentId, parentId);
 		/* use the depth of the parrent as a reference */
 		currentItem.getItemProperty("depth").setValue(
-			(Integer) parentItem.getItemProperty("depth").getValue() + 1);
+			(Integer) parentItem.getItemProperty("depth")
+				.getValue() + 1);
 	    } else {
 		currentItem.getItemProperty("depth").setValue(e.getDepth());
 	    }
@@ -174,14 +186,16 @@ public class CausalHierarchyContainer extends VerticalLayout {
     }
 
     /**
-     * Checks if the specified entity has children that have a non leaf type ( are part of a causal hierarchy)
+     * Checks if the specified entity has children that have a non leaf type (
+     * are part of a causal hierarchy)
      * 
      * @param e
      * @return
      */
     private boolean hasNonLeafChildren(Entity e) {
 	Map<String, Long> subtypeEntitiesCount = e.getSubtypeEntitiesCount();
-	List<String> nonLeafTypes = ApplicationConfigManager.getInstance().getNonLeafTypes();
+	List<String> nonLeafTypes = ApplicationConfigManager.getInstance()
+		.getNonLeafTypes();
 	for (String nlt : nonLeafTypes) {
 	    Long value = subtypeEntitiesCount.get(nlt.toLowerCase());
 	    if (value != null && value > 0) {
@@ -233,10 +247,12 @@ public class CausalHierarchyContainer extends VerticalLayout {
      *            the startDepth to set
      */
     public void setStartDepth(int startDepth) {
-	if (startDepth >= 0 && startDepth <= maxDepth && this.startDepth != startDepth) {
+	if (startDepth >= 0 && startDepth <= maxDepth
+		&& this.startDepth != startDepth) {
 	    this.startDepth = startDepth;
 	    Object startDepthValue = startDepthSelect.getValue();
-	    if (startDepthValue == null || startDepth != (Integer) startDepthValue) {
+	    if (startDepthValue == null
+		    || startDepth != (Integer) startDepthValue) {
 		startDepthSelect.select(startDepth);
 	    }
 	}
@@ -259,19 +275,17 @@ public class CausalHierarchyContainer extends VerticalLayout {
 
     public void setSelected(Object id) {
 	Object selected = hierarchyTree.getValue();
-	if(selected == null){
-	    if(id==null) {
+	if (selected == null) {
+	    if (id == null) {
 		return;
 	    }
-	}
-	else if( selected.equals(id)) {
+	} else if (selected.equals(id)) {
 	    return;
 	}
-	
+
 	if (hierarchyTree.containsId(id)) {
 	    hierarchyTree.select(id);
-	}
-	else {
+	} else {
 	    hierarchyTree.select(null);
 	}
     }
