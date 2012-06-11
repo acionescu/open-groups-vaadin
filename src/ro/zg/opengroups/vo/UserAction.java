@@ -43,11 +43,10 @@ import ro.zg.netcell.vaadin.action.user.UpdateUserHandler;
 import ro.zg.netcell.vo.InputParameter;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.resources.OpenGroupsResources;
-import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.constants.ActionTypes;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.ObjectsUtil;
-import ro.zg.util.parser.utils.ListMapParser;
+import ro.zg.util.parser.utils.ParseUtils;
 
 import com.vaadin.ui.ComponentContainer;
 
@@ -313,7 +312,7 @@ public class UserAction implements Serializable {
 	}
 	List<Map<String, String>> paramsList = null;
 	try {
-	    paramsList = (List<Map<String, String>>) ListMapParser.parse(s);
+	    paramsList = (List<Map<String, String>>) ParseUtils.parseCollection(s);
 	} catch (Exception e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
