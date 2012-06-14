@@ -71,10 +71,10 @@ a:link,a:visited {
 /* 	width: 100%; */
 /* /* 	margin-rigth: 40px; */
 * /
-	/* /* 	padding-right: 40px; */   * /
-	/* /* 	padding-left: 20px; */   * /
+	/* /* 	padding-right: 40px; */    * /
+	/* /* 	padding-left: 20px; */    * /
 	/* 	white-space: normal; */
-	/* } */  
+	/* } */   
 
 .text-label>div {
 	width: 96%;
@@ -83,8 +83,7 @@ a:link,a:visited {
 	height: 100%;
 }
 
-.top-right {
-/* 	position: relative; */
+.top-right { /* 	position: relative; */
 	top: 0px;
 	float: right;
 	margin-left: 5px;
@@ -158,12 +157,11 @@ a:link,a:visited {
 	/* 	border-color: #dddddd; */
 	/* 	padding-left: 10px; */
 	/* 	margin-left: 350px; */
-/* 	padding-left: 10px; */
-/* 	padding-right: 10px; */
-/* 	margin-bottom: 30px; */
+	/* 	padding-left: 10px; */
+	/* 	padding-right: 10px; */
+	/* 	margin-bottom: 30px; */
 	background-color: white;
-/* 	width: 98%; */
-
+	/* 	width: 98%; */
 }
 
 .entity-with-header-actions {
@@ -182,21 +180,19 @@ a:link,a:visited {
 	background-color: white;
 	height: 100%;
 	width: 100%;
-/* 	float: left; */
+	/* 	float: left; */
 }
 
 .hierarchy-pane {
-	
 	width: 350px;
 	height: 100%;
 	float: left;
-	
 }
 
-.hierarchy-tree-container{
+.hierarchy-tree-container {
 	background-color: #eeeeee;
 	overflow: auto !important;
-	width:100%;
+	width: 100%;
 	height: 100%;
 }
 
@@ -207,7 +203,6 @@ a:link,a:visited {
 /* .v-tree-node span { */
 /*     white-space: normal; */
 /* } */
-
 .header-bar {
 	padding-top: 5px;
 	background-color: #ffffff;
@@ -268,13 +263,13 @@ a:link,a:visited {
 	/* 	padding-bottom: 5px; */
 	/* 	margin-bottom: 20px; */
 	/* 	padding-right: 5px; */
-	
 }
 
 .user-actions-content-pane { /*border: thin solid #dddddd;*/
 	/* 	background-color: #eeeeee; */
-/* 	width: 100%; */
+	/* 	width: 100%; */
 	/* 	overflow: visible !important; */
+	
 }
 
 .user-actions-tab {
@@ -336,4 +331,19 @@ a:link,a:visited {
 
 .entity-stats-summary-pane {
 	width: 100%;
+}
+
+.openid-login-pane {
+	border-left: thin;
+	border-left-color: black;
+	border-left-style: solid;
+}
+
+.centered-button a img{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	
 }

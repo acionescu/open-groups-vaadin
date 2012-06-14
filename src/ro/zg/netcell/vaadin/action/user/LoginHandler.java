@@ -26,6 +26,7 @@ import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
+import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
@@ -40,13 +41,16 @@ import ro.zg.util.data.GenericNameValueList;
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class LoginHandler extends UserHandler {
@@ -56,29 +60,82 @@ public class LoginHandler extends UserHandler {
      */
     private static final long serialVersionUID = 2384226053251524497L;
 
+    private static final String LOCAL_LOGIN_TYPE = "local";
+    private static final String OPENID_LOGIN_TYPE = "openid";
+
     @Override
     public void handle(ActionContext actionContext) throws Exception {
-	Map<String, Map<String, String>> loginTypes = (Map<String, Map<String, String>>) getAppConfigManager()
-		.getApplicationConfigParam(ApplicationConfigParam.LOGIN_TYPES);
-
-	System.out.println("login types: "+loginTypes);
-	
 	Window w = new Window();
 	w.setModal(true);
-	OpenGroupsApplication app = actionContext.getApp();
+
 	OpenGroupsMainWindow mainWindow = actionContext.getWindow();
 	UserAction ua = actionContext.getUserAction();
-	w.setWidth("400px");
+	w.setWidth("600px");
 	w.setHeight("300px");
 	w.center();
 	w.setCaption(getMessage(ua.getActionName() + ".window.caption"));
 	mainWindow.addWindow(w);
 
+	ComponentContainer loginView = getLoginView(actionContext);
+
+	w.setContent(loginView);
+
+    }
+
+    private ComponentContainer getLoginView(ActionContext actionContext) {
+	Map<String, Map<String, String>> loginTypes = (Map<String, Map<String, String>>) getAppConfigManager()
+		.getApplicationConfigParam(ApplicationConfigParam.LOGIN_TYPES);
+
+	System.out.println("login types: " + loginTypes);
+
+	HorizontalLayout hl = new HorizontalLayout();
+	hl.setSizeFull();
+
+	if (loginTypes.containsKey(LOCAL_LOGIN_TYPE)) {
+	    Component localView = getLocalLoginView(actionContext);
+	    hl.addComponent(localView);
+	    hl.setExpandRatio(localView, 2f);
+	}
+
+	Map<String, String> openIdProviders = loginTypes.get(OPENID_LOGIN_TYPE);
+
+	if (openIdProviders != null) {
+	    CssLayout openIdLayout = new CssLayout();
+	    openIdLayout.setSizeFull();
+	    openIdLayout.addStyleName("openid-login-pane");
+	    for (Map.Entry<String, String> e : openIdProviders.entrySet()) {
+
+		openIdLayout.addComponent(getOpenidLoginComponent(actionContext, e));
+
+	    }
+	    
+	    hl.addComponent(openIdLayout);
+	    hl.setComponentAlignment(openIdLayout, Alignment.MIDDLE_CENTER);
+	    hl.setExpandRatio(openIdLayout, 1f);
+	}
+
+	return hl;
+    }
+
+    private Component getOpenidLoginComponent(ActionContext actionContext, Map.Entry<String, String> entry) {
+	Link lb = new Link();
+	
+	lb.setIcon(OpenGroupsResources.getIcon(entry.getKey() + ".ico"));
+	 lb.addStyleName("centered-button");
+	 
+	 
+	// TODO: add listener
+	return lb;
+    }
+
+    private ComponentContainer getLocalLoginView(ActionContext actionContext) {
 	VerticalLayout layout = new VerticalLayout();
 	layout.setSizeFull();
-	Form form = getLoginForm(actionContext.getUserAction(), app, actionContext.getWindow(),
+	OpenGroupsApplication app = actionContext.getApp();
+
+	Form form = getLocalLoginForm(actionContext.getUserAction(), app, actionContext.getWindow(),
 		actionContext.getEntity());
-	w.setContent(layout);
+
 	layout.addComponent(form);
 	form.setWidth("60%");
 	layout.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
@@ -89,9 +146,11 @@ public class LoginHandler extends UserHandler {
 	layout.addComponent(footerActionsContainer);
 	layout.setComponentAlignment(footerActionsContainer, Alignment.MIDDLE_RIGHT);
 	addFooterActions(footerActionsContainer, app, actionContext);
+
+	return layout;
     }
 
-    private Form getLoginForm(final UserAction ua, final OpenGroupsApplication app, final Window window,
+    private Form getLocalLoginForm(final UserAction ua, final OpenGroupsApplication app, final Window window,
 	    final Entity entity) {
 
 	DefaultForm form = ua.generateForm();
