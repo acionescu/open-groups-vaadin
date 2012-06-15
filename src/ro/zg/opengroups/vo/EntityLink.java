@@ -1,8 +1,14 @@
 package ro.zg.opengroups.vo;
 
+import java.io.Serializable;
+
 import ro.zg.util.data.GenericNameValueContext;
 
-public class EntityLink {
+public class EntityLink implements Serializable{
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7369656838538851010L;
     private long linkId=-1;
     private long entityId=-1;
     private long parentId=-1;

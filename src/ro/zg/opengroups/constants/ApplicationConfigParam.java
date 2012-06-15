@@ -20,4 +20,5 @@ public class ApplicationConfigParam {
     public static final String LOGABLE_ACTIONS = "logable.actions";
     public static final String MAX_PRIORITY = "max.priority";
     public static final String APP_ENTITY_ID = "app.entity.id";
+    public static final String LOGIN_TYPES="login.types";
 }

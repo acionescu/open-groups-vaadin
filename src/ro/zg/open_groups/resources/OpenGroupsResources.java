@@ -63,4 +63,8 @@ public class OpenGroupsResources {
     public static ThemeResource getIcon(String name,String size) {
 	return iconsSet.getIcon(name, size);
     }
+    
+    public static ThemeResource getIcon(String name) {
+	return new ThemeResource("img/"+name);
+    }
 }
