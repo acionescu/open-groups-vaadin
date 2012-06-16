@@ -21,7 +21,7 @@ public class LunaBlueIconsSet extends OpenGroupsIconsSet{
 	addIcon(VOTE_DOWN, "remove.png");
 	addIcon(CANCEL,"delete.png");
 	addIcon(REFRESH,"refresh.png");
-	
+	addIcon(SEARCH,"zoom.png");
 	addIcon(UPSTREAM_HIERARCHY_OFF, "download.png");
 	addIcon(UPSTREAM_HIERARCHY_ON, "next.png");
 	
