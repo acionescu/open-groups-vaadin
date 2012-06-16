@@ -91,39 +91,42 @@ public class LoginHandler extends UserHandler {
 	HorizontalLayout hl = new HorizontalLayout();
 	hl.setSizeFull();
 
-	if (loginTypes.containsKey(LOCAL_LOGIN_TYPE)) {
+	if (loginTypes == null || loginTypes.containsKey(LOCAL_LOGIN_TYPE)) {
 	    Component localView = getLocalLoginView(actionContext);
 	    hl.addComponent(localView);
 	    hl.setExpandRatio(localView, 2f);
 	}
 
-	Map<String, String> openIdProviders = loginTypes.get(OPENID_LOGIN_TYPE);
+	if (loginTypes != null) {
+	    Map<String, String> openIdProviders = loginTypes
+		    .get(OPENID_LOGIN_TYPE);
 
-	if (openIdProviders != null) {
-	    CssLayout openIdLayout = new CssLayout();
-	    openIdLayout.setSizeFull();
-	    openIdLayout.addStyleName("openid-login-pane");
-	    for (Map.Entry<String, String> e : openIdProviders.entrySet()) {
+	    if (openIdProviders != null) {
+		CssLayout openIdLayout = new CssLayout();
+		openIdLayout.setSizeFull();
+		openIdLayout.addStyleName("openid-login-pane");
+		for (Map.Entry<String, String> e : openIdProviders.entrySet()) {
 
-		openIdLayout.addComponent(getOpenidLoginComponent(actionContext, e));
+		    openIdLayout.addComponent(getOpenidLoginComponent(
+			    actionContext, e));
 
+		}
+
+		hl.addComponent(openIdLayout);
+		hl.setComponentAlignment(openIdLayout, Alignment.MIDDLE_CENTER);
+		hl.setExpandRatio(openIdLayout, 1f);
 	    }
-	    
-	    hl.addComponent(openIdLayout);
-	    hl.setComponentAlignment(openIdLayout, Alignment.MIDDLE_CENTER);
-	    hl.setExpandRatio(openIdLayout, 1f);
 	}
-
 	return hl;
     }
 
-    private Component getOpenidLoginComponent(ActionContext actionContext, Map.Entry<String, String> entry) {
+    private Component getOpenidLoginComponent(ActionContext actionContext,
+	    Map.Entry<String, String> entry) {
 	Link lb = new Link();
-	
+
 	lb.setIcon(OpenGroupsResources.getIcon(entry.getKey() + ".ico"));
-	 lb.addStyleName("centered-button");
-	 
-	 
+	lb.addStyleName("centered-button");
+
 	// TODO: add listener
 	return lb;
     }
@@ -133,8 +136,8 @@ public class LoginHandler extends UserHandler {
 	layout.setSizeFull();
 	OpenGroupsApplication app = actionContext.getApp();
 
-	Form form = getLocalLoginForm(actionContext.getUserAction(), app, actionContext.getWindow(),
-		actionContext.getEntity());
+	Form form = getLocalLoginForm(actionContext.getUserAction(), app,
+		actionContext.getWindow(), actionContext.getEntity());
 
 	layout.addComponent(form);
 	form.setWidth("60%");
@@ -144,17 +147,20 @@ public class LoginHandler extends UserHandler {
 	footerActionsContainer.setSpacing(true);
 	footerActionsContainer.setMargin(true);
 	layout.addComponent(footerActionsContainer);
-	layout.setComponentAlignment(footerActionsContainer, Alignment.MIDDLE_RIGHT);
+	layout.setComponentAlignment(footerActionsContainer,
+		Alignment.MIDDLE_RIGHT);
 	addFooterActions(footerActionsContainer, app, actionContext);
 
 	return layout;
     }
 
-    private Form getLocalLoginForm(final UserAction ua, final OpenGroupsApplication app, final Window window,
+    private Form getLocalLoginForm(final UserAction ua,
+	    final OpenGroupsApplication app, final Window window,
 	    final Entity entity) {
 
 	DefaultForm form = ua.generateForm();
-	// EntityDefinitionSummary loginDef = getActionsManager().getFlowDefinitionSummary(ua.getAction());
+	// EntityDefinitionSummary loginDef =
+	// getActionsManager().getFlowDefinitionSummary(ua.getAction());
 	// List<InputParameter> inputParams = loginDef.getInputParameters();
 	//
 	// form.populateFromInputParameterList(inputParams);
@@ -175,13 +181,19 @@ public class LoginHandler extends UserHandler {
 	return form;
     }
 
-    private void doLogin(Form form, UserAction ua, OpenGroupsApplication app, Window window, Entity entity) {
+    private void doLogin(Form form, UserAction ua, OpenGroupsApplication app,
+	    Window window, Entity entity) {
 	form.setComponentError(null);
-	Map<String, Object> paramsMap = DataTranslationUtils.getFormFieldsAsMap(form);
-	paramsMap.put("password", UsersManager.getInstance().encrypt(paramsMap.get("password").toString()));
+	Map<String, Object> paramsMap = DataTranslationUtils
+		.getFormFieldsAsMap(form);
+	paramsMap.put(
+		"password",
+		UsersManager.getInstance().encrypt(
+			paramsMap.get("password").toString()));
 	paramsMap.put("ip", app.getAppContext().getBrowser().getAddress());
 
-	CommandResponse response = executeAction(new ActionContext(ua, app, null), paramsMap);
+	CommandResponse response = executeAction(new ActionContext(ua, app,
+		null), paramsMap);
 	GenericNameValue result = (GenericNameValue) response.get("result");
 	GenericNameValueList list = (GenericNameValueList) result.getValue();
 	if (list.size() < 1) {
@@ -189,16 +201,18 @@ public class LoginHandler extends UserHandler {
 	    return;
 	}
 	/* so we have a user */
-	GenericNameValueContext userRow = (GenericNameValueContext) list.getValueForIndex(0);
+	GenericNameValueContext userRow = (GenericNameValueContext) list
+		.getValueForIndex(0);
 	User user = getUserFromParamsContext(userRow);
 	/* close the login window */
 	window.removeWindow(form.getWindow());
 	app.login(user, entity);
     }
 
-    private void addFooterActions(final ComponentContainer container, final OpenGroupsApplication app,
-	    final ActionContext ac) {
-	UserActionList actionsList = ActionsManager.getInstance().getGlobalActions(ActionLocations.LOGIN_FOOTER);
+    private void addFooterActions(final ComponentContainer container,
+	    final OpenGroupsApplication app, final ActionContext ac) {
+	UserActionList actionsList = ActionsManager.getInstance()
+		.getGlobalActions(ActionLocations.LOGIN_FOOTER);
 	if (actionsList != null && actionsList.getActions() != null) {
 	    final Window window = ac.getWindow();
 	    for (final UserAction ua : actionsList.getActions().values()) {

@@ -30,6 +30,7 @@ public class OpenGroupsIconsSet {
     public static final String CANCEL="cancel";
     
     public static final String REFRESH="refresh";
+    public static final String SEARCH="search";
     
     public static final String UPSTREAM_HIERARCHY_ON="entity.upstream.hierarchy.on";
     public static final String UPSTREAM_HIERARCHY_OFF="entity.upstream.hierarchy.off";

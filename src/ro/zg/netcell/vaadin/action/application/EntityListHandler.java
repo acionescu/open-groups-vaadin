@@ -33,6 +33,7 @@ import ro.zg.opengroups.vo.UserAction;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
 
+import com.sun.accessibility.internal.resources.accessibility_en;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.validator.StringLengthValidator;
@@ -43,6 +44,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -97,6 +99,9 @@ public class EntityListHandler extends BaseListHandler {
 	});
 
 	targetContainer.addComponent(refreshButtonContainer);
+	Component searchFilter = getSearchFilter(entity, ua, app, actionContext);
+	searchFilter.addStyleName("middle-left");
+	refreshButtonContainer.addComponent(searchFilter);
 	refreshButtonContainer.addComponent(refreshButton);
 
 	ComponentContainer filtersContainer = initFilters(entity, ua, app, actionContext);
@@ -128,7 +133,7 @@ public class EntityListHandler extends BaseListHandler {
 
 	    /* add page controls */
 	    CssLayout pageControlsContainer = new CssLayout();
-	    pageControlsContainer.addStyleName("middle-right");
+	    pageControlsContainer.addStyleName("middle-right top-margin-5");
 //	    pageControlsContainer.setSpacing(true);
 	    refreshPageControls(entity, ua, app, pageControlsContainer, ac);
 	    displayArea.addComponent(pageControlsContainer);
@@ -334,14 +339,14 @@ public class EntityListHandler extends BaseListHandler {
 //	}
 
 	/* add search filter */
-	Component searchFilter = getSearchFilter(entity, ua, app, ac);
-	searchFilter.addStyleName("middle-right");
+//	Component searchFilter = getSearchFilter(entity, ua, app, ac);
+//	searchFilter.addStyleName("middle-right");
 //	filtersContainer.addComponent(searchFilter);
 //	filtersContainer.setComponentAlignment(searchFilter, Alignment.MIDDLE_RIGHT);
 //
 //	return filtersContainer;
 	
-	filtersLayout.addComponent(searchFilter);
+//	filtersLayout.addComponent(searchFilter);
 	return filtersLayout;
     }
 
@@ -445,8 +450,13 @@ public class EntityListHandler extends BaseListHandler {
 
 	CssLayout container = new CssLayout();
 	container.setSizeUndefined();
-	Label label = new Label(getMessage("search"));
-	container.addComponent(label);
+	Embedded eicon = new Embedded(null, OpenGroupsResources.getIcon(OpenGroupsIconsSet.SEARCH, OpenGroupsIconsSet.MEDIUM));
+	eicon.setDescription(getMessage("search"));
+	eicon.addStyleName("middle-left right-margin-10");
+	select.addStyleName("middle-left");
+//	Label label = new Label(getMessage("search"));
+//	container.addComponent(label);
+	container.addComponent(eicon);
 	container.addComponent(select);
 	return container;
     }
