@@ -29,16 +29,5 @@ public abstract class UserHandler extends OpenGroupsActionHandler{
     private static final long serialVersionUID = 1L;
 
     
-    protected User getUserFromParamsContext(GenericNameValueContext userRow) {
-	User user = new User();
-	String username = (String)userRow.getValue("username");
-	long userId = (Long)userRow.getValue("id");
-	Timestamp lastLogin =(Timestamp)userRow.getValue("last_login");
-	String email = (String)userRow.getValue("email");
-	user.setUserId(userId);
-	user.setUsername(username);
-	user.setLastLogin(lastLogin);
-	user.setEmail(email);
-	return user;
-    }
+    
 }

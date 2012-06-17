@@ -15,12 +15,14 @@
  ******************************************************************************/
 package ro.zg.open_groups;
 
+import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.netcell.vaadin.action.ActionContext;
@@ -29,19 +31,23 @@ import ro.zg.open_groups.gui.OpenGroupsMainWindow;
 import ro.zg.open_groups.gui.components.logic.CausalHierarchyItemSelectedListener;
 import ro.zg.open_groups.gui.components.logic.CausalHierarchyStartDepthChangedListener;
 import ro.zg.open_groups.gui.components.logic.CausalHierarchyTreeExpandListener;
+import ro.zg.open_groups.model.OpenGroupsModel;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.open_groups.user.UsersManager;
+import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityState;
 import ro.zg.opengroups.vo.OpenGroupsApplicationState;
 import ro.zg.opengroups.vo.TabContainer;
 import ro.zg.opengroups.vo.User;
+import ro.zg.openid.util.OpenIdConstants;
 import ro.zg.util.logging.Logger;
 import ro.zg.util.logging.MasterLogManager;
 import ro.zg.vaadin.util.WindowsManger;
 
 import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext.TransactionListener;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
@@ -75,7 +81,7 @@ public class OpenGroupsApplication extends Application {
     private CausalHierarchyStartDepthChangedListener hierarchyStartDepthListener;
     private CausalHierarchyTreeExpandListener hierarchyTreeExpandListener;
     private CausalHierarchyItemSelectedListener hierarchyItemSelectedListener;
-    
+
     @Override
     public void init() {
 	System.out.println("init");
@@ -83,7 +89,7 @@ public class OpenGroupsApplication extends Application {
 	try {
 	    appState = new OpenGroupsApplicationState();
 	} catch (ContextAwareException e) {
-	   handleErrors();
+	    handleErrors();
 	}
 	setTheme("open-groupstheme");
 	appContext = (WebApplicationContext) getContext();
@@ -109,12 +115,12 @@ public class OpenGroupsApplication extends Application {
 			return;
 		    }
 		    String oldFragment = activeWindow.getFragment();
-		    
+
 		    logger.debug("Transaction start: new->'" + fragment + "' + old->'" + oldFragment + "'");
 		    if (oldFragment == null) {
 			logger.debug("Process fragment '" + fragment + "'");
 			uriHandler.handleFragment(fragment);
-			activeWindow.getUriUtility().setFragment(fragment,false);
+			activeWindow.getUriUtility().setFragment(fragment, false);
 		    }
 		    /* this may be a refresh */
 		    if (fragment.equals(oldFragment)) {
@@ -214,23 +220,22 @@ public class OpenGroupsApplication extends Application {
     }
 
     public void openEntityById(Long id, String actionPath, int pageNumber) {
-	// Entity e = openEntities.get(id);
-	// if (e == null) {
-	// e = new Entity(id);
-	// } else {
-	// if (!e.getState().getCurrentActionPath().equals(actionPath)) {
-	// tabsForEntities.get(e.getId()).setRefreshOn(true);
-	// }
-	// }
-	// e.getState().setDesiredActionsPath(actionPath);
-	// e.getState().setCurrentPageForAction("/" + actionPath, pageNumber);
-
 	Entity e = new Entity(id);
 	EntityState state = e.getState();
 	state.setDesiredActionsPath(actionPath);
 	state.setCurrentPageForAction(state.getDesiredActionsPath(), pageNumber);
 
-	openInActiveWindow(e);
+	HttpSession session = getAppContext().getHttpSession();
+	String userOpenId = (String) session.getAttribute(OpenIdConstants.USER_OPENID);
+	if (userOpenId != null) {
+	    session.removeAttribute(OpenIdConstants.USER_OPENID);
+	    User user = OpenGroupsModel.getInstance().loginWithOpenId(userOpenId,
+		    getAppContext().getBrowser().getAddress());
+	    login(user, e);
+	    logger.info("Logged in with openid: " + userOpenId);
+	} else {
+	    openInActiveWindow(e);
+	}
 
     }
 
@@ -323,6 +328,27 @@ public class OpenGroupsApplication extends Application {
 	getAppContext().getHttpSession().invalidate();
     }
 
+    public void openIdLogin(String providerUrl) {
+	HttpSession session = getAppContext().getHttpSession();
+	session.setAttribute(OpenIdConstants.PROVIDER_URL, providerUrl);
+	OpenGroupsMainWindow currentWindow = appState.getActiveWindow();
+	URL url = currentWindow.getURL();
+	String path = url.getPath();
+	String urlString = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort();
+	if (path.length() > 1) {
+	    int contextIndex = path.substring(1).indexOf("/");
+	    String contextPath = null;
+	    if (contextIndex > 0) {
+		contextPath = path.substring(0, contextIndex + 1);
+		urlString += contextPath + "/";
+	    }
+	}
+
+	String returnUrl = urlString + "#" + OpenGroupsUtil.getFragmentForEntity(appState.getActiveEntity());
+	session.setAttribute(OpenIdConstants.RETURN_URL, returnUrl);
+	appState.getActiveWindow().open(new ExternalResource(urlString + "openid/login"));
+    }
+
     /**
      * Opens an entity in a new window
      * 
@@ -348,7 +374,7 @@ public class OpenGroupsApplication extends Application {
 	Integer nextId = windowsManager.getNextWindowId(name);
 	name = name + MY_WINDOW_SEPARATOR + nextId;
 	System.out.println("->createWindow(" + name + ")");
-	OpenGroupsMainWindow w = new OpenGroupsMainWindow(this,"Metaguvernare");
+	OpenGroupsMainWindow w = new OpenGroupsMainWindow(this, "Metaguvernare");
 	System.out.println("createWindow(" + name + ") -> " + w);
 	return w;
     }
@@ -372,13 +398,13 @@ public class OpenGroupsApplication extends Application {
 
     private void initWindow(OpenGroupsMainWindow w) {
 	// OpenGroupsUriHandler uriHandler = new OpenGroupsUriHandler(this);
-//	w.getUriUtility().addListener(uriHandler);
-//	w.addURIHandler(uriHandler);
+	// w.getUriUtility().addListener(uriHandler);
+	// w.addURIHandler(uriHandler);
 	addCloseListener(w);
-//	CausalHierarchyContainer chc = w.getHierarchyContainer();
-//	chc.setStartDepthChangedListener(hierarchyStartDepthListener);
-//	chc.setTreeExpandListener(hierarchyTreeExpandListener);
-//	chc.setSelectionChangedListener(hierarchyItemSelectedListener);
+	// CausalHierarchyContainer chc = w.getHierarchyContainer();
+	// chc.setStartDepthChangedListener(hierarchyStartDepthListener);
+	// chc.setTreeExpandListener(hierarchyTreeExpandListener);
+	// chc.setSelectionChangedListener(hierarchyItemSelectedListener);
 	w.init();
     }
 
@@ -492,28 +518,28 @@ public class OpenGroupsApplication extends Application {
      * @return the hierarchyStartDepthListener
      */
     public CausalHierarchyStartDepthChangedListener getHierarchyStartDepthListener() {
-        return hierarchyStartDepthListener;
+	return hierarchyStartDepthListener;
     }
 
     /**
      * @return the hierarchyTreeExpandListener
      */
     public CausalHierarchyTreeExpandListener getHierarchyTreeExpandListener() {
-        return hierarchyTreeExpandListener;
+	return hierarchyTreeExpandListener;
     }
 
     /**
      * @return the hierarchyItemSelectedListener
      */
     public CausalHierarchyItemSelectedListener getHierarchyItemSelectedListener() {
-        return hierarchyItemSelectedListener;
+	return hierarchyItemSelectedListener;
     }
 
     /**
      * @return the uriHandler
      */
     public OpenGroupsUriHandler getUriHandler() {
-        return uriHandler;
+	return uriHandler;
     }
 
 }

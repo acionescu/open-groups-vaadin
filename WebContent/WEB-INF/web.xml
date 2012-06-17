@@ -23,7 +23,16 @@
    <filter-mapping>
       <filter-name>addBackSlash</filter-name>
       <url-pattern>/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
    </filter-mapping>
+   <servlet>
+      <servlet-name>OpenIdLoginManager</servlet-name>
+      <servlet-class>ro.zg.open_groups.openid.OpenIdLoginManagerServlet</servlet-class>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>OpenIdLoginManager</servlet-name>
+      <url-pattern>/openid/*</url-pattern>
+   </servlet-mapping>
    <servlet>
       <servlet-name>open_groups</servlet-name>
       <servlet-class>ro.zg.open_groups.OpenGroupsApplicationServlet</servlet-class>
@@ -42,7 +51,7 @@
    </servlet>
    <servlet-mapping>
       <servlet-name>open_groups</servlet-name>
-      <url-pattern>/*</url-pattern>
+      <url-pattern>/VAADIN/*</url-pattern>
    </servlet-mapping>
    <welcome-file-list>
       <welcome-file>index.html</welcome-file>

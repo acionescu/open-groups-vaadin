@@ -105,9 +105,15 @@ public class LoginHandler extends UserHandler {
 		CssLayout openIdLayout = new CssLayout();
 		openIdLayout.setSizeFull();
 		openIdLayout.addStyleName("openid-login-pane");
+		
+		CssLayout openIdContainer = new CssLayout();
+		openIdContainer.setSizeUndefined();
+		openIdContainer.addStyleName("openid-container");
+		openIdLayout.addComponent(openIdContainer);
+		
 		for (Map.Entry<String, String> e : openIdProviders.entrySet()) {
 
-		    openIdLayout.addComponent(getOpenidLoginComponent(
+		    openIdContainer.addComponent(getOpenidLoginComponent(
 			    actionContext, e));
 
 		}
@@ -120,14 +126,21 @@ public class LoginHandler extends UserHandler {
 	return hl;
     }
 
-    private Component getOpenidLoginComponent(ActionContext actionContext,
-	    Map.Entry<String, String> entry) {
-	Link lb = new Link();
-
+    private Component getOpenidLoginComponent(final ActionContext actionContext,
+	    final Map.Entry<String, String> entry) {
+	final Button lb = new Button();
+	
 	lb.setIcon(OpenGroupsResources.getIcon(entry.getKey() + ".ico"));
-	lb.addStyleName("centered-button");
+	lb.addStyleName(BaseTheme.BUTTON_LINK);
 
-	// TODO: add listener
+	lb.addListener(new ClickListener() {
+	    
+	    @Override
+	    public void buttonClick(ClickEvent event) {
+		actionContext.getApp().openIdLogin(entry.getValue());
+		actionContext.getWindow().removeWindow(lb.getWindow());
+	    }
+	});
 	return lb;
     }
 
@@ -203,7 +216,7 @@ public class LoginHandler extends UserHandler {
 	/* so we have a user */
 	GenericNameValueContext userRow = (GenericNameValueContext) list
 		.getValueForIndex(0);
-	User user = getUserFromParamsContext(userRow);
+	User user = getModel().getUserFromParamsContext(userRow);
 	/* close the login window */
 	window.removeWindow(form.getWindow());
 	app.login(user, entity);

@@ -6,6 +6,7 @@
 		<project>netcell-client</project>
 		<project>netcell-commons</project>
 		<project>commons</project>
+		<project>openid-support</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

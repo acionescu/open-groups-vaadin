@@ -144,11 +144,16 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	EntityLink selectedCause = entity.getSelectedCause();
 	/* display title */
 	/* if the entity is open or it is a leaf entity, and it is not displayed in the recent activity list */
-	if (isOpened || (subtyesList == null && selectedCause == null)) {
+	if (isOpened || (subtyesList == null && entity.getLastActionType() == null)) {
 	    System.out.println("opening entity with cause: "+entity.getSelectedCause());
 
 	    Label title = new Label(entity.getTitle());
+	    if(isOpened) {
 	    title.addStyleName(OpenGroupsStyles.TITLE_LINK);
+	    }
+	    else {
+		title.addStyleName("list-issue-title");
+	    }
 //	    title.addStyleName("top-left");
 	    // title.setSizeFull();
 	    title.setWidth("80%");
