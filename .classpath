@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="var" path="VAADIN_DOWNLOAD/gwt-dependencies/2.3.0/validation-api-1.0.0.GA-sources.jar"/>
+	<classpathentry kind="var" path="VAADIN_DOWNLOAD/gwt-dependencies/2.3.0/validation-api-1.0.0.GA.jar"/>
+	<classpathentry kind="var" path="VAADIN_DOWNLOAD/gwt-user/2.3.0/gwt-user.jar"/>
+	<classpathentry kind="var" path="VAADIN_DOWNLOAD/gwt-dev/2.3.0/gwt-dev.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.4.3/mail-1.4.3.jar" sourcepath="M2_REPO/javax/mail/mail/1.4.3/mail-1.4.3-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.1/activation-1.1.jar" sourcepath="M2_REPO/javax/activation/activation/1.1/activation-1.1-sources.jar"/>
