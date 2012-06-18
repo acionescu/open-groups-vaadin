@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -36,32 +37,33 @@ public class AddBackSlashFilter implements Filter {
 	String contextPath = req.getContextPath();
 	String requestUri = req.getRequestURI();
 //	System.out.println("context path=" + contextPath);
-//	System.out.println("req uri=" + requestUri);
+	System.out.println("req uri=" + requestUri);
 //	System.out.println("req url=" + req.getRequestURL());
-	String uri = requestUri.substring(contextPath.length());
-	if (uri.trim().equals("")) {
-	    res.sendRedirect(contextPath + "/");
+	String uri = requestUri.substring(contextPath.length()).trim();
+	if (uri.equals("") || uri.equals("/")) {
+//	    res.sendRedirect(contextPath + "/");
+	    RequestDispatcher dispatcher = req.getRequestDispatcher("/VAADIN/");
+	    dispatcher.forward(req, res);
 	    return;
 	}
-	else if (uri.startsWith("/img")) {
-	    returnImage(uri, req, res);
-	    return;
-	}
+//	else if (uri.startsWith("/img")) {
+//	    returnImage(uri, req, res);
+//	    return;
+//	}
+//	
+//	else if(uri.startsWith("/res/")) {
+//	    RequestDispatcher dispatcher = req.getRequestDispatcher(uri);
+//	    dispatcher.forward(req, res);
+//	    return;
+//	}
 	else if(uri.startsWith("/"+UriFragments.SHOW_ENTITY)) {
 	    res.sendRedirect(contextPath+"/#"+uri.substring(1));
+//	    System.out.println("show");
+//	    RequestDispatcher dispatcher = req.getRequestDispatcher("/#"+uri.substring(1));
+//	    dispatcher.forward(req, res);
 	    return;
 	}
-
-	// System.out.println("real uri="+uri);
-
-	// if (!isVaadinStuff(uri)) {
-	// System.out.println("send redirect");
-	// if (uri.length() > 1) {
-	// res.sendRedirect(req.getRequestURL() + "/#" + uri);
-	// }
-	//
-	// return;
-	// }
+	
 	arg2.doFilter(arg0, arg1);
     }
 

@@ -43,7 +43,7 @@ public class OpenGroupsUtil {
     }
 
     public static Label getLinkForEntity(Entity entity, OpenGroupsApplication app, String title) {
-	String url = app.getURL().toString();
+	String url = "/"+app.getAppContext().getBaseDirectory().getName()+"/";
 	String fragment = getDesiredFragmentForEntity(entity);
 	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, fragment, title, "_self"), Label.CONTENT_XHTML);
 	anchor.setWidth("80%");

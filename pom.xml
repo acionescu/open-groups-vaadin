@@ -33,18 +33,32 @@
                <archiveClasses>false</archiveClasses>
             </configuration>
          </plugin>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>gwt-maven-plugin</artifactId>
+            <version>2.4.0</version>
+            <configuration>
+               <!-- if you don't specify any modules, the plugin will find 
+                  them -->
+               <!--modules> .. </modules -->
+               <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
+               <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+               <runTarget>clean</runTarget>
+               <hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
+               <noServer>true</noServer>
+               <port>8080</port>
+               <soyc>false</soyc>
+            </configuration>
+            
+         </plugin>
       </plugins>
+      
    </build>
    <dependencies>
       <dependency>
          <groupId>com.vaadin</groupId>
          <artifactId>vaadin</artifactId>
          <version>6.8.0</version>
-      </dependency>
-      <dependency>
-         <groupId>org.vaadin.addons</groupId>
-         <artifactId>confirmdialog</artifactId>
-         <version>1.0.1</version>
       </dependency>
       <dependency>
          <groupId>ro.zg.netcell</groupId>
@@ -66,6 +80,16 @@
          <groupId>ro.zg</groupId>
          <artifactId>commons</artifactId>
          <version>0.0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+         <groupId>ro.zg</groupId>
+         <artifactId>openid-support</artifactId>
+         <version>0.0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>jstl</artifactId>
+         <version>1.2</version>
       </dependency>
    </dependencies>
    <repositories>

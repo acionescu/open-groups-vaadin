@@ -15,17 +15,23 @@
  ******************************************************************************/
 package ro.zg.open_groups.model;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.terminal.UserError;
+
 import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.commons.exceptions.ExceptionContext;
 import ro.zg.netcell.control.CommandResponse;
+import ro.zg.netcell.vaadin.DataTranslationUtils;
+import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.open_groups.resources.OpenGroupsResources;
+import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.constants.ExceptionTypes;
 import ro.zg.opengroups.constants.TypeRelationConfigParam;
@@ -33,7 +39,9 @@ import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityLink;
 import ro.zg.opengroups.vo.EntityList;
 import ro.zg.opengroups.vo.Tag;
+import ro.zg.opengroups.vo.User;
 import ro.zg.opengroups.vo.UserAction;
+import ro.zg.util.data.GenericNameValue;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
 import ro.zg.util.logging.MasterLogManager;
@@ -44,6 +52,7 @@ public class OpenGroupsModel {
     private static final String GET_HIERARCHY_MAX_DEPTH = "ro.problems.flows.get-hierarchy-max-depth";
     private static final String GET_CAUSAL_HIERARCHY = "ro.problems.flows.get-entities-list";
     private static final String GET_CAUSES = "ro.problems.flows.get-all-causes-for-entity";
+    private static final String LOGIN_WITH_OPENID = "ro.problems.flows.login-with-openid";
 
     private static OpenGroupsModel instance;
 
@@ -71,17 +80,15 @@ public class OpenGroupsModel {
     }
 
     public Entity getRootEntity() throws ContextAwareException {
-	Entity e = new Entity((Long) getAppConfigManager()
-		.getApplicationConfigParam(
-			ApplicationConfigParam.DEFAULT_ENTITY_ID));
+	Entity e = new Entity((Long) getAppConfigManager().getApplicationConfigParam(
+		ApplicationConfigParam.DEFAULT_ENTITY_ID));
 	refreshEntity(e, null);
-//	String caption = getMessage("metagroup.caption");
-//	e.setTitle(caption);
+	// String caption = getMessage("metagroup.caption");
+	// e.setTitle(caption);
 	return e;
     }
 
-    public void refreshEntity(Entity entity, Long userId)
-	    throws ContextAwareException {
+    public void refreshEntity(Entity entity, Long userId) throws ContextAwareException {
 	Map<String, Object> params = new HashMap<String, Object>();
 	params.put("entityId", entity.getId());
 	params.put("userId", userId);
@@ -89,12 +96,9 @@ public class OpenGroupsModel {
 	if (selectedCause != null) {
 	    params.put("parentLinkId", selectedCause.getLinkId());
 	}
-	CommandResponse response = getActionsManager().execute(
-		GET_ENTITY_INFO_FLOW, params);
-	GenericNameValueList result = (GenericNameValueList) response
-		.getValue("result");
-	GenericNameValueContext row = (GenericNameValueContext) result
-		.getValueForIndex(0);
+	CommandResponse response = getActionsManager().execute(GET_ENTITY_INFO_FLOW, params);
+	GenericNameValueList result = (GenericNameValueList) response.getValue("result");
+	GenericNameValueContext row = (GenericNameValueContext) result.getValueForIndex(0);
 	// selectedEntity.setComplexType(row.getValue("complex_type").toString());
 	/* get the tags */
 	if (row == null) {
@@ -104,18 +108,15 @@ public class OpenGroupsModel {
 	}
 	entity.update(row);
 	entity.setSelectedCause(selectedCause);
-	GenericNameValueList tagsResult = (GenericNameValueList) response
-		.getValue("tags");
+	GenericNameValueList tagsResult = (GenericNameValueList) response.getValue("tags");
 	entity.setTags(Tag.getTagsList(tagsResult));
 
     }
 
-    public EntityList getChildrenListForEntity(Entity entity, UserAction ua,
-	    Long userId) {
+    public EntityList getChildrenListForEntity(Entity entity, UserAction ua, Long userId) {
 	Map<String, Object> params = ua.getActionParams();
 	params.putAll(entity.getFilterValues());
-	params.put("pageNumber", entity.getState()
-		.getCurrentPageForCurrentAction());
+	params.put("pageNumber", entity.getState().getCurrentPageForCurrentAction());
 	params.put("itemsOnPage", entity.getState().getItemsPerPage());
 	params.put("parentId", entity.getId());
 	String complexEntityType = ua.getTargetEntityComplexType();
@@ -129,31 +130,26 @@ public class OpenGroupsModel {
 	// ComplexEntityParam.LIST_WITH_CONTENT));
 	params.put(
 		"withContent",
-		getAppConfigManager().getTypeRelationBooleanConfigParam(
-			ua.getTypeRelationId(),
+		getAppConfigManager().getTypeRelationBooleanConfigParam(ua.getTypeRelationId(),
 			TypeRelationConfigParam.LIST_WITH_CONTENT));
 	params.put("userId", userId);
 	// if
 	// (!getAppConfigManager().getComplexEntityBooleanParam(complexEntityType,
 	// ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
-	if (!getAppConfigManager().getTypeRelationBooleanConfigParam(
-		ua.getTypeRelationId(),
+	if (!getAppConfigManager().getTypeRelationBooleanConfigParam(ua.getTypeRelationId(),
 		TypeRelationConfigParam.ALLOW_RECURSIVE_LIST)) {
 	    params.put("depth", 0);
 	}
 
-	CommandResponse response = getActionsManager().execute(ua.getAction(),
-		params);
-	GenericNameValueList list = (GenericNameValueList) response
-		.getValue("result");
+	CommandResponse response = getActionsManager().execute(ua.getAction(), params);
+	GenericNameValueList list = (GenericNameValueList) response.getValue("result");
 	Object totalItemsCount = response.getValue("totalItemsCount");
 	if (totalItemsCount != null) {
-	    entity.getState().setCurrentListTotalItemsCount(
-		    Integer.parseInt(totalItemsCount.toString()));
+	    entity.getState().setCurrentListTotalItemsCount(Integer.parseInt(totalItemsCount.toString()));
 	}
 	/*
-	 * the selected cause needs to be set, to point to the current open
-	 * entity which is actually the parent off all entities from the list
+	 * the selected cause needs to be set, to point to the current open entity which is actually the parent off all
+	 * entities from the list
 	 */
 	return new EntityList(list, showEntityType, entity);
     }
@@ -168,10 +164,8 @@ public class OpenGroupsModel {
 	params.put("withContent", true);
 	params.put("userId", userId);
 
-	CommandResponse response = getActionsManager().execute(ua.getAction(),
-		params);
-	GenericNameValueList list = (GenericNameValueList) response
-		.getValue("result");
+	CommandResponse response = getActionsManager().execute(ua.getAction(), params);
+	GenericNameValueList list = (GenericNameValueList) response.getValue("result");
 	/* remove current entity from the hierarchy */
 	list.removeValueForIndex(list.size() - 1);
 	return new EntityList(list, true);
@@ -181,8 +175,7 @@ public class OpenGroupsModel {
     public long getHierarchyMaxDepth(long rootNodeId) {
 	Map<String, Object> params = new HashMap<String, Object>();
 	params.put("parentId", rootNodeId);
-	CommandResponse response = getActionsManager().execute(
-		GET_HIERARCHY_MAX_DEPTH, params);
+	CommandResponse response = getActionsManager().execute(GET_HIERARCHY_MAX_DEPTH, params);
 	Object maxDepth = response.getValue("max_depth");
 	if (maxDepth != null) {
 	    return Long.parseLong(maxDepth.toString());
@@ -190,8 +183,7 @@ public class OpenGroupsModel {
 	return 0;
     }
 
-    public EntityList getCausalHierarchy(long rootNodeId, int startDepth,
-	    int cacheDepth) {
+    public EntityList getCausalHierarchy(long rootNodeId, int startDepth, int cacheDepth) {
 	Map<String, Object> params = new HashMap<String, Object>();
 	params.put("parentId", rootNodeId);
 	params.put("startDepth", startDepth);
@@ -202,10 +194,8 @@ public class OpenGroupsModel {
 	params.put("pageNumber", 1);
 	params.put("itemsOnPage", 5000);
 
-	CommandResponse response = getActionsManager().execute(
-		GET_CAUSAL_HIERARCHY, params);
-	GenericNameValueList list = (GenericNameValueList) response
-		.getValue("result");
+	CommandResponse response = getActionsManager().execute(GET_CAUSAL_HIERARCHY, params);
+	GenericNameValueList list = (GenericNameValueList) response.getValue("result");
 	return new EntityList(list, false);
     }
 
@@ -213,24 +203,21 @@ public class OpenGroupsModel {
 	Map<String, Object> params = new HashMap<String, Object>();
 	params.put("entityId", entity.getId());
 
-	CommandResponse response = getActionsManager().execute(GET_CAUSES,
-		params);
+	CommandResponse response = getActionsManager().execute(GET_CAUSES, params);
 
 	if (!response.isSuccessful()) {
-	    MasterLogManager.getLogger("OPEN-GROUPS").error(
-		    "Failed to get causes for entity " + entity.getId()
-			    + ". Error code: " + response.getResponseCode());
+	    MasterLogManager.getLogger("OPEN-GROUPS")
+		    .error("Failed to get causes for entity " + entity.getId() + ". Error code: "
+			    + response.getResponseCode());
 	    return;
 	}
 
-	GenericNameValueList list = (GenericNameValueList) response
-		.getValue("result");
+	GenericNameValueList list = (GenericNameValueList) response.getValue("result");
 
 	if (list != null) {
 	    List<EntityLink> causes = new ArrayList<EntityLink>();
 	    for (int i = 0; i < list.size(); i++) {
-		GenericNameValueContext context = (GenericNameValueContext) list
-			.getValueForIndex(i);
+		GenericNameValueContext context = (GenericNameValueContext) list.getValueForIndex(i);
 		causes.add(new EntityLink(context));
 	    }
 	    entity.setCauses(causes);
@@ -239,5 +226,37 @@ public class OpenGroupsModel {
 		entity.setSelectedCause(causes.get(0));
 	    }
 	}
+    }
+
+    public User loginWithOpenId(String email, String ip) {
+	Map<String, Object> paramsMap = new HashMap<String, Object>();
+	paramsMap.put("email", email);
+	paramsMap.put("ip", ip);
+
+	CommandResponse response = getActionsManager().execute(LOGIN_WITH_OPENID, paramsMap);
+	GenericNameValue result = (GenericNameValue) response.get("result");
+	GenericNameValueList list = (GenericNameValueList) result.getValue();
+	
+	/* so we have a user */
+	GenericNameValueContext userRow = (GenericNameValueContext) list.getValueForIndex(0);
+	User user = getUserFromParamsContext(userRow);
+	return user;
+    }
+
+    public User getUserFromParamsContext(GenericNameValueContext userRow) {
+	User user = new User();
+	String username = (String) userRow.getValue("username");
+	long userId = (Long) userRow.getValue("id");
+	Timestamp lastLogin = (Timestamp) userRow.getValue("last_login");
+	String email = (String) userRow.getValue("email");
+	user.setUserId(userId);
+	if (username != null) {
+	    user.setUsername(username);
+	} else {
+	    user.setUsername(email);
+	}
+	user.setLastLogin(lastLogin);
+	user.setEmail(email);
+	return user;
     }
 }

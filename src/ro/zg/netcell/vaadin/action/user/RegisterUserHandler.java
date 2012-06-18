@@ -112,7 +112,7 @@ public class RegisterUserHandler extends UserHandler{
 	/* user successfully registered, probably */
 	GenericNameValueList list = (GenericNameValueList)response.getValue("result");
 	GenericNameValueContext userRow = (GenericNameValueContext)list.getValueForIndex(0);
-	User user = getUserFromParamsContext(userRow);
+	User user = getModel().getUserFromParamsContext(userRow);
 	app.login(user,entity);
 	/* close the login window */
 	window.removeWindow(form.getWindow());
