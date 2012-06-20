@@ -130,7 +130,7 @@ public class LoginHandler extends UserHandler {
 	    final Map.Entry<String, String> entry) {
 	final Button lb = new Button();
 	
-	lb.setIcon(OpenGroupsResources.getIcon(entry.getKey() + ".ico"));
+	lb.setIcon(OpenGroupsResources.getIcon(entry.getKey() + ".png"));
 	lb.addStyleName(BaseTheme.BUTTON_LINK);
 
 	lb.addListener(new ClickListener() {
