@@ -34,6 +34,7 @@ import ro.zg.open_groups.gui.components.logic.CausalHierarchyTreeExpandListener;
 import ro.zg.open_groups.model.OpenGroupsModel;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.open_groups.user.UsersManager;
+import ro.zg.opengroups.constants.OpenGroupsExceptions;
 import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityState;
@@ -355,9 +356,18 @@ public class OpenGroupsApplication extends Application {
      * @param entity
      */
     public void openInActiveWindow(Entity entity) {
+	long entityId=-1;
+	long rootEntityId=-1;
 	if (entity == null) {
 	    entity = getRootEntity();
-	} else if (entity.getId() != getRootEntity().getId()) {
+	} else if ( (entityId = entity.getId()) != ( rootEntityId = getRootEntity().getId()) ) {
+	    
+	    /* don't allow the user to display entities from the inner logic of the application */
+	    if(entityId < rootEntityId){
+		pushError(OpenGroupsExceptions.getNoSuchEntityException(entityId));
+		handleErrors();
+		return;
+	    }
 	    /*
 	     * this is stupid, should be handled via the complex_entity_type table
 	     */
@@ -368,6 +378,10 @@ public class OpenGroupsApplication extends Application {
 	OpenGroupsMainWindow activeWindow = getActiveWindow();
 	logger.debug("Open entity " + entity.getId() + " in window " + activeWindow);
 	actionsManager.executeAction(ActionsManager.OPEN_ENTITY_IN_WINDOW, entity, this, activeWindow, false);
+	if (hasErrors()) {
+	    handleErrors();
+	    return;
+	}
     }
 
     protected OpenGroupsMainWindow createWindow(String name) {

@@ -33,7 +33,7 @@ import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
-import ro.zg.opengroups.constants.ExceptionTypes;
+import ro.zg.opengroups.constants.OpenGroupsExceptions;
 import ro.zg.opengroups.constants.TypeRelationConfigParam;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityLink;
@@ -102,9 +102,7 @@ public class OpenGroupsModel {
 	// selectedEntity.setComplexType(row.getValue("complex_type").toString());
 	/* get the tags */
 	if (row == null) {
-	    ExceptionContext ec = new ExceptionContext();
-	    ec.put("ENTITY_ID", entity.getId());
-	    throw new ContextAwareException(ExceptionTypes.NO_SUCH_ENTITY, ec);
+	    throw OpenGroupsExceptions.getNoSuchEntityException(entity.getId());
 	}
 	entity.update(row);
 	entity.setSelectedCause(selectedCause);
