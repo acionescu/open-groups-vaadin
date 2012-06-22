@@ -151,6 +151,7 @@ a:link,a:visited {
 	/* 	margin-left: -100%; */
 	/* 	float: left; */
 	overflow-y: scroll !important;
+	overflow-x: auto !important;
 }
 
 .entity-pane { /* 	border-left-style: solid; */
@@ -343,7 +344,7 @@ a:link,a:visited {
 
 .openid-container{
 /* 	display: block; */
-	margin-left: 75px;
+	margin-left: 70px;
 	margin-right: auto;
 	margin-top: 30px;
 	margin-bottom: 30px;

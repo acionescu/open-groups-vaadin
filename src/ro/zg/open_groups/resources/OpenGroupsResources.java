@@ -15,6 +15,7 @@
  ******************************************************************************/
 package ro.zg.open_groups.resources;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,10 +40,8 @@ public class OpenGroupsResources {
 	    InputStream in = (Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName));
 	    messagesBundle = new PropertyResourceBundle(new InputStreamReader(in, "UTF-8"));
 	} catch (FileNotFoundException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	} catch (IOException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
     }
@@ -61,7 +60,8 @@ public class OpenGroupsResources {
     }
 
     public static ThemeResource getIcon(String name,String size) {
-	return iconsSet.getIcon(name, size);
+	ThemeResource res = iconsSet.getIcon(name, size);
+	return res;
     }
     
     public static ThemeResource getIcon(String name) {

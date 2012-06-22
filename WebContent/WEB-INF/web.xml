@@ -6,7 +6,7 @@
    <context-param>
       <description>Vaadin production mode</description>
       <param-name>productionMode</param-name>
-      <param-value>false</param-value>
+      <param-value>true</param-value>
    </context-param>
    <filter>
       <filter-name>addBackSlash</filter-name>
@@ -49,6 +49,10 @@
          <param-value>ro.zg.open_groups.widgetset.Open_groupsWidgetset</param-value>
       </init-param>
    </servlet>
+   <servlet-mapping>
+      <servlet-name>open_groups</servlet-name>
+      <url-pattern>/site/*</url-pattern>
+   </servlet-mapping>
    <servlet-mapping>
       <servlet-name>open_groups</servlet-name>
       <url-pattern>/VAADIN/*</url-pattern>

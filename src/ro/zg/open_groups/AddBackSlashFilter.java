@@ -42,7 +42,7 @@ public class AddBackSlashFilter implements Filter {
 	String uri = requestUri.substring(contextPath.length()).trim();
 	if (uri.equals("") || uri.equals("/")) {
 //	    res.sendRedirect(contextPath + "/");
-	    RequestDispatcher dispatcher = req.getRequestDispatcher("/VAADIN/");
+	    RequestDispatcher dispatcher = req.getRequestDispatcher("/site/");
 	    dispatcher.forward(req, res);
 	    return;
 	}

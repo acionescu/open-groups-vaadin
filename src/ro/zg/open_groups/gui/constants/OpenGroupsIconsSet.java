@@ -55,7 +55,7 @@ public class OpenGroupsIconsSet {
     }
     
     public ThemeResource getIcon(String name,String size) {
-	String s = File.separator;
+	String s = "/";
 	return new ThemeResource(dirPath+s+sizesMap.get(size)+s+iconsMap.get(name));
     }
 

@@ -96,7 +96,7 @@ public class OpenGroupsMainWindow extends Window {
 	
 	CssLayout entityFrame = new CssLayout();
 	entityFrame.setHeight("96%");
-//	entityFrame.setWidth("100%");
+//	entityFrame.setWidth("100%"); uncomment this and you will have problems
 	entityFrame.addStyleName("entity-frame");
 	entityFrame.setMargin(true);
 
