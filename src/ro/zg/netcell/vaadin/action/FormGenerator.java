@@ -15,6 +15,7 @@
  ******************************************************************************/
 package ro.zg.netcell.vaadin.action;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -30,7 +31,11 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextField;
 
-public class FormGenerator {
+public class FormGenerator implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2306330779022587201L;
     private List<Map<String,String>> paramsConfigList;
     private ResourceBundle messages;
     private String formId;

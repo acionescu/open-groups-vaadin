@@ -93,6 +93,7 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 
     private ActionsManager() {
 	init();
+	System.out.println(actionsMap);
     }
 
     private void init() {

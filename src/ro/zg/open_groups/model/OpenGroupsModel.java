@@ -145,11 +145,8 @@ public class OpenGroupsModel {
 	if (totalItemsCount != null) {
 	    entity.getState().setCurrentListTotalItemsCount(Integer.parseInt(totalItemsCount.toString()));
 	}
-	/*
-	 * the selected cause needs to be set, to point to the current open entity which is actually the parent off all
-	 * entities from the list
-	 */
-	return new EntityList(list, showEntityType, entity);
+	
+	return new EntityList(list, showEntityType);
     }
 
     public EntityList getHierarchyList(Entity entity, UserAction ua, Long userId) {

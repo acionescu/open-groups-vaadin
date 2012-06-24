@@ -47,30 +47,9 @@ public class VoteEntityHandler extends OpenGroupsActionHandler {
 
     @Override
     public void handle(ActionContext actionContext) throws Exception {
-	// TODO Auto-generated method stub
-
 	ComponentContainer container = actionContext.getTargetContainer();
 	container.removeAllComponents();
-	/*
-	 * Entity selectedEntity = application.getSelectedEntity(); String entityType =
-	 * selectedEntity.getSimpleType().toLowerCase(); String voteCaption = application.getMessage(entityType +
-	 * ".vote");
-	 * 
-	 * final Form votesForm = new Form(); final OptionGroup votesChoices = new OptionGroup(null,
-	 * VoteType.valuesList(entityType)); votesChoices.setRequired(true);
-	 * votesChoices.setRequiredError(application.getMessage("vote.required.error")); votesForm.addField("vote",
-	 * votesChoices);
-	 * 
-	 * container.addComponent(votesForm);
-	 * 
-	 * Button voteButton = new Button(voteCaption); container.addComponent(voteButton); voteButton.addListener(new
-	 * ClickListener() {
-	 * 
-	 * @Override public void buttonClick(ClickEvent event) { try { votesForm.commit(); System.out.println("Vote: " +
-	 * votesChoices.getValue()); } catch (Validator.InvalidValueException e) {
-	 * 
-	 * } } });
-	 */
+	
 	Entity selectedEntity = actionContext.getEntity();
 	EntityUserData userData = selectedEntity.getUserData();
 	if (userData.getVote() != null) {

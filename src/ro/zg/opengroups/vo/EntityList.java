@@ -26,20 +26,15 @@ public class EntityList {
     
     public EntityList(GenericNameValueList sourceList,boolean showEntityType) {
 	this.showEntityType = showEntityType;
-	update(sourceList,null);
+	update(sourceList);
     }
     
-    public EntityList(GenericNameValueList sourceList,boolean showEntityType,Entity parent){
-	this.showEntityType = showEntityType;
-	update(sourceList, parent);
-    }
-    
-    private void update(GenericNameValueList source, Entity parent) {
+    private void update(GenericNameValueList source/*, Entity parent*/) {
 	itemsList = new ArrayList<Entity>();
 	
 	for (int i = 0; i < source.size(); i++) {
 	    GenericNameValueContext row = (GenericNameValueContext) source.getValueForIndex(i);
-	    Entity currentEntity = new Entity(row,parent);
+	    Entity currentEntity = new Entity(row);
 	    currentEntity.getState().setEntityTypeVisible(showEntityType);
 	    itemsList.add(currentEntity);
 	}

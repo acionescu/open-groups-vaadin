@@ -55,8 +55,7 @@ public class Entity implements Serializable {
     private String generalStatus;
     private List<Tag> tags = new ArrayList<Tag>();
     /*
-     * these are populated when the entity is displayed in the recent activity
-     * list
+     * these are populated when the entity is displayed in the recent activity list
      */
     // private Long selectedParentId = -1L;
     // private Long selectedParentLinkId;
@@ -95,12 +94,6 @@ public class Entity implements Serializable {
 	update(dataMap);
     }
 
-    public Entity(GenericNameValueContext dataMap, Entity parent) {
-	this(dataMap);
-	if (parent != null) {
-	    updateSelectedCause(dataMap, parent);
-	}
-    }
 
     public void update(GenericNameValueContext dataMap) {
 	// System.out.println(dataMap);
@@ -130,13 +123,13 @@ public class Entity implements Serializable {
 	this.userData = new EntityUserData(dataMap);
 	initSubtypeEntitiesInfo(dataMap);
 
-	/* if displayed in the recent activity list */
-	String parentEntityTitle = (String) dataMap.getValue("parent_title");
-	if (parentEntityTitle != null) {
-	    this.selectedCause = new EntityLink(
-		    (Long) dataMap.getValue("selected_parent_link_id"),
-		    this.id, (Long) dataMap.getValue("selected_parent_id"),
-		    parentEntityTitle);
+	/* if displayed in a list */
+
+	Long selectedParentLinkId = (Long) dataMap.getValue("selected_parent_link_id");
+	if (selectedParentLinkId != null) {
+	    String parentEntityTitle = (String) dataMap.getValue("parent_title");
+	    this.selectedCause = new EntityLink(selectedParentLinkId, this.id,
+		    (Long) dataMap.getValue("selected_parent_id"), parentEntityTitle);
 
 	    if (dataMap.getValue("action_type_id") != null) {
 		this.lastActionId = (Long) dataMap.getValue("action_type_id");
@@ -159,13 +152,6 @@ public class Entity implements Serializable {
 	}
     }
 
-    private void updateSelectedCause(GenericNameValueContext dataMap,
-	    Entity parent) {
-	this.selectedCause = new EntityLink(
-		(Long) dataMap.getValue("selected_parent_link_id"), this.id,
-		parent.getId(), parent.getTitle());
-    }
-
     public void setFilter(FilterOption fo) {
 	filters.put(fo.getParamName(), fo);
 	filterValues.put(fo.getParamName(), fo.getValue());
@@ -184,8 +170,7 @@ public class Entity implements Serializable {
 	filterValues.clear();
     }
 
-    public void addHeaderActionContainer(String actionName,
-	    ComponentContainer container) {
+    public void addHeaderActionContainer(String actionName, ComponentContainer container) {
 	headerActionsContainers.put(actionName, container);
     }
 
@@ -203,15 +188,13 @@ public class Entity implements Serializable {
 	    int index = name.indexOf(suffix);
 	    if (index > 0) {
 		String subtype = name.substring(0, index);
-		subtypeEntitiesCount
-			.put(subtype, (Long) dataMap.getValue(name));
+		subtypeEntitiesCount.put(subtype, (Long) dataMap.getValue(name));
 	    }
 	    /* get all subtypes count */
 	    index = name.indexOf(recursiveSuffinx);
 	    if (index > 0) {
 		String subtype = name.substring(0, index);
-		recursiveSubtypeEntitiesCount.put(subtype,
-			(Long) dataMap.getValue(name));
+		recursiveSubtypeEntitiesCount.put(subtype, (Long) dataMap.getValue(name));
 	    }
 	}
     }
@@ -407,8 +390,7 @@ public class Entity implements Serializable {
      * @param headerActionLinksContainer
      *            the headerActionLinksContainer to set
      */
-    public void setHeaderActionLinksContainer(
-	    ComponentContainer headerActionLinksContainer) {
+    public void setHeaderActionLinksContainer(ComponentContainer headerActionLinksContainer) {
 	this.headerActionLinksContainer = headerActionLinksContainer;
     }
 

@@ -32,6 +32,7 @@ import ro.zg.netcell.vaadin.action.application.OpenHierarchyForEntityHandler;
 import ro.zg.netcell.vaadin.action.application.SetEntityPriorityHandler;
 import ro.zg.netcell.vaadin.action.application.SetEntityStatusHandler;
 import ro.zg.netcell.vaadin.action.application.UpdateEntityHandler;
+import ro.zg.netcell.vaadin.action.application.UserNotificationRulesHandler;
 import ro.zg.netcell.vaadin.action.application.VoteEntityHandler;
 import ro.zg.netcell.vaadin.action.constants.ActionParamProperties;
 import ro.zg.netcell.vaadin.action.user.LoginHandler;
@@ -102,6 +103,7 @@ public class UserAction implements Serializable {
 	actionsHandlersByName.put("user.update.data", new UpdateUserHandler());
 	actionsHandlersByName.put("user.request.password.reset", new RequestPasswordResetHandler());
 	actionsHandlersByName.put("user.reset.password", new ResetPasswordHandler());
+	actionsHandlersByName.put("user.notification.rules.read", new UserNotificationRulesHandler());
     }
 
     private String action;
@@ -128,6 +130,7 @@ public class UserAction implements Serializable {
     private String actionType;
     private String actionLocation;
     private String actionPath;
+    private long orderIndex;
     /**
      * this will have the format {@link #sourceEntityComplexType}: {@link #actionLocation} will be used to group the
      * actions based on source entity complex type and the location where the action will be displayed in the gui
@@ -150,6 +153,7 @@ public class UserAction implements Serializable {
 	targetEntityComplexType = (String) contextMap.getValue("target_entity_complex_type");
 	userType = (String) contextMap.getValue("user_type");
 	actionType = (String) contextMap.getValue("action_type");
+	orderIndex = (Long) contextMap.getValue("order_index");
 	initActionLocationAndActionPath(actionTarget);
 	// initParamsFromString((String) contextMap.getValue("action_params"));
 	initActionParamsFromString((String) contextMap.getValue("action_params"));
@@ -576,6 +580,13 @@ public class UserAction implements Serializable {
      */
     public void setActionType(String actionType) {
 	this.actionType = actionType;
+    }
+
+    /**
+     * @return the orderIndex
+     */
+    public long getOrderIndex() {
+        return orderIndex;
     }
 
 }
