@@ -81,7 +81,8 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     private Map<String, EntityDefinitionSummary> flowDefSummaries;
     private Map<String, UserActionList> actionsMap = new HashMap<String, UserActionList>();
     private Map<String, UserAction> allActions = new HashMap<String, UserAction>();
-
+    private Map<String, UserAction> globalActionsByLocation = new HashMap<String, UserAction>();
+    
     private static ActionsManager _instance = new ActionsManager();
     private ThreadPoolExecutor handlersExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     private boolean initialized;
@@ -143,7 +144,13 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 		// + ua.getActionName() + " : " + ua.getActionPath());
 		getUserActionList(ua.getSourceEntityActionLocation()).addAction(ua.getActionPath(), ua);
 		allActions.put(ua.getFullActionPath(), ua);
+		
+		if(ua.getSourceEntityComplexType().equals("*")) {
+		    globalActionsByLocation.put(ua.getActionLocation(), ua);
+		}
 	    }
+	    injectGlobalActions();
+	    
 	    return true;
 	}
 	return false;
@@ -262,7 +269,20 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
      * public UserActionList getAvailableActions(OpenGroupsApplication app) { User user = (User)
      * app.getAppContext().getHttpSession().getAttribute("user"); return getAvailableActions(user, app); }
      */
-
+    
+    
+    private void injectGlobalActions() {
+	for(Map.Entry<String, UserAction> e : globalActionsByLocation.entrySet()) {
+	    String location = e.getKey();
+	    UserAction ua = e.getValue();
+	    for(Map.Entry<String, UserActionList> uale : actionsMap.entrySet()) {
+		if(uale.getKey().contains(location)) {
+		    uale.getValue().addAction(ua.getActionPath(), ua);
+		}
+	    }
+	}
+    }
+    
     public UserActionList getAvailableActions(Entity selectedEntity, String actionLocation) {
 	init();
 	String searchValue = selectedEntity.getComplexType() + ":" + actionLocation;

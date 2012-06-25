@@ -518,7 +518,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	if (global == null && local != null) {
 	    getSimpleActions(local, localStack);
 	    return localStack;
-	} else if (local == null && global == null) {
+	} else if (local == null && global != null) {
 	    getSimpleActions(global, globalStack);
 	    return globalStack;
 	} else if (local == null) { // both are null
