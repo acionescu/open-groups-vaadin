@@ -15,7 +15,6 @@
  ******************************************************************************/
 package ro.zg.netcell.vaadin.action;
 
-import java.util.List;
 import java.util.Map;
 
 import ro.zg.netcell.control.CommandResponse;
@@ -23,7 +22,6 @@ import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.open_groups.model.OpenGroupsModel;
 import ro.zg.open_groups.resources.OpenGroupsResources;
-import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.opengroups.vo.UserActionList;
