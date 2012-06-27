@@ -1,11 +1,24 @@
 package ro.zg.opengroups.vo;
 
+import ro.zg.util.data.GenericNameValueContext;
+
 public class NotificationRule {
     private long actionTypeId;
     private int depth;
     private long notificationModeId;
     private boolean enabled;
     
+    public NotificationRule() {
+	super();
+    }
+    
+    
+    public NotificationRule(GenericNameValueContext data){
+	actionTypeId = (Long)data.getValue("action_type_id");
+	depth = Integer.parseInt(data.getValue("depth").toString());
+	notificationModeId = (Long)data.getValue("notification_mode_id");
+	enabled = ("y".equals(data.getValue("enabled")))?true:false;
+    }
     
     
     /**
