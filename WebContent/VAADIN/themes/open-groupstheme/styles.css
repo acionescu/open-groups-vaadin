@@ -72,10 +72,10 @@ a:link,a:visited {
 /* 	width: 100%; */
 /* /* 	margin-rigth: 40px; */
 * /
-	/* /* 	padding-right: 40px; */    * /
-	/* /* 	padding-left: 20px; */    * /
+	/* /* 	padding-right: 40px; */      * /
+	/* /* 	padding-left: 20px; */      * /
 	/* 	white-space: normal; */
-	/* } */   
+	/* } */     
 
 .text-label>div {
 	width: 96%;
@@ -342,15 +342,34 @@ a:link,a:visited {
 	border-left-style: solid;
 }
 
-.openid-container{
-/* 	display: block; */
+.openid-container { /* 	display: block; */
 	margin-left: 70px;
 	margin-right: auto;
 	margin-top: 30px;
 	margin-bottom: 30px;
-	
 }
 
-.top-margin-5{
+.top-margin-5 {
 	margin-top: 5px;
+}
+
+.notification-rules-container {
+	width: 100%;
+}
+
+.notification-rules-list-container {
+	width: 100%;
+}
+
+.notification-rules-list-header-container {
+	width: 100%;
+	background-color: #dddddd;
+}
+
+.notification-rules-list-controls-container {
+	float: right;
+}
+
+.notification-rules-list-row-container {
+	width: 100%;
 }

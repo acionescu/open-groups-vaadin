@@ -1,19 +1,27 @@
 package ro.zg.opengroups.views;
 
-import com.vaadin.ui.CssLayout;
-
 import ro.zg.opengroups.vo.NotificationRulesList;
 
-public class UserNotificationRulesView extends CssLayout{
+public class UserNotificationRulesView extends OpenGroupsBaseView<NotificationRulesList>{
     
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 8229366866912950289L;
+    private UserNotificationRulesListView listView = new UserNotificationRulesListView();
+    private UserNotificationRulesListControls controlsView = new UserNotificationRulesListControls();
 
     public void update(NotificationRulesList nrl){
-	
+	container.removeAllComponents();
+	container.addStyleName("notification-rules-container");
+	updateList(nrl);
+	updateControls(nrl);
+    }
+    
+    private void updateList(NotificationRulesList nrl){
+	listView.update(nrl);
+	container.addComponent(listView.getContainer());
+    }
+    
+    private void updateControls(NotificationRulesList nrl){
+	controlsView.update(nrl);
+	container.addComponent(controlsView.getContainer());
     }
 
 }

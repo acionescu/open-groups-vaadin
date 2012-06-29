@@ -33,9 +33,10 @@ public class UserNotificationRulesHandler extends OpenGroupsActionHandler{
 	container.removeAllComponents();
 	
 	UserNotificationRulesView view = new UserNotificationRulesView();
+	rulesList.addView(view);
 	view.update(rulesList);
 	
-	container.addComponent(view);
+	container.addComponent(view.getContainer());
     }
     
     private NotificationRulesList getNotificationRulesList(ActionContext actionContext) throws Exception{

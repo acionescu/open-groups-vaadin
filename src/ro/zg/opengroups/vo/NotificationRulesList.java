@@ -5,15 +5,18 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import ro.zg.netcell.control.CommandResponse;
+import ro.zg.netcell.vaadin.action.constants.MessagesConstants;
+import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.util.NetcellBean;
+import ro.zg.presentation.utils.AbstractList;
+import ro.zg.presentation.utils.ListColumn;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
 
-public class NotificationRulesList implements NetcellBean {
+public class NotificationRulesList extends AbstractList implements NetcellBean {
     private List<NotificationRule> rulesList;
     private Map<Long, NotificationMode> notificationModes;
     private Map<Long, ActionType> actionTypes;
@@ -26,6 +29,20 @@ public class NotificationRulesList implements NetcellBean {
      * of input
      */
     private Map<MultitypeNotificationRuleId, MultitypeNotificationRule> multitypeRules;
+    
+    
+    public NotificationRulesList(){
+	initColumns();
+    }
+    
+    private void initColumns(){
+	setName("notification-rules-list");
+	
+	addColumn(new ListColumn("25%", OpenGroupsResources.getMessage(MessagesConstants.NOTIFICATION_RULES_LIST_PREFIX+"action.type")));
+	addColumn(new ListColumn("25%", OpenGroupsResources.getMessage(MessagesConstants.NOTIFICATION_RULES_LIST_PREFIX+"depth")));
+	addColumn(new ListColumn("25%", OpenGroupsResources.getMessage(MessagesConstants.NOTIFICATION_RULES_LIST_PREFIX+"mode")));
+	addColumn(new ListColumn("25%", OpenGroupsResources.getMessage(MessagesConstants.NOTIFICATION_RULES_LIST_PREFIX+"enabled")));
+    }
 
     @Override
     public void update(CommandResponse response) {
@@ -105,4 +122,14 @@ public class NotificationRulesList implements NetcellBean {
 	}
 	return mRule;
     }
+
+    public Map<MultitypeNotificationRuleId, MultitypeNotificationRule> getMultitypeRules() {
+        return multitypeRules;
+    }
+
+    public Map<Long, ActionType> getAvailableActionTypes() {
+        return availableActionTypes;
+    }
+    
+    
 }
