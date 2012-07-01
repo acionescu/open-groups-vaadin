@@ -9,6 +9,7 @@ public class AbstractList extends AbstractModel{
     public static final String CONTROLS_CONTAINER="controls-container";
     public static final String CONTAINER="container";
     public static final String ROW_CONTAINER="row-container";
+    public static final String ROW_CELL="row-cell";
     
     private String name;
     private List<ListColumn> columns = new ArrayList<ListColumn>();
@@ -32,6 +33,10 @@ public class AbstractList extends AbstractModel{
     
     public String getRowContainerStyle(){
 	return name+"-"+ROW_CONTAINER;
+    }
+    
+    public String getRowCellStyle() {
+	return name+"-"+ROW_CELL;
     }
     
     public void addColumn(ListColumn column){

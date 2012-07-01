@@ -17,11 +17,24 @@ import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
 
 public class NotificationRulesList extends AbstractList implements NetcellBean {
+    private static final Map<Integer, DepthValue> depthValues;
+    
+    static {
+	depthValues = new LinkedHashMap<Integer, DepthValue>();
+	depthValues.put(0, new DepthValue(0, OpenGroupsResources.getMessage(MessagesConstants.NOTIFICATION_DEPTH_PREFIX+0)));
+	depthValues.put(3, new DepthValue(3, OpenGroupsResources.getMessage(MessagesConstants.NOTIFICATION_DEPTH_PREFIX+3)));
+	depthValues.put(5, new DepthValue(5, OpenGroupsResources.getMessage(MessagesConstants.NOTIFICATION_DEPTH_PREFIX+5)));
+	depthValues.put(10, new DepthValue(10, OpenGroupsResources.getMessage(MessagesConstants.NOTIFICATION_DEPTH_PREFIX+10)));
+	depthValues.put(Integer.MAX_VALUE, new DepthValue(Integer.MAX_VALUE, OpenGroupsResources.getMessage(MessagesConstants.NOTIFICATION_DEPTH_PREFIX+Integer.MAX_VALUE)));
+	
+    }
+    
     private List<NotificationRule> rulesList;
     private Map<Long, NotificationMode> notificationModes;
     private Map<Long, ActionType> actionTypes;
     /* keeps the action types for which there is no rule defined yet */
     private Map<Long, ActionType> availableActionTypes;
+    private NotificationMode defaultNotificationMode;
 
     /*
      * Groups the rules by the fields depth, notificationMode and enabled <br/>
@@ -85,6 +98,9 @@ public class NotificationRulesList extends AbstractList implements NetcellBean {
 	    NotificationMode mode = new NotificationMode(
 		    (GenericNameValueContext) list.getValueForIndex(i));
 	    notificationModes.put(mode.getNotificationModeId(), mode);
+	    if(defaultNotificationMode == null) {
+		defaultNotificationMode=mode;
+	    }
 	}
     }
 
@@ -109,7 +125,7 @@ public class NotificationRulesList extends AbstractList implements NetcellBean {
     }
     
     private void addMultitypeRule(NotificationRule rule){
-	MultitypeNotificationRuleId rid = new MultitypeNotificationRuleId(rule.getDepth(), notificationModes.get(rule.getNotificationModeId()), rule.isEnabled());
+	MultitypeNotificationRuleId rid = new MultitypeNotificationRuleId(depthValues.get(rule.getDepth()), notificationModes.get(rule.getNotificationModeId()), rule.isEnabled(),null);
 	MultitypeNotificationRule mRule = getMultitypeRuleById(rid);
 	mRule.addSelectedActionType(actionTypes.get(rule.getActionTypeId()));
     }
@@ -117,11 +133,45 @@ public class NotificationRulesList extends AbstractList implements NetcellBean {
     private MultitypeNotificationRule getMultitypeRuleById(MultitypeNotificationRuleId rid){
 	MultitypeNotificationRule mRule = multitypeRules.get(rid);
 	if(mRule == null){
-	    mRule = new MultitypeNotificationRule(rid,notificationModes.values(),new TreeSet<ActionType>(availableActionTypes.values()));
+	    mRule = new MultitypeNotificationRule(rid,notificationModes.values(), new TreeSet<ActionType>(availableActionTypes.values()),depthValues.values(), this);
 	    multitypeRules.put(rid, mRule);
 	}
 	return mRule;
     }
+    
+    public void createNewRule() {
+	MultitypeNotificationRuleId rid = new MultitypeNotificationRuleId(depthValues.get(0), defaultNotificationMode, true,new ArrayList<ActionType>(availableActionTypes.values()));
+	MultitypeNotificationRule mRule = getMultitypeRuleById(rid);
+	mRule.setAvailableActionTypes(availableActionTypes.values());
+	
+	availableActionTypes.clear();
+	updateMultitypeRules();
+	
+	dispatchUpdate(this);
+    }
+    
+    public void onRuleUpdated() {
+	updateAvailableActions();
+	updateMultitypeRules();
+	
+	dispatchUpdate(this);
+    }
+    
+    private void updateAvailableActions() {
+	availableActionTypes = new HashMap<Long, ActionType>(actionTypes);
+	for(MultitypeNotificationRule mRule : multitypeRules.values()) {
+	    for(ActionType at : mRule.getSelectedActionTypes()) {
+		availableActionTypes.remove(at.getActionTypeId());
+	    }
+	}
+    }
+    
+    private void updateMultitypeRules() {
+	for(MultitypeNotificationRule mRule : multitypeRules.values()) {
+	    mRule.setAvailableActionTypes(availableActionTypes.values());
+	}
+    }
+    
 
     public Map<MultitypeNotificationRuleId, MultitypeNotificationRule> getMultitypeRules() {
         return multitypeRules;

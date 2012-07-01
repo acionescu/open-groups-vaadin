@@ -26,6 +26,7 @@ public class UserNotificationRulesListView extends
 	for(MultitypeNotificationRule rule : updateData.getMultitypeRules().values()){
 	    UserNotificationRuleView ruleView = new UserNotificationRuleView();
 	    ruleView.update(rule);
+	    ruleView.getContainer().addStyleName(updateData.getRowContainerStyle());
 	    container.addComponent(ruleView.getContainer());
 	}
     }

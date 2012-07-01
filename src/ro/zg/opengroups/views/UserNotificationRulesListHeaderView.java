@@ -3,6 +3,7 @@ package ro.zg.opengroups.views;
 import ro.zg.opengroups.vo.NotificationRulesList;
 import ro.zg.presentation.utils.ListColumn;
 
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 
 public class UserNotificationRulesListHeaderView extends OpenGroupsBaseView<NotificationRulesList>{
@@ -21,9 +22,10 @@ public class UserNotificationRulesListHeaderView extends OpenGroupsBaseView<Noti
     
     private void addHeader(ListColumn lc, NotificationRulesList updateData){
 	Label header = new Label(lc.getDescription());
-	header.setWidth(lc.getWidth());
-	header.addStyleName(updateData.getHeaderCellStyle());
-	
+	CssLayout cell = new CssLayout();
+	cell.addStyleName(updateData.getHeaderCellStyle());
+	cell.addComponent(header);
+	container.addComponent(cell);
     }
 
 }

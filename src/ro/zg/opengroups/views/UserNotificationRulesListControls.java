@@ -6,7 +6,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-public class UserNotificationRulesListControls extends OpenGroupsBaseView<NotificationRulesList>{
+public class UserNotificationRulesListControls extends OpenGroupsBaseView<NotificationRulesList> {
 
     @Override
     public void update(NotificationRulesList updateData) {
@@ -14,23 +14,23 @@ public class UserNotificationRulesListControls extends OpenGroupsBaseView<Notifi
 	container.addStyleName(updateData.getControlsContainerStyle());
 	displayAddNewRuleButton(updateData);
     }
-    
-    private void displayAddNewRuleButton(final NotificationRulesList updateData){
+
+    private void displayAddNewRuleButton(final NotificationRulesList updateData) {
 	Button button = new Button();
-	//TODO: add an icon, don't let this hardcoded text
+	// TODO: add an icon, don't let this hardcoded text
 	button.setCaption("Adauga");
-	if(updateData.getAvailableActionTypes().size() == 0){
+	if (updateData.getAvailableActionTypes().size() == 0) {
 	    button.setEnabled(false);
-	    return;
+	} else {
+	    button.addListener(new ClickListener() {
+
+		@Override
+		public void buttonClick(ClickEvent event) {
+		    updateData.createNewRule();
+		}
+	    });
 	}
-	button.addListener(new ClickListener() {
-	    
-	    @Override
-	    public void buttonClick(ClickEvent event) {
-		
-	    }
-	});
-	
+
 	container.addComponent(button);
     }
 

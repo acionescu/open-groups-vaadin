@@ -83,6 +83,15 @@ public class ActionType implements Comparable{
 	ActionType other = (ActionType)o;
 	return new Long(actionTypeId).compareTo(new Long(other.getActionTypeId()));
     }
+
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+	return description;
+    }
     
     
 }
