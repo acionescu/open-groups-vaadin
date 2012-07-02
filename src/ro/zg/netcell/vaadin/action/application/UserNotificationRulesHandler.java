@@ -9,8 +9,9 @@ import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.opengroups.views.UserNotificationRulesView;
 import ro.zg.opengroups.vo.NotificationRulesList;
+import ro.zg.presentation.utils.UserEvent;
+import ro.zg.presentation.utils.UserEventHandler;
 
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComponentContainer;
 
 public class UserNotificationRulesHandler extends OpenGroupsActionHandler{
@@ -32,7 +33,16 @@ public class UserNotificationRulesHandler extends OpenGroupsActionHandler{
 	ComponentContainer container =actionContext.getTargetContainer();
 	container.removeAllComponents();
 	
-	UserNotificationRulesView view = new UserNotificationRulesView();
+	
+	UserEventHandler<UserEvent> eventHandler = new UserEventHandler<UserEvent>() {
+
+	    @Override
+	    public void handleEvent(UserEvent event) {
+		System.out.println("We have a user event: "+event);
+	    }
+	};
+	
+	UserNotificationRulesView view = getViewsManager().createView(UserNotificationRulesView.class, eventHandler);
 	rulesList.addView(view);
 	view.update(rulesList);
 	

@@ -82,7 +82,7 @@ public class OpenGroupsApplication extends Application {
     private CausalHierarchyStartDepthChangedListener hierarchyStartDepthListener;
     private CausalHierarchyTreeExpandListener hierarchyTreeExpandListener;
     private CausalHierarchyItemSelectedListener hierarchyItemSelectedListener;
-
+    
     @Override
     public void init() {
 	System.out.println("init");

@@ -28,6 +28,8 @@ public class OpenGroupsIconsSet {
     public static final String VOTE_UP="vote_up";
     public static final String VOTE_DOWN="vote_down";
     public static final String CANCEL="cancel";
+    public static final String ADD="add";
+    public static final String ACCEPT="accept";
     
     public static final String REFRESH="refresh";
     public static final String SEARCH="search";

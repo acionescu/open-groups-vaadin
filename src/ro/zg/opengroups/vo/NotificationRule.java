@@ -12,7 +12,6 @@ public class NotificationRule {
 	super();
     }
     
-    
     public NotificationRule(GenericNameValueContext data){
 	actionTypeId = (Long)data.getValue("action_type_id");
 	depth = Integer.parseInt(data.getValue("depth").toString());
@@ -20,7 +19,16 @@ public class NotificationRule {
 	enabled = ("y".equals(data.getValue("enabled")))?true:false;
     }
     
-    
+    public NotificationRule(long actionTypeId, int depth,
+	    long notificationModeId, boolean enabled) {
+	super();
+	this.actionTypeId = actionTypeId;
+	this.depth = depth;
+	this.notificationModeId = notificationModeId;
+	this.enabled = enabled;
+    }
+
+
     /**
      * @return the actionTypeId
      */
@@ -69,4 +77,40 @@ public class NotificationRule {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + (int) (actionTypeId ^ (actionTypeId >>> 32));
+	result = prime * result + depth;
+	result = prime * result + (enabled ? 1231 : 1237);
+	result = prime * result
+		+ (int) (notificationModeId ^ (notificationModeId >>> 32));
+	return result;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+	if (this == obj)
+	    return true;
+	if (obj == null)
+	    return false;
+	if (getClass() != obj.getClass())
+	    return false;
+	NotificationRule other = (NotificationRule) obj;
+	if (actionTypeId != other.actionTypeId)
+	    return false;
+	if (depth != other.depth)
+	    return false;
+	if (enabled != other.enabled)
+	    return false;
+	if (notificationModeId != other.notificationModeId)
+	    return false;
+	return true;
+    }
+    
+    
 }

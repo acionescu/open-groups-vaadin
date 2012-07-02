@@ -17,9 +17,9 @@ public class MultitypeNotificationRule {
 	super();
 	this.commonFields = commonFields;
 	this.availableNotificationModes = availableNotificationModes;
-	this.availableActionTypes = availableActionTypes;
 	this.rulesList=rulesList;
 	this.availableDepths=availableDepths;
+	setAvailableActionTypes(availableActionTypes);
     }
     
     
@@ -118,9 +118,6 @@ public class MultitypeNotificationRule {
         return availableDepths;
     }
 
-
-
-
     /**
      * @param availableDepths the availableDepths to set
      */
@@ -128,5 +125,7 @@ public class MultitypeNotificationRule {
         this.availableDepths = availableDepths;
     }
 
-    
+    public void delete(){
+	rulesList.deleteRule(this);
+    }
 }

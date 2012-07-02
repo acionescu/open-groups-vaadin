@@ -6,7 +6,15 @@ import ro.zg.opengroups.vo.NotificationRulesList;
 public class UserNotificationRulesListView extends
 	OpenGroupsBaseView<NotificationRulesList> {
     
-    private UserNotificationRulesListHeaderView headerView=new UserNotificationRulesListHeaderView();
+    private UserNotificationRulesListHeaderView headerView;
+    
+    @Override
+    protected void init() {
+	super.init();
+	
+	headerView=createView(UserNotificationRulesListHeaderView.class);
+
+    }
 
     @Override
     public void update(NotificationRulesList updateData) {
@@ -24,7 +32,7 @@ public class UserNotificationRulesListView extends
 
     private void displayRows(NotificationRulesList updateData){
 	for(MultitypeNotificationRule rule : updateData.getMultitypeRules().values()){
-	    UserNotificationRuleView ruleView = new UserNotificationRuleView();
+	    UserNotificationRuleView ruleView = createView(UserNotificationRuleView.class);
 	    ruleView.update(rule);
 	    ruleView.getContainer().addStyleName(updateData.getRowContainerStyle());
 	    container.addComponent(ruleView.getContainer());

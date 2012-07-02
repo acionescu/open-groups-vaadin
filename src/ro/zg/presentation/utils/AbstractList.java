@@ -3,13 +3,14 @@ package ro.zg.presentation.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AbstractList extends AbstractModel{
+public class AbstractList extends AbstractModel<UserEvent>{
     public static final String HEADER_CONTAINER="header-container";
     public static final String HEADER_CELL="header-cell";
     public static final String CONTROLS_CONTAINER="controls-container";
     public static final String CONTAINER="container";
     public static final String ROW_CONTAINER="row-container";
     public static final String ROW_CELL="row-cell";
+    private static final String CONTROLS_CONTAINER_CELL="controls-container-cell";
     
     private String name;
     private List<ListColumn> columns = new ArrayList<ListColumn>();
@@ -37,6 +38,10 @@ public class AbstractList extends AbstractModel{
     
     public String getRowCellStyle() {
 	return name+"-"+ROW_CELL;
+    }
+    
+    public String getControlsContainerCellStyle(){
+	return name+"-"+CONTROLS_CONTAINER_CELL;
     }
     
     public void addColumn(ListColumn column){

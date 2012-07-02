@@ -25,6 +25,7 @@ import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.opengroups.vo.UserActionList;
+import ro.zg.presentation.utils.ViewsManager;
 
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.gwt.server.WebBrowser;
@@ -116,6 +117,10 @@ public abstract class OpenGroupsActionHandler implements ActionHandler<OpenGroup
     
     public OpenGroupsModel getModel() {
 	return OpenGroupsModel.getInstance();
+    }
+    
+    public ViewsManager getViewsManager(){
+	return ViewsManager.getInstance();
     }
     
 }
