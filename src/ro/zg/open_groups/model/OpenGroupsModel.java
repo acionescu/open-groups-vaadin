@@ -55,6 +55,7 @@ public class OpenGroupsModel {
     private static final String GET_CAUSAL_HIERARCHY = "ro.problems.flows.get-entities-list";
     private static final String GET_CAUSES = "ro.problems.flows.get-all-causes-for-entity";
     private static final String LOGIN_WITH_OPENID = "ro.problems.flows.login-with-openid";
+    private static final String SAVE_USER_NOTIFICATION_RULES="ro.problems.notifications.save-rules-list";
 
     private static OpenGroupsModel instance;
 
@@ -294,5 +295,17 @@ public class OpenGroupsModel {
 	bean.update(response);
 
 	return bean;
+    }
+    
+    public boolean saveUserNotificationRules(long userId, long entityId, NotificationRulesList rulesList){
+	Map<String,Object> params = new HashMap<String, Object>();
+	
+	params.put("userId", userId);
+	params.put("entityId",entityId);
+	params.put("rulesList",rulesList.getRawData());
+	
+	CommandResponse response = getActionsManager().execute(SAVE_USER_NOTIFICATION_RULES, params);
+	
+	return response.isSuccessful();
     }
 }

@@ -38,14 +38,14 @@ public class UserNotificationRuleView extends OpenGroupsBaseView<MultitypeNotifi
 
 	container.removeAllComponents();
 
-	displayActionTypesCombo(rule);
+	displayActionTypesOptions(rule);
 	displayDepthField(rule);
 	displayNotificationModesCombo(rule);
 	displayEnabledCheckBox(rule);
 	displayDeleteRuleButton(rule);
     }
 
-    private void displayActionTypesCombo(final MultitypeNotificationRule rule) {
+    private void displayActionTypesOptions(final MultitypeNotificationRule rule) {
 
 	// final ComboBox select = new ComboBox();
 	final OptionGroup select = new OptionGroup();
@@ -107,6 +107,7 @@ public class UserNotificationRuleView extends OpenGroupsBaseView<MultitypeNotifi
 	    @Override
 	    public void valueChange(ValueChangeEvent event) {
 		rule.getCommonFields().setDepth((DepthValue) event.getProperty().getValue());
+		rule.getRulesList().onRuleUpdated();
 	    }
 	});
     }
@@ -131,6 +132,7 @@ public class UserNotificationRuleView extends OpenGroupsBaseView<MultitypeNotifi
 	    @Override
 	    public void valueChange(ValueChangeEvent event) {
 		rule.getCommonFields().setNotificationMode((NotificationMode) event.getProperty().getValue());
+		rule.getRulesList().onRuleUpdated();
 	    }
 	});
     }
@@ -150,6 +152,7 @@ public class UserNotificationRuleView extends OpenGroupsBaseView<MultitypeNotifi
 	    @Override
 	    public void valueChange(ValueChangeEvent event) {
 		rule.getCommonFields().setEnabled((Boolean) event.getProperty().getValue());
+		rule.getRulesList().onRuleUpdated();
 	    }
 	});
     }

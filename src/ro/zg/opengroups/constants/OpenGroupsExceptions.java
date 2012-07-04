@@ -20,6 +20,7 @@ import ro.zg.commons.exceptions.ExceptionContext;
 
 public class OpenGroupsExceptions {
     public static final String NO_SUCH_ENTITY = "no.such.entity.error";
+    public static final String SYSTEM_ERROR="system.error";
 
     public static ContextAwareException getNoSuchEntityException(long entityId) {
 	ExceptionContext ec = new ExceptionContext();
@@ -27,4 +28,8 @@ public class OpenGroupsExceptions {
 	return new ContextAwareException(OpenGroupsExceptions.NO_SUCH_ENTITY, ec);
     }
 
+    public static ContextAwareException getSystemError(){
+	return new ContextAwareException(SYSTEM_ERROR);
+    }
+    
 }

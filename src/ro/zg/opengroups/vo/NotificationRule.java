@@ -28,6 +28,16 @@ public class NotificationRule {
 	this.enabled = enabled;
     }
 
+    public GenericNameValueContext getRawData(){
+	GenericNameValueContext context = new GenericNameValueContext();
+	context.put("action_type_id", actionTypeId);
+	context.put("depth",depth);
+	context.put("notification_mode_id",notificationModeId);
+	context.put("enabled",(enabled)?"y":"n");
+	
+	return context;
+    }
+    
 
     /**
      * @return the actionTypeId

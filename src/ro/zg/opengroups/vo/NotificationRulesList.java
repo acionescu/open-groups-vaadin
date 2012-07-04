@@ -120,6 +120,15 @@ public class NotificationRulesList extends AbstractList implements NetcellBean {
 	updateAllowNewRule();
 
     }
+    
+    public GenericNameValueList getRawData(){
+	GenericNameValueList list = new GenericNameValueList();
+	
+	for(NotificationRule r : currentRules){
+	    list.addValue(r.getRawData());
+	}
+	return list;
+    }
 
     private void updateRulesList(GenericNameValueList list) {
 	originalRules = new HashSet<NotificationRule>();
@@ -172,7 +181,7 @@ public class NotificationRulesList extends AbstractList implements NetcellBean {
     private void addMultitypeRule(NotificationRule rule) {
 	MultitypeNotificationRuleId rid = new MultitypeNotificationRuleId(
 		depthValues.get(rule.getDepth()), notificationModes.get(rule
-			.getNotificationModeId()), rule.isEnabled(), null);
+			.getNotificationModeId()), rule.isEnabled(), new TreeSet<ActionType>());
 	MultitypeNotificationRule mRule = getMultitypeRuleById(rid);
 	mRule.addSelectedActionType(actionTypes.get(rule.getActionTypeId()));
     }
@@ -273,6 +282,12 @@ public class NotificationRulesList extends AbstractList implements NetcellBean {
 	}
 	
 	saveNeeded=!currentRules.equals(originalRules);
+    }
+    
+    public void markAsSaved(){
+	originalRules=new HashSet<NotificationRule>(currentRules);
+	saveNeeded=false;
+	dispatchUpdate(this);
     }
 
     public Map<MultitypeNotificationRuleId, MultitypeNotificationRule> getMultitypeRules() {
