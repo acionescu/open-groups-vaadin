@@ -52,7 +52,7 @@ public class UserNotificationRuleView extends OpenGroupsBaseView<MultitypeNotifi
 	select.setImmediate(true);
 	select.setMultiSelect(true);
 	// select.setWidth("100%");
-	select.setWidth("70px");
+	select.setWidth("90px");
 //	select.setSizeUndefined();
 	
 
@@ -70,6 +70,7 @@ public class UserNotificationRuleView extends OpenGroupsBaseView<MultitypeNotifi
 	    public void valueChange(ValueChangeEvent event) {
 		Collection<ActionType> selectedActions = (Collection<ActionType>) event.getProperty().getValue();
 		rule.setSelectedActionTypes(selectedActions);
+		rule.getRulesList().onRuleUpdated();
 	    }
 	});
     }
@@ -90,7 +91,7 @@ public class UserNotificationRuleView extends OpenGroupsBaseView<MultitypeNotifi
 	final ComboBox select = new ComboBox();
 	select.setImmediate(true);
 	select.setNullSelectionAllowed(false);
-	select.addStyleName("notification-rules-list-row-cell-content");
+//	select.addStyleName("notification-rules-list-row-cell-content");
 	select.setWidth("150px");
 	
 
@@ -116,7 +117,7 @@ public class UserNotificationRuleView extends OpenGroupsBaseView<MultitypeNotifi
 	final ComboBox select = new ComboBox();
 	select.setImmediate(true);
 	select.setNullSelectionAllowed(false);
-	select.addStyleName("notification-rules-list-row-cell-content");
+//	select.addStyleName("notification-rules-list-row-cell-content");
 	select.setWidth("150px");
 	
 	for (NotificationMode nm : rule.getAvailableNotificationModes()) {
@@ -176,6 +177,7 @@ public class UserNotificationRuleView extends OpenGroupsBaseView<MultitypeNotifi
     private CssLayout addToContainer(Component component) {
 	CssLayout cell = new CssLayout();
 	cell.addStyleName("notification-rules-list-row-cell");
+	cell.setMargin(true);
 	cell.addComponent(component);
 	container.addComponent(cell);
 	HorizontalLayout hl = (HorizontalLayout) container;

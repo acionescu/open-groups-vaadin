@@ -62,7 +62,6 @@ public class MultitypeNotificationRule {
      */
     public void setSelectedActionTypes(Collection<ActionType> selectedActionTypes) {
         commonFields.setSelectedActionTypes(selectedActionTypes);
-        rulesList.onRuleUpdated();
     }
 
 

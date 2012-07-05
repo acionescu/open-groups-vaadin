@@ -36,6 +36,7 @@ public class UserNotificationRulesListHeaderView extends OpenGroupsBaseView<Noti
 	header.setSizeUndefined();
 	CssLayout cell = new CssLayout();
 	cell.addStyleName(updateData.getHeaderCellStyle());
+	cell.setMargin(false,false,false,true);
 	cell.addComponent(header);
 	container.addComponent(cell);
 	

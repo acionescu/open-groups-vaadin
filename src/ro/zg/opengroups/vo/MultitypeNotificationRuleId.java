@@ -1,6 +1,7 @@
 package ro.zg.opengroups.vo;
 
 import java.util.Collection;
+import java.util.TreeSet;
 
 public class MultitypeNotificationRuleId {
     private DepthValue depth;
@@ -48,7 +49,7 @@ public class MultitypeNotificationRuleId {
      * @param selectedActionTypes the selectedActionTypes to set
      */
     public void setSelectedActionTypes(Collection<ActionType> selectedActionTypes) {
-        this.selectedActionTypes = selectedActionTypes;
+        this.selectedActionTypes = new TreeSet<ActionType>(selectedActionTypes);
     }
     
     

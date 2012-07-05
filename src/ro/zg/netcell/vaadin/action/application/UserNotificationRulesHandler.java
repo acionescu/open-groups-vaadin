@@ -55,7 +55,6 @@ public class UserNotificationRulesHandler extends OpenGroupsActionHandler {
 		UserNotificationRulesView.class, eventHandler);
 	rulesList.addView(view);
 	view.update(rulesList);
-
 	container.addComponent(view.getContainer());
     }
 

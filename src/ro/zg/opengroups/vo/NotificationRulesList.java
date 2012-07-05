@@ -16,6 +16,7 @@ import ro.zg.presentation.utils.AbstractList;
 import ro.zg.presentation.utils.ListColumn;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
+import ro.zg.util.data.ListMap;
 
 public class NotificationRulesList extends AbstractList implements NetcellBean {
     private static final Map<Integer, DepthValue> depthValues;
@@ -117,8 +118,9 @@ public class NotificationRulesList extends AbstractList implements NetcellBean {
 
 	buildMultitypeRules();
 	
-	updateAllowNewRule();
-
+//	updateAllowNewRule();
+	
+	updateMultitypeRules();
     }
     
     public GenericNameValueList getRawData(){
@@ -173,17 +175,27 @@ public class NotificationRulesList extends AbstractList implements NetcellBean {
     private void buildMultitypeRules() {
 	multitypeRules = new LinkedHashMap<MultitypeNotificationRuleId, MultitypeNotificationRule>();
 
+	
+	ListMap<MultitypeNotificationRuleId, ActionType> rulesByCommonFields = new ListMap<MultitypeNotificationRuleId, ActionType>();
+	
 	for (NotificationRule rule : originalRules) {
-	    addMultitypeRule(rule);
+	    addMultitypeRule(rule,rulesByCommonFields);
+	}
+	
+	for(MultitypeNotificationRuleId rid : rulesByCommonFields.keySet()){
+	    MultitypeNotificationRule mRule = getMultitypeRuleById(rid);
+	    mRule.setSelectedActionTypes(rulesByCommonFields.get(rid));
 	}
     }
 
-    private void addMultitypeRule(NotificationRule rule) {
+    private void addMultitypeRule(NotificationRule rule, ListMap<MultitypeNotificationRuleId, ActionType> rulesByCommonFields) {
 	MultitypeNotificationRuleId rid = new MultitypeNotificationRuleId(
 		depthValues.get(rule.getDepth()), notificationModes.get(rule
 			.getNotificationModeId()), rule.isEnabled(), new TreeSet<ActionType>());
-	MultitypeNotificationRule mRule = getMultitypeRuleById(rid);
-	mRule.addSelectedActionType(actionTypes.get(rule.getActionTypeId()));
+//	MultitypeNotificationRule mRule = getMultitypeRuleById(rid);
+//	mRule.addSelectedActionType(actionTypes.get(rule.getActionTypeId()));
+	
+	rulesByCommonFields.add(rid,actionTypes.get(rule.getActionTypeId()));
     }
 
     private MultitypeNotificationRule getMultitypeRuleById(

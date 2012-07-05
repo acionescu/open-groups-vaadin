@@ -383,18 +383,18 @@ a:link,a:visited {
 /* 	float: left; */
 	width: 100%;
 /* 	height: 100%; */
-	margin-left: 15px;
+	margin-left: 10px;
 }
 
 .notification-rules-list-row-cell {
 /* 	float: left; */
-	margin-left: 10px;
+/* 	margin-left: 10px; */
 	width: 100%;
 /* 	height: 100%; */
 }
 
 .notification-rules-list-row-cell-content {
-	vertical-align: middle;
+	
 }
 
 .notification-rules-list-controls-container{

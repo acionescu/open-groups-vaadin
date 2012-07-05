@@ -46,6 +46,10 @@ public class AddBackSlashFilter implements Filter {
 	    dispatcher.forward(req, res);
 	    return;
 	}
+	
+//	if(uri.equals("")){
+//	    res.sendRedirect(contextPath + "/");
+//	}
 //	else if (uri.startsWith("/img")) {
 //	    returnImage(uri, req, res);
 //	    return;

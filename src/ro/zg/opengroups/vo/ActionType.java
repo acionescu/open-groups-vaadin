@@ -4,7 +4,7 @@ import ro.zg.netcell.vaadin.action.constants.MessagesConstants;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.util.data.GenericNameValueContext;
 
-public class ActionType implements Comparable{
+public class ActionType implements Comparable<ActionType>{
     private long actionTypeId;
     private String description;
     private String type;
@@ -78,19 +78,18 @@ public class ActionType implements Comparable{
     }
 
 
-    @Override
-    public int compareTo(Object o) {
-	ActionType other = (ActionType)o;
-	return new Long(actionTypeId).compareTo(new Long(other.getActionTypeId()));
-    }
-
-
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
 	return description;
+    }
+
+
+    @Override
+    public int compareTo(ActionType o) {
+	return new Long(actionTypeId).compareTo(new Long(o.getActionTypeId()));
     }
     
     
