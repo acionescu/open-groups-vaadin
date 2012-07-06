@@ -1,0 +1,3 @@
+-add domain check for openid login
+-add mandatory login if the instance is private
+-add support for instance configuration

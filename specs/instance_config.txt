@@ -1,0 +1,8 @@
+Instance configuration parameters:
+
+-instance name - The name that will be used to send notifications and things like that
+-instance description - The description of the instance - displayed in browser bar
+-instance url - The url where the instance can be accessed
+-is instance private - Flag to define if the instance can be publically accessed or you need to be a member to access it
+
+- group private or public

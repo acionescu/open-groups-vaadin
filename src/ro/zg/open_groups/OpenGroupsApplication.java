@@ -85,7 +85,9 @@ public class OpenGroupsApplication extends Application {
     
     @Override
     public void init() {
-	System.out.println("init");
+	String contextPath = getContext().getBaseDirectory().getName();
+	System.out.println("init "+contextPath);
+	this.setLogoutURL("/"+contextPath+"/");
 	windowsManager = new WindowsManger();
 	try {
 	    appState = new OpenGroupsApplicationState();
@@ -326,7 +328,8 @@ public class OpenGroupsApplication extends Application {
     public void logout() {
 	UsersManager.getInstance().removeUser(currentUser.getUserId());
 	this.currentUser = null;
-	getAppContext().getHttpSession().invalidate();
+//	getAppContext().getHttpSession().invalidate();
+	this.close();
     }
 
     public void openIdLogin(String providerUrl) {

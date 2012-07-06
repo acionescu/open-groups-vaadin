@@ -37,6 +37,8 @@ A row will be inserted for each combination ( user_id, entity_id, event_type )
 
 2) Sending notifications
 
+2.1) Getting the data
+
 A scheduled job will check the "activity_log" table, select all the events that respect the criteria and process them.
 A job will run for each notification mode.
 
@@ -50,4 +52,20 @@ Search criteria:
 For other modes:
 
 For each user, notifications will be aggregated in a single mail
+
+2.2) Composing the mail
+
+Title: {Instance name}:{Event type}:{Entity name}
+
+Content:
+
+Message for {entity type}{event type}
+
+Small preview with link
+
+Notification cause ( link towards the notification rule that caused this mail )
+
+
+
+
 

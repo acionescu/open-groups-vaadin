@@ -48,7 +48,7 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Link;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -106,15 +106,22 @@ public class LoginHandler extends UserHandler {
 		openIdLayout.setSizeFull();
 		openIdLayout.addStyleName("openid-login-pane");
 		
-		CssLayout openIdContainer = new CssLayout();
-		openIdContainer.setSizeUndefined();
-		openIdContainer.addStyleName("openid-container");
+		VerticalLayout openIdContainer = new VerticalLayout();
+		openIdContainer.setSizeFull();
+		openIdContainer.setMargin(true);
 		openIdLayout.addComponent(openIdContainer);
 		
+		Label openIdLoginMessage = new Label(OpenGroupsResources.getMessage("openid.login.message"));
+		openIdLoginMessage.addStyleName("openid-title");
+		openIdContainer.addComponent(openIdLoginMessage);
+		openIdContainer.setExpandRatio(openIdLoginMessage, 0.1f);
+		
 		for (Map.Entry<String, String> e : openIdProviders.entrySet()) {
-
-		    openIdContainer.addComponent(getOpenidLoginComponent(
-			    actionContext, e));
+		    
+		    Component providerLink = getOpenidLoginComponent(actionContext, e);
+		    openIdContainer.addComponent(providerLink);
+		    openIdContainer.setComponentAlignment(providerLink, Alignment.MIDDLE_CENTER);
+		    openIdContainer.setExpandRatio(providerLink, 1f);
 
 		}
 
@@ -126,15 +133,16 @@ public class LoginHandler extends UserHandler {
 	return hl;
     }
 
-    private Component getOpenidLoginComponent(final ActionContext actionContext,
+    private Component getOpenidLoginComponent(
+	    final ActionContext actionContext,
 	    final Map.Entry<String, String> entry) {
 	final Button lb = new Button();
-	
+
 	lb.setIcon(OpenGroupsResources.getIcon(entry.getKey() + ".png"));
 	lb.addStyleName(BaseTheme.BUTTON_LINK);
 
 	lb.addListener(new ClickListener() {
-	    
+
 	    @Override
 	    public void buttonClick(ClickEvent event) {
 		actionContext.getApp().openIdLogin(entry.getValue());
