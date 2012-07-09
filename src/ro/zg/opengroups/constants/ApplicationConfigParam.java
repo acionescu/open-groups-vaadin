@@ -21,4 +21,6 @@ public class ApplicationConfigParam {
     public static final String MAX_PRIORITY = "max.priority";
     public static final String APP_ENTITY_ID = "app.entity.id";
     public static final String LOGIN_TYPES="login.types";
+    public static final String ALLOWED_OPENID_DOMAINS="allowed.openid.domains";
+    public static final String IS_INSTANCE_PRIVATE = "is.instance.private";
 }

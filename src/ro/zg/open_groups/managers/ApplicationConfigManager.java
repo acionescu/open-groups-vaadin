@@ -62,8 +62,9 @@ public class ApplicationConfigManager {
     private void loadConfig() {
 	if (!initialized) {
 	    initialized = loadApplicationConfigParams() && loadComplexEntityTypes() && loadEntitiesTypesRelations();
+	    initNonLeafSubtypes();
 	}
-	initNonLeafSubtypes();
+	
     }
 
     private boolean loadApplicationConfigParams() {
@@ -143,6 +144,11 @@ public class ApplicationConfigManager {
 	init();
 	return applicationConfigParams.get(paramName);
     }
+    
+    public Boolean getApplicationBooleanParam(String paramName){
+	Object param= getApplicationConfigParam(paramName);
+	return getBooleanParam(param);
+    }
 
     public void setApplicationConfigParam(String paramName, Object value) {
 	applicationConfigParams.put(paramName, value);
@@ -163,6 +169,13 @@ public class ApplicationConfigManager {
 
     public Boolean getComplexEntityBooleanParam(String complexType, String paramName) {
 	Object param = getComplexEntityParam(complexType, paramName);
+	return getBooleanParam(param);
+    }
+
+    private Boolean getBooleanParam(Object param){
+	if(param == null){
+	    return false;
+	}
 	String value = param.toString();
 	if ("y".equals(value)) {
 	    return true;
@@ -171,7 +184,8 @@ public class ApplicationConfigManager {
 	}
 	return (Boolean) param;
     }
-
+    
+    
     public Object getTypeRelationConfigParam(long typeRelationId, String paramName) {
 	TypeRelationConfig trc = typeRelations.get(typeRelationId);
 	Object param = null;

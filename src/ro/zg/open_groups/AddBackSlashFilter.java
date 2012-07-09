@@ -37,7 +37,7 @@ public class AddBackSlashFilter implements Filter {
 	String contextPath = req.getContextPath();
 	String requestUri = req.getRequestURI();
 //	System.out.println("context path=" + contextPath);
-	System.out.println("req uri=" + requestUri);
+//	System.out.println("req uri=" + requestUri);
 //	System.out.println("req url=" + req.getRequestURL());
 	String uri = requestUri.substring(contextPath.length()).trim();
 	if (uri.equals("") || uri.equals("/")) {

@@ -74,6 +74,7 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     public static final String OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS = "openEntityWithHeaderActions";
 
     public static final String ENTITY_WITH_UPSTREAM_HIERARCHY = "entity.upstream.hierarchy";
+    public static final String LOGIN_ACTION="user.login";
 
     private Map<String, OpenGroupsActionHandler> handlers = new HashMap<String, OpenGroupsActionHandler>();
 
@@ -82,6 +83,7 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     private Map<String, UserActionList> actionsMap = new HashMap<String, UserActionList>();
     private Map<String, UserAction> allActions = new HashMap<String, UserAction>();
     private Map<String, UserAction> globalActionsByLocation = new HashMap<String, UserAction>();
+    private Map<String, UserAction> globalActionsByName = new HashMap<String, UserAction>();
     
     private static ActionsManager _instance = new ActionsManager();
     private ThreadPoolExecutor handlersExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -94,7 +96,6 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 
     private ActionsManager() {
 	init();
-	System.out.println(actionsMap);
     }
 
     private void init() {
@@ -122,15 +123,6 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 	handlers.put(OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS, new OpenSelectedEntityWithHeaderActions());
     }
 
-    private void getFlowDefSummaries() {
-	try {
-	    flowDefSummaries = netcellDao.getWorkflowDefinitionSummaries();
-	    System.out.println("Retrieved " + flowDefSummaries.size() + " flow summaries");
-	} catch (Exception e) {
-	    System.out.println("Failed to get flows definition summaries");
-	    e.printStackTrace();
-	}
-    }
 
     private boolean getAllAvailableActions() {
 	CommandResponse response = netcellDao.execute(GET_ALL_AVAILABLE_ACTIONS, new HashMap<String, Object>());
@@ -147,6 +139,7 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 		
 		if(ua.getSourceEntityComplexType().equals("*")) {
 		    globalActionsByLocation.put(ua.getActionLocation(), ua);
+		    globalActionsByName.put(ua.getActionName(), ua);
 		}
 	    }
 	    injectGlobalActions();
@@ -308,5 +301,9 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 
     public UserAction getActionByPath(String path) {
 	return allActions.get(path);
+    }
+    
+    public UserAction getGlobalActionByName(String actionName){
+	return globalActionsByName.get(actionName);
     }
 }

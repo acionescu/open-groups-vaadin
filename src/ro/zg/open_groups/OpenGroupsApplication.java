@@ -25,15 +25,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import ro.zg.commons.exceptions.ContextAwareException;
+import ro.zg.commons.exceptions.ExceptionContext;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
 import ro.zg.open_groups.gui.components.logic.CausalHierarchyItemSelectedListener;
 import ro.zg.open_groups.gui.components.logic.CausalHierarchyStartDepthChangedListener;
 import ro.zg.open_groups.gui.components.logic.CausalHierarchyTreeExpandListener;
+import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.open_groups.model.OpenGroupsModel;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.open_groups.user.UsersManager;
+import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.constants.OpenGroupsExceptions;
 import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.Entity;
@@ -218,8 +221,11 @@ public class OpenGroupsApplication extends Application {
     }
 
     public String getMessage(String msgKey) {
-	// return messagesBundle.getString(msgKey);
 	return OpenGroupsResources.getMessage(msgKey);
+    }
+    
+    public String getMessage(String msgKey, Object... args){
+	return OpenGroupsResources.getMessage(msgKey, args);
     }
 
     public void openEntityById(Long id, String actionPath, int pageNumber) {
@@ -228,18 +234,82 @@ public class OpenGroupsApplication extends Application {
 	state.setDesiredActionsPath(actionPath);
 	state.setCurrentPageForAction(state.getDesiredActionsPath(), pageNumber);
 
-	HttpSession session = getAppContext().getHttpSession();
-	String userOpenId = (String) session.getAttribute(OpenIdConstants.USER_OPENID);
-	if (userOpenId != null) {
-	    session.removeAttribute(OpenIdConstants.USER_OPENID);
-	    User user = OpenGroupsModel.getInstance().loginWithOpenId(userOpenId,
-		    getAppContext().getBrowser().getAddress());
+	
+	User user = getUserFromOpenid();
+	if(user != null){
 	    login(user, e);
-	    logger.info("Logged in with openid: " + userOpenId);
-	} else {
+	    logger.info("Logged in with openid: " + user.getEmail());
+	}
+	/* if no user is logged in, display the content only if the instance is not private */
+	else if(!isInstancePrivate()){ 
 	    openInActiveWindow(e);
 	}
-
+	else{
+	    executeMandatoryLogin();
+	}
+	
+//	HttpSession session = getAppContext().getHttpSession();
+//	String userOpenId = (String) session.getAttribute(OpenIdConstants.USER_OPENID);
+//	if (userOpenId != null) {
+//	    session.removeAttribute(OpenIdConstants.USER_OPENID);
+//	    User user = OpenGroupsModel.getInstance().loginWithOpenId(userOpenId,
+//		    getAppContext().getBrowser().getAddress());
+//	    login(user, e);
+//	    logger.info("Logged in with openid: " + userOpenId);
+//	} else {
+//	    openInActiveWindow(e);
+//	}
+    }
+    
+    private void executeMandatoryLogin(){
+	logger.debug("Manadatory login");
+	closeAllSubwindows();
+	actionsManager.getGlobalActionByName(ActionsManager.LOGIN_ACTION).executeHandler(this, null);
+    }
+    
+    private void closeAllSubwindows(){
+	Window mainWindow = getMainWindow();
+	for(Window w : mainWindow.getChildWindows()){
+	    mainWindow.removeWindow(w);
+	}
+    }
+    
+    private User getUserFromOpenid(){
+	HttpSession session = getAppContext().getHttpSession();
+	String userOpenId = (String) session.getAttribute(OpenIdConstants.USER_OPENID);
+	session.removeAttribute(OpenIdConstants.USER_OPENID);
+	if (userOpenId != null && checkAllowedDomain(userOpenId)) {
+	    User user = OpenGroupsModel.getInstance().loginWithOpenId(userOpenId,
+		    getAppContext().getBrowser().getAddress());
+	    return user;
+	} 
+	return null;
+    }
+    
+    private boolean checkAllowedDomain(String openid){
+	String domains = (String)ApplicationConfigManager.getInstance().getApplicationConfigParam(ApplicationConfigParam.ALLOWED_OPENID_DOMAINS);
+	if(domains == null){
+	    return true;
+	}
+	String[] domainsArray=domains.split(",");
+	for(String domain : domainsArray){
+	    if(openid.endsWith(domain.trim())){
+		return true;
+	    }
+	}
+	
+	/* the domain does not comply */
+	
+	ExceptionContext ec = new ExceptionContext();
+	ec.put("args", new Object[]{domains});
+	if(domainsArray.length > 1){
+	    pushError(new ContextAwareException("openid.allowed.domains",ec));
+	}
+	else{
+	    pushError(new ContextAwareException("openid.allowed.domain",ec));
+	}
+	
+	return false;	
     }
 
     public Entity getOpenEntityForId(long id) {
@@ -256,6 +326,10 @@ public class OpenGroupsApplication extends Application {
 	return c;
     }
 
+    public boolean isInstancePrivate(){
+	return getAppConfigManager().getApplicationBooleanParam(ApplicationConfigParam.IS_INSTANCE_PRIVATE);
+    }
+    
     public void pushError(Exception e) {
 	errorsStack.push(e);
     }
@@ -270,6 +344,14 @@ public class OpenGroupsApplication extends Application {
 	    Exception e = errorsStack.pop();
 	    if (e instanceof ContextAwareException) {
 		ContextAwareException cae = (ContextAwareException) e;
+		ExceptionContext ec = cae.getExceptionContext();
+		if(ec != null){
+		    Object[] args = (Object[])ec.getValue("args");
+		    if(args != null){
+			errorMessage += "<br>- " + getMessage(cae.getType(),args);
+			continue;
+		    }
+		}
 		errorMessage += "<br>- " + getMessage(((ContextAwareException) e).getType());
 	    } else {
 		errorMessage += "<br>- " + getMessage("system.error");
@@ -328,8 +410,8 @@ public class OpenGroupsApplication extends Application {
     public void logout() {
 	UsersManager.getInstance().removeUser(currentUser.getUserId());
 	this.currentUser = null;
-//	getAppContext().getHttpSession().invalidate();
-	this.close();
+	getAppContext().getHttpSession().invalidate();
+//	this.close();
     }
 
     public void openIdLogin(String providerUrl) {
@@ -559,4 +641,8 @@ public class OpenGroupsApplication extends Application {
 	return uriHandler;
     }
 
+    
+    public ApplicationConfigManager getAppConfigManager(){
+	return ApplicationConfigManager.getInstance();
+    }
 }

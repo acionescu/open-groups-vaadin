@@ -67,8 +67,13 @@ public class LoginHandler extends UserHandler {
     public void handle(ActionContext actionContext) throws Exception {
 	Window w = new Window();
 	w.setModal(true);
+	
+	if(actionContext.getApp().isInstancePrivate()){
+	    w.setClosable(false);
+	}
 
 	OpenGroupsMainWindow mainWindow = actionContext.getWindow();
+	
 	UserAction ua = actionContext.getUserAction();
 	w.setWidth("600px");
 	w.setHeight("300px");

@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -55,6 +56,15 @@ public class OpenGroupsResources {
 	return null;
     }
 
+    public static String getMessage(String key, Object... args){
+	try {
+	    return MessageFormat.format(messagesBundle.getString(key), args);
+	} catch (Exception e) {
+//	    e.printStackTrace();
+	}
+	return null;
+    }
+    
     public static ResourceBundle getBundle() {
 	return messagesBundle;
     }
