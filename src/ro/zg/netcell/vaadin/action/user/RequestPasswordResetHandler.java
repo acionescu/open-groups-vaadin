@@ -81,8 +81,9 @@ public class RequestPasswordResetHandler extends UserHandler {
     private void sendPasswordResetRequest(Form form, UserAction ua, OpenGroupsApplication app) {
 	form.setComponentError(null);
 	Map<String, Object> paramsMap = DataTranslationUtils.getFormFieldsAsMap(form);
-	paramsMap.put("subject", getMessage(ua.getActionName()+".subject"));
-	paramsMap.put("message", getMessage(ua.getActionName()+".message"));
+	String instanceName = getAppConfigManager().getInstanceName();
+	paramsMap.put("subject", getMessage(ua.getActionName()+".subject", instanceName));
+	paramsMap.put("message", getMessage(ua.getActionName()+".message",instanceName,app.getURL().toString()));
 	
 	CommandResponse response = executeAction(new ActionContext(ua, app, null), paramsMap);
 

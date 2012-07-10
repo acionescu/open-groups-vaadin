@@ -79,6 +79,10 @@ public abstract class OpenGroupsActionHandler implements ActionHandler<OpenGroup
     protected String getMessage(String key) {
 	return OpenGroupsResources.getMessage(key);
     }
+    
+    protected String getMessage(String key, Object... args){
+	return OpenGroupsResources.getMessage(key,args);
+    }
 
 //    public CommandResponse executeAction(Map<String,Object> params) {
 //	return userAction.execute(params);

@@ -48,7 +48,6 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -68,7 +67,7 @@ public class LoginHandler extends UserHandler {
 	Window w = new Window();
 	w.setModal(true);
 	
-	if(actionContext.getApp().isInstancePrivate()){
+	if(getAppConfigManager().isInstancePrivate()){
 	    w.setClosable(false);
 	}
 
@@ -116,10 +115,10 @@ public class LoginHandler extends UserHandler {
 		openIdContainer.setMargin(true);
 		openIdLayout.addComponent(openIdContainer);
 		
-		Label openIdLoginMessage = new Label(OpenGroupsResources.getMessage("openid.login.message"));
-		openIdLoginMessage.addStyleName("openid-title");
-		openIdContainer.addComponent(openIdLoginMessage);
-		openIdContainer.setExpandRatio(openIdLoginMessage, 0.1f);
+//		Label openIdLoginMessage = new Label(OpenGroupsResources.getMessage("openid.login.message"));
+//		openIdLoginMessage.addStyleName("openid-title");
+//		openIdContainer.addComponent(openIdLoginMessage);
+//		openIdContainer.setExpandRatio(openIdLoginMessage, 0.1f);
 		
 		for (Map.Entry<String, String> e : openIdProviders.entrySet()) {
 		    
@@ -145,7 +144,9 @@ public class LoginHandler extends UserHandler {
 
 	lb.setIcon(OpenGroupsResources.getIcon(entry.getKey() + ".png"));
 	lb.addStyleName(BaseTheme.BUTTON_LINK);
-
+	String providerName = entry.getKey();
+	providerName = Character.toUpperCase(providerName.charAt(0)) + providerName.substring(1);  
+	lb.setDescription(OpenGroupsResources.getMessage("openid.login.message",providerName));
 	lb.addListener(new ClickListener() {
 
 	    @Override
@@ -232,7 +233,7 @@ public class LoginHandler extends UserHandler {
 	User user = getModel().getUserFromParamsContext(userRow);
 	/* close the login window */
 	window.removeWindow(form.getWindow());
-	app.login(user, entity);
+	app.loginAndShowEntity(user, entity);
     }
 
     private void addFooterActions(final ComponentContainer container,

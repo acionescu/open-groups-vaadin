@@ -85,12 +85,11 @@ public class OpenGroupsApplication extends Application {
     private CausalHierarchyStartDepthChangedListener hierarchyStartDepthListener;
     private CausalHierarchyTreeExpandListener hierarchyTreeExpandListener;
     private CausalHierarchyItemSelectedListener hierarchyItemSelectedListener;
-    
+
     @Override
     public void init() {
-	String contextPath = getContext().getBaseDirectory().getName();
-	System.out.println("init "+contextPath);
-	this.setLogoutURL("/"+contextPath+"/");
+
+	this.setLogoutURL(getAppRootContext());
 	windowsManager = new WindowsManger();
 	try {
 	    appState = new OpenGroupsApplicationState();
@@ -100,9 +99,11 @@ public class OpenGroupsApplication extends Application {
 	setTheme("open-groupstheme");
 	appContext = (WebApplicationContext) getContext();
 	uriHandler = new OpenGroupsUriHandler(this);
-	hierarchyStartDepthListener = new CausalHierarchyStartDepthChangedListener(this);
+	hierarchyStartDepthListener = new CausalHierarchyStartDepthChangedListener(
+		this);
 	hierarchyTreeExpandListener = new CausalHierarchyTreeExpandListener();
-	hierarchyItemSelectedListener = new CausalHierarchyItemSelectedListener(this);
+	hierarchyItemSelectedListener = new CausalHierarchyItemSelectedListener(
+		this);
 
 	printUserAgentInfo();
 	initSession();
@@ -110,7 +111,8 @@ public class OpenGroupsApplication extends Application {
 	getContext().addTransactionListener(new TransactionListener() {
 
 	    @Override
-	    public void transactionStart(Application application, Object transactionData) {
+	    public void transactionStart(Application application,
+		    Object transactionData) {
 		HttpServletRequest req = (HttpServletRequest) transactionData;
 		String fragment = req.getParameter("fr");
 		if (fragment != null) {
@@ -122,11 +124,13 @@ public class OpenGroupsApplication extends Application {
 		    }
 		    String oldFragment = activeWindow.getFragment();
 
-		    logger.debug("Transaction start: new->'" + fragment + "' + old->'" + oldFragment + "'");
+		    logger.debug("Transaction start: new->'" + fragment
+			    + "' + old->'" + oldFragment + "'");
 		    if (oldFragment == null) {
 			logger.debug("Process fragment '" + fragment + "'");
 			uriHandler.handleFragment(fragment);
-			activeWindow.getUriUtility().setFragment(fragment, false);
+			activeWindow.getUriUtility().setFragment(fragment,
+				false);
 		    }
 		    /* this may be a refresh */
 		    if (fragment.equals(oldFragment)) {
@@ -137,7 +141,8 @@ public class OpenGroupsApplication extends Application {
 	    }
 
 	    @Override
-	    public void transactionEnd(Application application, Object transactionData) {
+	    public void transactionEnd(Application application,
+		    Object transactionData) {
 		// TODO Auto-generated method stub
 
 	    }
@@ -158,6 +163,14 @@ public class OpenGroupsApplication extends Application {
 	return true;
     }
 
+    public String getAppRootContext() {
+	String contextPath = getContext().getBaseDirectory().getName();
+	if (contextPath.length() > 1) {
+	    return "/" + contextPath + "/";
+	}
+	return contextPath;
+    }
+
     private void printUserAgentInfo() {
 	WebBrowser wb = appContext.getBrowser();
 	StringBuffer sb = new StringBuffer();
@@ -170,7 +183,8 @@ public class OpenGroupsApplication extends Application {
     @Override
     public void close() {
 	super.close();
-	logger.info("Session ended from ip " + appContext.getBrowser().getAddress());
+	logger.info("Session ended from ip "
+		+ appContext.getBrowser().getAddress());
     }
 
     private void initSession() {
@@ -178,21 +192,23 @@ public class OpenGroupsApplication extends Application {
     }
 
     public void refreshEntity(Entity entity, ActionContext ac) {
-	actionsManager.executeAction(ActionsManager.OPEN_AND_REFRESH_ENTITY, entity, this, entity.getEntityContainer(),
-		false, ac);
+	actionsManager.executeAction(ActionsManager.OPEN_AND_REFRESH_ENTITY,
+		entity, this, entity.getEntityContainer(), false, ac);
     }
 
     public void fullyRefreshEntity(Entity entity, ActionContext ac) {
 	EntityState state = entity.getState();
 	if (state.getDesiredActionTabsQueue().size() == 0) {
-	    state.setDesiredActionTabsQueue(new ArrayDeque<String>(state.getCurrentActionTabsQueue()));
+	    state.setDesiredActionTabsQueue(new ArrayDeque<String>(state
+		    .getCurrentActionTabsQueue()));
 	}
 	state.setOpened(true);
 	OpenGroupsMainWindow window = ac.getWindow();
-	logger.debug("Refresh entity " + entity.getId() + " in window " + window);
+	logger.debug("Refresh entity " + entity.getId() + " in window "
+		+ window);
 	entity.setEntityContainer(window.getEntityContent());
-	actionsManager.executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS, entity, this, window.getEntityContent(),
-		false, ac);
+	actionsManager.executeAction(ActionsManager.OPEN_ENTITY_WITH_ACTIONS,
+		entity, this, window.getEntityContent(), false, ac);
 	if (hasErrors()) {
 	    handleErrors();
 	    return;
@@ -223,8 +239,8 @@ public class OpenGroupsApplication extends Application {
     public String getMessage(String msgKey) {
 	return OpenGroupsResources.getMessage(msgKey);
     }
-    
-    public String getMessage(String msgKey, Object... args){
+
+    public String getMessage(String msgKey, Object... args) {
 	return OpenGroupsResources.getMessage(msgKey, args);
     }
 
@@ -234,82 +250,95 @@ public class OpenGroupsApplication extends Application {
 	state.setDesiredActionsPath(actionPath);
 	state.setCurrentPageForAction(state.getDesiredActionsPath(), pageNumber);
 
-	
-	User user = getUserFromOpenid();
-	if(user != null){
-	    login(user, e);
-	    logger.info("Logged in with openid: " + user.getEmail());
-	}
-	/* if no user is logged in, display the content only if the instance is not private */
-	else if(!isInstancePrivate()){ 
-	    openInActiveWindow(e);
-	}
-	else{
-	    executeMandatoryLogin();
-	}
-	
-//	HttpSession session = getAppContext().getHttpSession();
-//	String userOpenId = (String) session.getAttribute(OpenIdConstants.USER_OPENID);
-//	if (userOpenId != null) {
-//	    session.removeAttribute(OpenIdConstants.USER_OPENID);
-//	    User user = OpenGroupsModel.getInstance().loginWithOpenId(userOpenId,
-//		    getAppContext().getBrowser().getAddress());
-//	    login(user, e);
-//	    logger.info("Logged in with openid: " + userOpenId);
-//	} else {
-//	    openInActiveWindow(e);
-//	}
+	openInActiveWindow(e);
+
+	// HttpSession session = getAppContext().getHttpSession();
+	// String userOpenId = (String)
+	// session.getAttribute(OpenIdConstants.USER_OPENID);
+	// if (userOpenId != null) {
+	// session.removeAttribute(OpenIdConstants.USER_OPENID);
+	// User user = OpenGroupsModel.getInstance().loginWithOpenId(userOpenId,
+	// getAppContext().getBrowser().getAddress());
+	// login(user, e);
+	// logger.info("Logged in with openid: " + userOpenId);
+	// } else {
+	// openInActiveWindow(e);
+	// }
     }
-    
-    private void executeMandatoryLogin(){
+
+    private void displayMandatoryLogin() {
 	logger.debug("Manadatory login");
 	closeAllSubwindows();
-	actionsManager.getGlobalActionByName(ActionsManager.LOGIN_ACTION).executeHandler(this, null);
+	actionsManager.getGlobalActionByName(ActionsManager.LOGIN_ACTION)
+		.executeHandler(this, null);
     }
-    
-    private void closeAllSubwindows(){
+
+    private void closeAllSubwindows() {
 	Window mainWindow = getMainWindow();
-	for(Window w : mainWindow.getChildWindows()){
+	for (Window w : mainWindow.getChildWindows()) {
 	    mainWindow.removeWindow(w);
 	}
     }
-    
-    private User getUserFromOpenid(){
+
+    private User getUserFromOpenid() {
 	HttpSession session = getAppContext().getHttpSession();
-	String userOpenId = (String) session.getAttribute(OpenIdConstants.USER_OPENID);
+	String userOpenId = (String) session
+		.getAttribute(OpenIdConstants.USER_OPENID);
 	session.removeAttribute(OpenIdConstants.USER_OPENID);
 	if (userOpenId != null && checkAllowedDomain(userOpenId)) {
-	    User user = OpenGroupsModel.getInstance().loginWithOpenId(userOpenId,
-		    getAppContext().getBrowser().getAddress());
+	    User user = OpenGroupsModel.getInstance().loginWithOpenId(
+		    userOpenId, getAppContext().getBrowser().getAddress());
 	    return user;
-	} 
+	}
 	return null;
     }
-    
-    private boolean checkAllowedDomain(String openid){
-	String domains = (String)ApplicationConfigManager.getInstance().getApplicationConfigParam(ApplicationConfigParam.ALLOWED_OPENID_DOMAINS);
-	if(domains == null){
+
+    private boolean checkAllowedDomain(String openid) {
+	String domains = (String) ApplicationConfigManager.getInstance()
+		.getApplicationConfigParam(
+			ApplicationConfigParam.ALLOWED_OPENID_DOMAINS);
+	if (domains == null) {
 	    return true;
 	}
-	String[] domainsArray=domains.split(",");
-	for(String domain : domainsArray){
-	    if(openid.endsWith(domain.trim())){
+	String[] domainsArray = domains.split(",");
+	for (String domain : domainsArray) {
+	    if (openid.endsWith(domain.trim())) {
 		return true;
 	    }
 	}
-	
+
 	/* the domain does not comply */
-	
+
 	ExceptionContext ec = new ExceptionContext();
-	ec.put("args", new Object[]{domains});
-	if(domainsArray.length > 1){
-	    pushError(new ContextAwareException("openid.allowed.domains",ec));
+	ec.put("args", new Object[] { domains });
+	if (domainsArray.length > 1) {
+	    pushError(new ContextAwareException("openid.allowed.domains", ec));
+	} else {
+	    pushError(new ContextAwareException("openid.allowed.domain", ec));
 	}
-	else{
-	    pushError(new ContextAwareException("openid.allowed.domain",ec));
+	handleErrors();
+	return false;
+    }
+
+    private boolean isAllowed(Entity entity) {
+	User user = getCurrentUser();
+	if (user == null && getAppConfigManager().isInstancePrivate()) {
+	    displayMandatoryLogin();
+	    return false;
 	}
-	
-	return false;	
+
+	/*
+	 * don't allow the user to display entities from the inner logic of the
+	 * application
+	 */
+	long entityId = entity.getId();
+	if (entityId < getRootEntity().getId()) {
+	    pushError(OpenGroupsExceptions.getNoSuchEntityException(entityId));
+	    handleErrors();
+	    return false;
+	}
+
+	return true;
     }
 
     public Entity getOpenEntityForId(long id) {
@@ -326,10 +355,7 @@ public class OpenGroupsApplication extends Application {
 	return c;
     }
 
-    public boolean isInstancePrivate(){
-	return getAppConfigManager().getApplicationBooleanParam(ApplicationConfigParam.IS_INSTANCE_PRIVATE);
-    }
-    
+
     public void pushError(Exception e) {
 	errorsStack.push(e);
     }
@@ -345,19 +371,22 @@ public class OpenGroupsApplication extends Application {
 	    if (e instanceof ContextAwareException) {
 		ContextAwareException cae = (ContextAwareException) e;
 		ExceptionContext ec = cae.getExceptionContext();
-		if(ec != null){
-		    Object[] args = (Object[])ec.getValue("args");
-		    if(args != null){
-			errorMessage += "<br>- " + getMessage(cae.getType(),args);
+		if (ec != null) {
+		    Object[] args = (Object[]) ec.getValue("args");
+		    if (args != null) {
+			errorMessage += "<br>- "
+				+ getMessage(cae.getType(), args);
 			continue;
 		    }
 		}
-		errorMessage += "<br>- " + getMessage(((ContextAwareException) e).getType());
+		errorMessage += "<br>- "
+			+ getMessage(((ContextAwareException) e).getType());
 	    } else {
 		errorMessage += "<br>- " + getMessage("system.error");
 	    }
 	}
-	Notification notification = new Notification(getMessage("error.notification.caption"), errorMessage,
+	Notification notification = new Notification(
+		getMessage("error.notification.caption"), errorMessage,
 		Notification.TYPE_ERROR_MESSAGE);
 	getActiveWindow().showNotification(notification);
 
@@ -383,6 +412,13 @@ public class OpenGroupsApplication extends Application {
      * @return the currentUser
      */
     public User getCurrentUser() {
+	if (currentUser != null) {
+	    return currentUser;
+	}
+	User user = getUserFromOpenid();
+	if (user != null) {
+	    login(user);
+	}
 	return currentUser;
     }
 
@@ -397,21 +433,26 @@ public class OpenGroupsApplication extends Application {
      * @param currentUser
      *            the currentUser to set
      */
-    public void login(User currentUser, Entity entity) {
+    public void login(User currentUser/* , Entity entity */) {
 	if (currentUser != null) {
 	    this.currentUser = currentUser;
 	    UsersManager.getInstance().addUser(currentUser);
+	    logger.info("User logged in: " + currentUser.getEmail());
 
-	    /* refresh main application window */
-	    openInActiveWindow(entity);
 	}
+    }
+
+    public void loginAndShowEntity(User currentUser, Entity entity) {
+	login(currentUser);
+	/* refresh main application window */
+	openInActiveWindow(entity);
     }
 
     public void logout() {
 	UsersManager.getInstance().removeUser(currentUser.getUserId());
 	this.currentUser = null;
 	getAppContext().getHttpSession().invalidate();
-//	this.close();
+	// this.close();
     }
 
     public void openIdLogin(String providerUrl) {
@@ -420,7 +461,8 @@ public class OpenGroupsApplication extends Application {
 	OpenGroupsMainWindow currentWindow = appState.getActiveWindow();
 	URL url = currentWindow.getURL();
 	String path = url.getPath();
-	String urlString = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort();
+	String urlString = url.getProtocol() + "://" + url.getHost() + ":"
+		+ url.getPort();
 	if (path.length() > 1) {
 	    int contextIndex = path.substring(1).indexOf("/");
 	    String contextPath = null;
@@ -430,9 +472,13 @@ public class OpenGroupsApplication extends Application {
 	    }
 	}
 
-	String returnUrl = urlString + "#" + OpenGroupsUtil.getFragmentForEntity(appState.getActiveEntity());
+	String returnUrl = urlString
+		+ "#"
+		+ OpenGroupsUtil.getFragmentForEntity(appState
+			.getActiveEntity());
 	session.setAttribute(OpenIdConstants.RETURN_URL, returnUrl);
-	appState.getActiveWindow().open(new ExternalResource(urlString + "openid/login"));
+	appState.getActiveWindow().open(
+		new ExternalResource(urlString + "openid/login"));
     }
 
     /**
@@ -441,28 +487,33 @@ public class OpenGroupsApplication extends Application {
      * @param entity
      */
     public void openInActiveWindow(Entity entity) {
-	long entityId=-1;
-	long rootEntityId=-1;
+	System.out.println("*****opening entity: " + entity);
+	long entityId = -1;
+	long rootEntityId = -1;
 	if (entity == null) {
 	    entity = getRootEntity();
-	} else if ( (entityId = entity.getId()) != ( rootEntityId = getRootEntity().getId()) ) {
-	    
-	    /* don't allow the user to display entities from the inner logic of the application */
-	    if(entityId < rootEntityId){
-		pushError(OpenGroupsExceptions.getNoSuchEntityException(entityId));
-		handleErrors();
-		return;
-	    }
+	} else if ((entityId = entity.getId()) != (rootEntityId = getRootEntity()
+		.getId())) {
+
 	    /*
-	     * this is stupid, should be handled via the complex_entity_type table
+	     * this is stupid, should be handled via the complex_entity_type
+	     * table
 	     */
 	    entity.getState().setEntityTypeVisible(true);
 	}
+	OpenGroupsMainWindow activeWindow = getActiveWindow();
+	if (!isAllowed(entity)) {
+	    activeWindow.setContentVisible(false);
+	    return;
+	}
+	activeWindow.setContentVisible(true);
 	appState.setActiveEntity(entity);
 	entity.getState().setOpened(true);
-	OpenGroupsMainWindow activeWindow = getActiveWindow();
-	logger.debug("Open entity " + entity.getId() + " in window " + activeWindow);
-	actionsManager.executeAction(ActionsManager.OPEN_ENTITY_IN_WINDOW, entity, this, activeWindow, false);
+
+	logger.debug("Open entity " + entity.getId() + " in window "
+		+ activeWindow);
+	actionsManager.executeAction(ActionsManager.OPEN_ENTITY_IN_WINDOW,
+		entity, this, activeWindow, false);
 	if (hasErrors()) {
 	    handleErrors();
 	    return;
@@ -473,7 +524,8 @@ public class OpenGroupsApplication extends Application {
 	Integer nextId = windowsManager.getNextWindowId(name);
 	name = name + MY_WINDOW_SEPARATOR + nextId;
 	System.out.println("->createWindow(" + name + ")");
-	OpenGroupsMainWindow w = new OpenGroupsMainWindow(this, "Metaguvernare");
+	OpenGroupsMainWindow w = new OpenGroupsMainWindow(this,
+		getAppConfigManager().getInstanceName());
 	System.out.println("createWindow(" + name + ") -> " + w);
 	return w;
     }
@@ -554,16 +606,20 @@ public class OpenGroupsApplication extends Application {
     public void terminalError(Terminal.ErrorEvent event) {
 	String message = event.getThrowable().getMessage();
 	if ("FILE_NOT_FOUND".equals(message)) {
-	    Notification notification = new Notification(getMessage("error.notification.caption"), "<br>- "
-		    + getMessage("system.error"), Notification.TYPE_ERROR_MESSAGE);
+	    Notification notification = new Notification(
+		    getMessage("error.notification.caption"), "<br>- "
+			    + getMessage("system.error"),
+		    Notification.TYPE_ERROR_MESSAGE);
 	    getActiveWindow().showNotification(notification);
 	}
 	// Call the default implementation.
 	super.terminalError(event);
 	// Some custom behaviour.
 	if (getActiveWindow() != null) {
-	    Notification notification = new Notification(getMessage("error.notification.caption"), "<br>- "
-		    + getMessage("system.error"), Notification.TYPE_ERROR_MESSAGE);
+	    Notification notification = new Notification(
+		    getMessage("error.notification.caption"), "<br>- "
+			    + getMessage("system.error"),
+		    Notification.TYPE_ERROR_MESSAGE);
 	    getActiveWindow().showNotification(notification);
 	}
     }
@@ -641,8 +697,7 @@ public class OpenGroupsApplication extends Application {
 	return uriHandler;
     }
 
-    
-    public ApplicationConfigManager getAppConfigManager(){
+    public ApplicationConfigManager getAppConfigManager() {
 	return ApplicationConfigManager.getInstance();
     }
 }

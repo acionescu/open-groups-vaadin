@@ -23,4 +23,5 @@ public class ApplicationConfigParam {
     public static final String LOGIN_TYPES="login.types";
     public static final String ALLOWED_OPENID_DOMAINS="allowed.openid.domains";
     public static final String IS_INSTANCE_PRIVATE = "is.instance.private";
+    public static final String INSTANCE_NAME="instance.name";
 }

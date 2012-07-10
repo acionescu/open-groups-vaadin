@@ -22,6 +22,7 @@ import java.util.Map;
 
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.ActionsManager;
+import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.vo.TypeRelationConfig;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
@@ -250,4 +251,13 @@ public class ApplicationConfigManager {
 	return nonLeafTypes;
     }
 
+    public String getInstanceName(){
+	return (String)getApplicationConfigParam(ApplicationConfigParam.INSTANCE_NAME);
+    }
+    
+    public boolean isInstancePrivate() {
+	return getApplicationBooleanParam(
+		ApplicationConfigParam.IS_INSTANCE_PRIVATE);
+    }
+    
 }

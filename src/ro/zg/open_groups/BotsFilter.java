@@ -27,6 +27,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.opengroups.util.MirrorSiteUtil;
 
 public class BotsFilter implements Filter {
@@ -39,18 +40,27 @@ public class BotsFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2) throws IOException,
-	    ServletException {
+    public void doFilter(ServletRequest arg0, ServletResponse arg1,
+	    FilterChain arg2) throws IOException, ServletException {
 
 	HttpServletRequest req = (HttpServletRequest) arg0;
 	HttpServletResponse res = (HttpServletResponse) arg1;
+
 	String userAgent = req.getHeader("User-Agent");
-	
-	boolean isBot = userAgent.contains("Googlebot") || userAgent.contains("Yahoo") || userAgent.contains("WordPress") || userAgent.toLowerCase().contains("bot");
+
+	boolean isBot = userAgent.contains("Googlebot")
+		|| userAgent.contains("Yahoo")
+		|| userAgent.contains("WordPress")
+		|| userAgent.toLowerCase().contains("bot");
 
 	if (isBot) {
-	    System.out.println("Serving bot: "+userAgent);
-	    System.out.println("url: "+req.getRequestURL());
+	    System.out.println("Serving bot: " + userAgent);
+	    System.out.println("url: " + req.getRequestURL());
+	    if (ApplicationConfigManager.getInstance().isInstancePrivate()) {
+		res.setStatus(res.SC_FORBIDDEN);
+		return;
+	    }
+
 	    URL url = new URL(req.getRequestURL().toString());
 	    String contextPath = req.getContextPath();
 	    String base = url.getProtocol() + "://" + url.getHost();
@@ -59,11 +69,11 @@ public class BotsFilter implements Filter {
 	    }
 	    base += contextPath;
 	    mirrorSite.updateBaseUrl(base);
-	    
+
 	    String uri = req.getRequestURI();
-	    String fragment="";
-	    if(uri.length() > contextPath.length() ) {
-		fragment = uri.substring(contextPath.length()+1);
+	    String fragment = "";
+	    if (uri.length() > contextPath.length()) {
+		fragment = uri.substring(contextPath.length() + 1);
 	    }
 	    mirrorSite.generatePage(fragment, res);
 	    return;
