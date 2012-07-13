@@ -72,9 +72,10 @@ public class OpenGroupsMainWindow extends Window {
 	mainContent.addStyleName(OpenGroupsStyles.MAIN_PANE);
 
 	header = new CssLayout();
-	header.setWidth("100%");
+//	header.setWidth("100%");
+	header.addStyleName(OpenGroupsStyles.HEADER_BAR);
 	mainContent.addComponent(header);
-
+	
 	userActionsContainer = new CssLayout();
 
 	CssLayout entityFrame = new CssLayout();

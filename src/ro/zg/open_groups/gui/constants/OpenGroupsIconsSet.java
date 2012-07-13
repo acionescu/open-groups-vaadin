@@ -40,6 +40,8 @@ public class OpenGroupsIconsSet {
     public static final String SHOW_CAUSE_ON= ActionConstants.SHOW_CAUSE+".on";
     public static final String SHOW_CAUSE_OFF=ActionConstants.SHOW_CAUSE+".off";
     
+    public static final String USER="user";
+    
     public static final String SMALL="small";
     public static final String LARGE="large";
     public static final String MEDIUM="medium";
@@ -73,6 +75,11 @@ public class OpenGroupsIconsSet {
      */
     public void setDirPath(String dirPath) {
         this.dirPath = dirPath;
+    }
+    
+    public String getIconPath(String name,String size){
+	String s = "/";
+	return dirPath+s+sizesMap.get(size)+s+iconsMap.get(name);
     }
     
 }

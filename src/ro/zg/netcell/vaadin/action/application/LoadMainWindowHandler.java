@@ -23,6 +23,8 @@ import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
+import ro.zg.open_groups.gui.constants.OpenGroupsIconsSet;
+import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.util.OpenGroupsUtil;
@@ -36,6 +38,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 
 public class LoadMainWindowHandler extends OpenGroupsActionHandler {
@@ -73,10 +76,16 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 	
 
 	if (user != null) {
-	    Label userInfo = new Label(app.getMessage("login.user.info") + ": " + user.getUsername());
+	    
+	    Embedded usericon = new Embedded(null,
+		    OpenGroupsResources.getIcon(OpenGroupsIconsSet.USER, OpenGroupsIconsSet.MEDIUM));
+	    usericon.addStyleName("middle-left right-margin-10");
+	    header.addComponent(usericon);
+	    
+	    Label userInfo = new Label(/*app.getMessage("login.user.info") + ": " +*/ user.getUsername());
 	    userInfo.setSizeUndefined();
 	    header.addComponent(userInfo);
-	    userInfo.addStyleName("top-left");
+	    userInfo.addStyleName("username-label");
 	    
 	}
 
@@ -103,7 +112,7 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 	    });
 
 	    header.addComponent(actButton);
-	    actButton.addStyleName("top-right");
+	    actButton.addStyleName("middle-right left-margin-10");
 	    
 	}
 	
@@ -115,8 +124,8 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
 	/* add quick links */
 	header.addComponent(rootLink);
 	header.addComponent(metaLink);
-	rootLink.addStyleName("top-right");
-	metaLink.addStyleName("top-right");
+	rootLink.addStyleName("middle-right left-margin-10");
+	metaLink.addStyleName("middle-right left-margin-10");
     }
 
     private Component getRootEntityLink(OpenGroupsApplication app) throws ContextAwareException {

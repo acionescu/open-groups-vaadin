@@ -150,8 +150,6 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	/* display title */
 	/* if the entity is open or it is a leaf entity, and it is not displayed in the recent activity list */
 	if (isOpened || (subtyesList == null && entity.getLastActionType() == null)) {
-	    System.out.println("opening entity with cause: " + entity.getSelectedCause());
-
 	    Label title = new Label(entity.getTitle());
 	    if (isOpened) {
 		title.addStyleName(OpenGroupsStyles.TITLE_LINK);
@@ -226,22 +224,9 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		String parentTitle = selectedCause.getParentTitle();
 		final Entity parentEntity = new Entity(selectedCause.getParentId());
 		parentEntity.setTitle(parentTitle);
-		// Button parentLink = new Button(getMessage("parent"));
-		// parentLink.setDescription(parentTitle);
-		// parentLink.addStyleName(BaseTheme.BUTTON_LINK);
-		// parentLink.addStyleName("issue-title");
-		// parentLink.addListener(new ClickListener() {
-		//
-		// @Override
-		// public void buttonClick(ClickEvent event) {
-		// parentEntity.getState().setEntityTypeVisible(true);
-		// getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, parentEntity, app, null,
-		// false, actionContext);
-		// }
-		// });
 
 		Label parentLink = OpenGroupsUtil.getLinkForEntityWithImage(parentEntity, app, OpenGroupsResources
-			.getIcon(OpenGroupsIconsSet.PARENT, OpenGroupsIconsSet.MEDIUM).getResourceId());
+			.getIconPath(OpenGroupsIconsSet.PARENT, OpenGroupsIconsSet.MEDIUM));
 		parentLink.setDescription(parentTitle);
 		parentLink.setSizeUndefined();
 		parentLink.addStyleName(OpenGroupsStyles.TOP_RIGHT);

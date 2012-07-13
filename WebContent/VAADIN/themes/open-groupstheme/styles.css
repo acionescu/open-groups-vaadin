@@ -72,10 +72,10 @@ a:link,a:visited {
 /* 	width: 100%; */
 /* /* 	margin-rigth: 40px; */
 * /
-	/* /* 	padding-right: 40px; */      * /
-	/* /* 	padding-left: 20px; */      * /
+	/* /* 	padding-right: 40px; */       * /
+	/* /* 	padding-left: 20px; */       * /
 	/* 	white-space: normal; */
-	/* } */     
+	/* } */      
 
 .text-label>div {
 	width: 96%;
@@ -99,7 +99,7 @@ a:link,a:visited {
 .middle-left {
 	position: relative;
 	float: left;
-	vertical-align: middle;
+	top: 50%;
 }
 
 .middle {
@@ -107,9 +107,8 @@ a:link,a:visited {
 }
 
 .middle-right {
-	position: relative;
 	float: right;
-	vertical-align: middle;
+	display: inline-block;
 }
 
 .right-margin-5 {
@@ -207,15 +206,23 @@ a:link,a:visited {
 /* } */
 .header-bar {
 	padding-top: 5px;
-	background-color: #ffffff;
-	/* 	border-bottom-style: solid; */
-	/* 	border-color: #dddddd; */
-	/* 	border-width: thin; */
-	margin-bottom: 5px;
+	padding-bottom: 5px;
+	width: 100%;
+/* 	height: 30px; */
+	display: block;
 }
 
 .header-actions {
 	margin-right: 20px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.username-label{
+	float: left;
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
 }
 
 .hierarchy-filters-bar {
@@ -340,10 +347,10 @@ a:link,a:visited {
 	border-left: thin;
 	border-left-color: black;
 	border-left-style: solid;
-/* 	padding-top:10px; */
-/* 	padding-bottom: 10px; */
-/* 	padding-left:20px; */
-/* 	padding-right:20px; */
+	/* 	padding-top:10px; */
+	/* 	padding-bottom: 10px; */
+	/* 	padding-left:20px; */
+	/* 	padding-right:20px; */
 	width: 100%;
 	height: 100%;
 }
@@ -391,37 +398,37 @@ a:link,a:visited {
 	padding-top: 10px;
 }
 
-.notification-rules-list-header-cell {
-/* 	float: left; */
+.notification-rules-list-header-cell { /* 	float: left; */
 	width: 100%;
-/* 	height: 100%; */
+	/* 	height: 100%; */
 	margin-left: 10px;
 }
 
-.notification-rules-list-row-cell {
-/* 	float: left; */
-/* 	margin-left: 10px; */
+.notification-rules-list-row-cell { /* 	float: left; */
+	/* 	margin-left: 10px; */
 	width: 100%;
-/* 	height: 100%; */
+	/* 	height: 100%; */
 }
 
 .notification-rules-list-row-cell-content {
 	
 }
 
-.notification-rules-list-controls-container{
+.notification-rules-list-controls-container {
 	margin-top: 5px;
 }
 
-.notification-rules-list-controls-container-cell{
+.notification-rules-list-controls-container-cell {
 	float: left;
 	margin-left: 10px;
 }
 
-.notification-rules-list-row-container .notification-rules-list-row-cell-delete-rule {
+.notification-rules-list-row-container .notification-rules-list-row-cell-delete-rule
+	{
 	visibility: hidden;
 }
 
-.notification-rules-list-row-container:hover .notification-rules-list-row-cell-delete-rule {
+.notification-rules-list-row-container:hover .notification-rules-list-row-cell-delete-rule
+	{
 	visibility: visible;
 }

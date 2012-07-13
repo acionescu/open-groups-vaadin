@@ -53,13 +53,13 @@ public class OpenGroupsUtil {
     public static Label getLinkForEntityWithImage(Entity entity, OpenGroupsApplication app, String imagePath) {
 	String url = app.getURL().toString();
 	String fragment = getDesiredFragmentForEntity(entity);
-	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, fragment, wrapAsImage(imagePath), "_self"), Label.CONTENT_XHTML);
+	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, fragment, wrapAsImage(imagePath, app), "_self"), Label.CONTENT_XHTML);
 	anchor.setWidth("80%");
 	return anchor;
     }
     
-    public static String wrapAsImage(String path) {
-	return "<img src=\""+path+"\"/>";
+    public static String wrapAsImage(String path, OpenGroupsApplication app) {
+	return "<img src=\"VAADIN/themes/"+app.getTheme()+"/"+path+"\"/>";
     }
 
     public static String getFragmentForEntity(Entity entity) {

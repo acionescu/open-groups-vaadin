@@ -118,7 +118,7 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
 
     @Override
     public DownloadStream handleURI(URL context, String relativeUri) {
-	if (relativeUri.startsWith("UIDL")) {
+	if (relativeUri.startsWith("UIDL") || relativeUri.startsWith("VAADIN/themes/")) {
 	    return null;
 	}
 	logger.info("handle uri '" + relativeUri + "'");

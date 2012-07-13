@@ -29,6 +29,8 @@ public class LunaBlueIconsSet extends OpenGroupsIconsSet{
 	
 	addIcon(SHOW_CAUSE_OFF, "next.png");
 	addIcon(SHOW_CAUSE_ON, "up.png");
+	
+	addIcon(USER, "user.png");
     }
 
 }
