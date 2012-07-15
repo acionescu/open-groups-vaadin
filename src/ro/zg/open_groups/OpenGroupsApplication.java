@@ -475,7 +475,7 @@ public class OpenGroupsApplication extends Application {
 	String returnUrl = urlString
 		+ "#"
 		+ OpenGroupsUtil.getFragmentForEntity(appState
-			.getActiveEntity());
+			.getDesiredEntity());
 	session.setAttribute(OpenIdConstants.RETURN_URL, returnUrl);
 	appState.getActiveWindow().open(
 		new ExternalResource(urlString + "openid/login"));
@@ -501,6 +501,7 @@ public class OpenGroupsApplication extends Application {
 	     */
 	    entity.getState().setEntityTypeVisible(true);
 	}
+	appState.setDesiredEntity(entity);
 	OpenGroupsMainWindow activeWindow = getActiveWindow();
 	if (!isAllowed(entity)) {
 	    activeWindow.setContentVisible(false);

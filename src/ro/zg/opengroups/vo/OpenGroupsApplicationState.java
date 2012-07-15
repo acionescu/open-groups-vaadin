@@ -10,6 +10,7 @@ public class OpenGroupsApplicationState {
     private OpenGroupsMainWindow activeWindow;
     private Entity activeEntity;
     private String currentUri;
+    private Entity desiredEntity;
 
     public OpenGroupsApplicationState() throws ContextAwareException {
 	OpenGroupsModel model = OpenGroupsModel.getInstance();
@@ -68,6 +69,17 @@ public class OpenGroupsApplicationState {
 
     public void setCurrentUri(String currentUri) {
 	this.currentUri = currentUri;
+    }
+
+    public Entity getDesiredEntity() {
+	if (desiredEntity == null) {
+	    return getActiveEntity();
+	}
+	return desiredEntity;
+    }
+
+    public void setDesiredEntity(Entity desiredEntity) {
+	this.desiredEntity = desiredEntity;
     }
 
 }
