@@ -43,7 +43,8 @@ public class OpenGroupsUtil {
     }
 
     public static Label getLinkForEntity(Entity entity, OpenGroupsApplication app, String title) {
-	String url = "/"+app.getAppContext().getBaseDirectory().getName()+"/";
+//	String url = "/"+app.getAppContext().getBaseDirectory().getName()+"/";
+	String url = app.getBaseAppUrl();
 	String fragment = getDesiredFragmentForEntity(entity);
 	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, fragment, title, "_self"), Label.CONTENT_XHTML);
 	anchor.setWidth("80%");
@@ -51,7 +52,7 @@ public class OpenGroupsUtil {
     }
     
     public static Label getLinkForEntityWithImage(Entity entity, OpenGroupsApplication app, String imagePath) {
-	String url = app.getURL().toString();
+	String url = app.getBaseAppUrl();
 	String fragment = getDesiredFragmentForEntity(entity);
 	Label anchor = new Label(OpenGroupsUtil.wrapAsA(url, fragment, wrapAsImage(imagePath, app), "_self"), Label.CONTENT_XHTML);
 	anchor.setWidth("80%");

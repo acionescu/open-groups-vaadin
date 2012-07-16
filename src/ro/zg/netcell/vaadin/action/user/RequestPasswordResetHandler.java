@@ -83,7 +83,7 @@ public class RequestPasswordResetHandler extends UserHandler {
 	Map<String, Object> paramsMap = DataTranslationUtils.getFormFieldsAsMap(form);
 	String instanceName = getAppConfigManager().getInstanceName();
 	paramsMap.put("subject", getMessage(ua.getActionName()+".subject", instanceName));
-	paramsMap.put("message", getMessage(ua.getActionName()+".message",instanceName,app.getURL().toString()));
+	paramsMap.put("message", getMessage(ua.getActionName()+".message",instanceName,app.getBaseAppUrl()));
 	
 	CommandResponse response = executeAction(new ActionContext(ua, app, null), paramsMap);
 

@@ -65,6 +65,7 @@ public class OpenGroupsApplication extends Application {
      */
     private static final long serialVersionUID = 2543794851816120227L;
 
+    public static final String APP_PATH="site";
     private WebApplicationContext appContext;
     private ActionsManager actionsManager = ActionsManager.getInstance();
     private Map<Long, TabContainer> tabsForEntities = new HashMap<Long, TabContainer>();
@@ -89,7 +90,7 @@ public class OpenGroupsApplication extends Application {
     @Override
     public void init() {
 
-	this.setLogoutURL(getAppRootContext());
+	this.setLogoutURL(getBaseAppUrl());
 	windowsManager = new WindowsManger();
 	try {
 	    appState = new OpenGroupsApplicationState();
@@ -461,17 +462,18 @@ public class OpenGroupsApplication extends Application {
 	OpenGroupsMainWindow currentWindow = appState.getActiveWindow();
 	URL url = currentWindow.getURL();
 	String path = url.getPath();
-	String urlString = url.getProtocol() + "://" + url.getHost() + ":"
-		+ url.getPort();
-	if (path.length() > 1) {
-	    int contextIndex = path.substring(1).indexOf("/");
-	    String contextPath = null;
-	    if (contextIndex > 0) {
-		contextPath = path.substring(0, contextIndex + 1);
-		urlString += contextPath + "/";
-	    }
-	}
-
+//	String urlString = url.getProtocol() + "://" + url.getHost() + ":"
+//		+ url.getPort();
+	
+//	if (path.length() > 1) {
+//	    int contextIndex = path.substring(1).indexOf("/");
+//	    String contextPath = null;
+//	    if (contextIndex > 0) {
+//		contextPath = path.substring(0, contextIndex + 1);
+//		urlString += contextPath + "/";
+//	    }
+//	}
+	String urlString = getBaseAppUrl();
 	String returnUrl = urlString
 		+ "#"
 		+ OpenGroupsUtil.getFragmentForEntity(appState
@@ -480,6 +482,13 @@ public class OpenGroupsApplication extends Application {
 	appState.getActiveWindow().open(
 		new ExternalResource(urlString + "openid/login"));
     }
+    
+    public String getBaseAppUrl(){
+	String urlString = getURL().toString();
+	int index = urlString.lastIndexOf(APP_PATH);
+	return urlString.substring(0,index);
+    }
+    
 
     /**
      * Opens an entity in a new window
