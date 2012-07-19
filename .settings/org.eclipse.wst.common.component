@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-modules id="moduleCoreId" project-version="1.5.0">
   <wb-module deploy-name="open-groups">
-    <property name="context-root" value="open-groups"/>
-    <wb-resource deploy-path="/" source-path="WebContent"/>
-    <wb-resource deploy-path="/" source-path="WebContent"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-    <property name="java-output-path" value="/target/classes"/>
+        <dependent-module archiveName="openid-support.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/openid-support/openid-support">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="netcell-client.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/netcell-client/netcell-client">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -15,8 +13,9 @@
         <dependent-module archiveName="commons.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/commons/commons">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="openid-support.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/openid-support/openid-support">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
+    <property name="context-root" value="open-groups"/>
+    <property name="java-output-path" value="/target/classes"/>
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
   </wb-module>
 </project-modules>
