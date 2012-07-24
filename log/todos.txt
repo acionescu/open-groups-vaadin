@@ -1,3 +1,20 @@
--add domain check for openid login
+TODO:
+
+
+
+
+-polish the interface ( add icons for user, align middle, etc )
+-notifications sending mechanism
+-do not display register button if local login is not allowed
+
+
+
+
+
+
+
+DONE:
+
+-add support for instance configuration ( instance name)
 -add mandatory login if the instance is private
--add support for instance configuration
+-add domain check for openid login
