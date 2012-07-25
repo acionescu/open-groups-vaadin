@@ -34,6 +34,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.CollapseEvent;
 import com.vaadin.ui.Tree.CollapseListener;
@@ -63,6 +64,7 @@ public class CausalHierarchyContainer extends CssLayout {
 	/* start depth combo */
 	CssLayout startDepthContainer = new CssLayout();
 	startDepthContainer.setWidth("100%");
+	startDepthContainer.setHeight("22px");
 	startDepthContainer
 		.addStyleName(OpenGroupsStyles.HIERARCHY_FILTERS_BAR);
 
@@ -114,7 +116,7 @@ public class CausalHierarchyContainer extends CssLayout {
 	CssLayout treeContainer = new CssLayout();
 	treeContainer.addStyleName("hierarchy-tree-container");
 	treeContainer.setWidth("100%");
-	treeContainer.setHeight("95.8%");
+	treeContainer.setHeight("93%");
 	treeContainer.addComponent(hierarchyTree);
 	addComponent(treeContainer);
 	// setExpandRatio(hierarchyTree, 1);
