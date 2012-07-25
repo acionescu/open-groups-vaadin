@@ -79,7 +79,7 @@ public class OpenGroupsMainWindow extends Window {
 	userActionsContainer = new CssLayout();
 
 	CssLayout entityFrame = new CssLayout();
-	entityFrame.setHeight("96%");
+	entityFrame.setHeight("100%");
 	// entityFrame.setWidth("100%"); uncomment this and you will have
 	// problems
 	entityFrame.addStyleName("entity-frame");
@@ -92,13 +92,13 @@ public class OpenGroupsMainWindow extends Window {
 
 	frameContent = new CssLayout();
 	frameContent.setWidth("100%");
-	frameContent.setHeight("100%");
+	frameContent.setHeight("90%");
 	frameContent.addStyleName(OpenGroupsStyles.FRAME_PANE);
 
 	hierarchyContainer = new CausalHierarchyContainer();
 	hierarchyContainer.addStyleName(OpenGroupsStyles.HIERARCHY_PANE);
 	hierarchyContainer.setWidth("350px");
-	hierarchyContainer.setHeight("96%");
+	hierarchyContainer.setHeight("100%");
 	hierarchyContainer.construct();
 
 	frameContent.addComponent(hierarchyContainer);

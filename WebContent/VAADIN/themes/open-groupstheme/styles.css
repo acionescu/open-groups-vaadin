@@ -72,10 +72,10 @@ a:link,a:visited {
 /* 	width: 100%; */
 /* /* 	margin-rigth: 40px; */
 * /
-	/* /* 	padding-right: 40px; */       * /
-	/* /* 	padding-left: 20px; */       * /
+	/* /* 	padding-right: 40px; */        * /
+	/* /* 	padding-left: 20px; */        * /
 	/* 	white-space: normal; */
-	/* } */      
+	/* } */       
 
 .text-label>div {
 	width: 96%;
@@ -144,6 +144,7 @@ a:link,a:visited {
 	margin-left: auto;
 	margin-right: auto;
 	height: 100%;
+	width: 90%;
 }
 
 .entity-frame { /* 	width: 100%; */
@@ -151,6 +152,9 @@ a:link,a:visited {
 	/* 	float: left; */
 	overflow-y: scroll !important;
 	overflow-x: auto !important;
+	height: 100%;
+	/* 	width: 100%; */
+	margin-left: 350px;
 }
 
 .entity-pane { /* 	border-left-style: solid; */
@@ -180,7 +184,7 @@ a:link,a:visited {
 .frame-pane {
 	background-color: white;
 	height: 100%;
-	width: 100%;
+	width: 90%;
 	/* 	float: left; */
 }
 
@@ -193,8 +197,7 @@ a:link,a:visited {
 .hierarchy-tree-container {
 	background-color: #eeeeee;
 	overflow: auto !important;
-	width: 100%;
-	height: 100%;
+
 }
 
 .hierarchy-tree {
@@ -208,7 +211,7 @@ a:link,a:visited {
 	padding-top: 5px;
 	padding-bottom: 5px;
 	width: 100%;
-/* 	height: 30px; */
+	/* 	height: 30px; */
 	display: block;
 }
 
@@ -218,7 +221,7 @@ a:link,a:visited {
 	text-align: center;
 }
 
-.username-label{
+.username-label {
 	float: left;
 	display: inline-block;
 	vertical-align: middle;
@@ -226,14 +229,15 @@ a:link,a:visited {
 }
 
 .hierarchy-filters-bar {
-	border-bottom-style: solid;
-	/*border-top-style: solid;*/
-	border-width: thin;
-	border-color: #cccccc;
 	background-color: #dddddd;
+	border-color: #cccccc;
+	border-bottom-style: solid;
+	border-width: thin;
 	padding-left: 10px;
-	padding-bottom: 2px;
-	padding-top: 2px;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	width: 100%;
+	height: 22px;
 }
 
 .hierarchy-title-bar {
