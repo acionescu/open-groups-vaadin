@@ -16,6 +16,7 @@
 package ro.zg.open_groups.openid;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -33,17 +34,21 @@ import org.openid4java.discovery.DiscoveryInformation;
 import org.openid4java.discovery.Identifier;
 import org.openid4java.message.AuthRequest;
 import org.openid4java.message.AuthSuccess;
+import org.openid4java.message.MessageException;
 import org.openid4java.message.ParameterList;
 import org.openid4java.message.ax.AxMessage;
 import org.openid4java.message.ax.FetchRequest;
 import org.openid4java.message.ax.FetchResponse;
 
+import ro.zg.openid.util.OpenIdAttribute;
+import ro.zg.openid.util.OpenIdAttributesManager;
 import ro.zg.openid.util.OpenIdConstants;
 import ro.zg.openid.util.OpenIdOperations;
 
 public class OpenIdLoginManagerServlet extends HttpServlet {
-    private static String providerUrl = /* "https://www.google.com/accounts/o8/site-xrds?hd=qualitance.ro"; */"https://www.google.com/accounts/o8/id";
+
     private ConsumerManager manager = new ConsumerManager();
+    private OpenIdAttributesManager attributesManager = new OpenIdAttributesManager();
 
     /**
      * 
@@ -62,18 +67,21 @@ public class OpenIdLoginManagerServlet extends HttpServlet {
 
 	System.out.println("init " + this.getClass());
 	System.out.println("contextPaht = " + contextPath);
-	System.out.println("servlet context name = " + config.getServletContext().getServletContextName());
+	System.out.println("servlet context name = "
+		+ config.getServletContext().getServletContextName());
 
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
-     * javax.servlet.http.HttpServletResponse)
+     * @see
+     * javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest
+     * , javax.servlet.http.HttpServletResponse)
      */
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+	    throws ServletException, IOException {
 	System.out.println("do get " + req.getRequestURL());
 
 	String path = req.getServletPath();
@@ -91,35 +99,35 @@ public class OpenIdLoginManagerServlet extends HttpServlet {
 	System.out.println("operation = " + operation);
 
 	if (OpenIdOperations.LOGIN.equals(operation)) {
-	    String consumerListenAddress = getOpenIdVerifyAuthRespUrl(req);
-//	    consumerListenAddress.replace("8080", "20000");
 
-	    System.out.println("listen address= " + consumerListenAddress);
 	    try {
-		authenticate(req, resp, consumerListenAddress);
+		authenticate(req, resp);
 	    } catch (OpenIDException e) {
 		e.printStackTrace();
 	    }
 	} else if (OpenIdOperations.VERIFY_AUTH_RESPONSE.equals(operation)) {
 	    try {
 		String email = verifyResponse(req);
-//		if (email != null) {
-//		    req.setAttribute("email", email);
-//		    RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/res/content.jsp");
-//		    dispatcher.forward(req, resp);
-//		} else {
-//		    RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/");
-//		    dispatcher.forward(req, resp);
-//		}
+		// if (email != null) {
+		// req.setAttribute("email", email);
+		// RequestDispatcher dispatcher =
+		// getServletContext().getRequestDispatcher("/res/content.jsp");
+		// dispatcher.forward(req, resp);
+		// } else {
+		// RequestDispatcher dispatcher =
+		// getServletContext().getRequestDispatcher("/");
+		// dispatcher.forward(req, resp);
+		// }
 		HttpSession session = req.getSession(true);
 		session.setAttribute(OpenIdConstants.USER_OPENID, email);
-		
-		String returnUrl = (String)session.getAttribute(OpenIdConstants.RETURN_URL);
-		if(returnUrl != null) {
-		    System.out.println("Sending redirect to: "+returnUrl);
+
+		String returnUrl = (String) session
+			.getAttribute(OpenIdConstants.RETURN_URL);
+		if (returnUrl != null) {
+		    System.out.println("Sending redirect to: " + returnUrl);
 		    resp.sendRedirect(returnUrl);
 		}
-		
+
 	    } catch (OpenIDException e) {
 		e.printStackTrace();
 	    }
@@ -132,16 +140,17 @@ public class OpenIdLoginManagerServlet extends HttpServlet {
     /*
      * (non-Javadoc)
      * 
-     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
-     * javax.servlet.http.HttpServletResponse)
+     * @see
+     * javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest
+     * , javax.servlet.http.HttpServletResponse)
      */
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+	    throws ServletException, IOException {
 	System.out.println("do post");
 
 	super.doPost(req, resp);
     }
-    
 
     private String getOpenIdVerifyAuthRespUrl(HttpServletRequest req) {
 	String fullUrl = req.getRequestURL().toString();
@@ -153,8 +162,59 @@ public class OpenIdLoginManagerServlet extends HttpServlet {
 	return baseUrl + "/" + OpenIdOperations.VERIFY_AUTH_RESPONSE;
     }
 
-    private void authenticate(HttpServletRequest req, HttpServletResponse res, String consumerUrl)
+    private String getProviderUrl(HttpServletRequest req) {
+	HttpSession session = req.getSession();
+	if (session != null) {
+	    return (String) session.getAttribute(OpenIdConstants.PROVIDER_URL);
+	}
+	return null;
+    }
+
+    private void addExtraAttributes(AuthRequest authReq,
+	    HttpServletRequest httpReq, String providerUrl) throws MessageException {
+	String[] attrNames = getExtraAttributes(httpReq);
+	if (attrNames == null) {
+	    return;
+	}
+
+	OpenIdAttribute[] attributes = attributesManager.getAttributes(
+		providerUrl, attrNames);
+
+	if (attributes == null) {
+	    System.out.println("Error: Could not resolve attributes "
+		    + Arrays.toString(attrNames) + " for provider "
+		    + providerUrl);
+	    return;
+	}
+
+	// Attribute Exchange example: fetching the 'email' attribute
+	FetchRequest fetch = FetchRequest.createFetchRequest();
+	
+	for (OpenIdAttribute attr : attributes) {
+	    fetch.addAttribute(attr.getName(), attr.getSchema(), true);
+	}
+	
+	authReq.addExtension(fetch);
+    }
+
+    private String[] getExtraAttributes(HttpServletRequest httpReq) {
+
+	return (String[]) httpReq.getSession().getAttribute(
+		OpenIdConstants.REQUEST_ATTRIBUTES);
+    }
+
+    private void authenticate(HttpServletRequest req, HttpServletResponse res)
 	    throws OpenIDException, IOException, ServletException {
+
+	String consumerUrl = getOpenIdVerifyAuthRespUrl(req);
+	System.out.println("listen address= " + consumerUrl);
+
+	String providerUrl = getProviderUrl(req);
+
+	if (providerUrl == null) {
+	    res.sendRedirect(consumerUrl);
+	}
+
 	// perform discovery on the user-supplied identifier
 	List discoveries = manager.discover(providerUrl);
 
@@ -167,16 +227,8 @@ public class OpenIdLoginManagerServlet extends HttpServlet {
 
 	// obtain a AuthRequest message to be sent to the OpenID provider
 	AuthRequest authReq = manager.authenticate(discovered, consumerUrl);
-
-	// Attribute Exchange example: fetching the 'email' attribute
-	FetchRequest fetch = FetchRequest.createFetchRequest();
-	fetch.addAttribute("email",
-	// attribute alias
-		"http://schema.openid.net/contact/email", // type URI
-		true); // required
-
-	// attach the extension to the authentication request
-	authReq.addExtension(fetch);
+	
+	addExtraAttributes(authReq, req, providerUrl);
 
 	if (!discovered.isVersion2()) {
 	    // Option 1: GET HTTP-redirect to the OpenID Provider endpoint
@@ -186,20 +238,23 @@ public class OpenIdLoginManagerServlet extends HttpServlet {
 	} else {
 	    // Option 2: HTML FORM Redirection (Allows payloads >2048 bytes)
 
-	    RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/res/formredirection.jsp");
+	    RequestDispatcher dispatcher = getServletContext()
+		    .getRequestDispatcher("/res/formredirection.jsp");
 	    req.setAttribute("parameterMap", authReq.getParameterMap());
 	    req.setAttribute("destinationUrl", authReq.getDestinationUrl(false));
 	    dispatcher.forward(req, res);
 	}
     }
 
-    private String verifyResponse(HttpServletRequest httpReq) throws OpenIDException {
+    private String verifyResponse(HttpServletRequest httpReq)
+	    throws OpenIDException {
 	// extract the parameters from the authentication response
 	// (which comes in as a HTTP request from the OpenID provider)
 	ParameterList response = new ParameterList(httpReq.getParameterMap());
 
 	// retrieve the previously stored discovery information
-	DiscoveryInformation discovered = (DiscoveryInformation) httpReq.getSession().getAttribute("openid-disc");
+	DiscoveryInformation discovered = (DiscoveryInformation) httpReq
+		.getSession().getAttribute("openid-disc");
 
 	// extract the receiving URL from the HTTP request
 	StringBuffer receivingURL = httpReq.getRequestURL();
@@ -209,18 +264,21 @@ public class OpenIdLoginManagerServlet extends HttpServlet {
 
 	// verify the response; ConsumerManager needs to be the same
 	// (static) instance used to place the authentication request
-	VerificationResult verification = manager.verify(receivingURL.toString(), response, discovered);
+	VerificationResult verification = manager.verify(
+		receivingURL.toString(), response, discovered);
 
 	// examine the verification result and extract the verified identifier
 	Identifier verified = verification.getVerifiedId();
 	System.out.println("verified= " + verified);
 	String email = null;
 	if (verified != null) {
-	    AuthSuccess authSuccess = (AuthSuccess) verification.getAuthResponse();
+	    AuthSuccess authSuccess = (AuthSuccess) verification
+		    .getAuthResponse();
 
 	    if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {
-		FetchResponse fetchResp = (FetchResponse) authSuccess.getExtension(AxMessage.OPENID_NS_AX);
-		System.out.println("fetched: "+fetchResp.getAttributes());
+		FetchResponse fetchResp = (FetchResponse) authSuccess
+			.getExtension(AxMessage.OPENID_NS_AX);
+		System.out.println("fetched: " + fetchResp.getAttributes());
 		List emails = fetchResp.getAttributeValues("email");
 		email = (String) emails.get(0);
 

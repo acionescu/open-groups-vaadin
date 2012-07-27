@@ -44,6 +44,7 @@ import ro.zg.opengroups.vo.EntityState;
 import ro.zg.opengroups.vo.OpenGroupsApplicationState;
 import ro.zg.opengroups.vo.TabContainer;
 import ro.zg.opengroups.vo.User;
+import ro.zg.openid.util.OpenIdAttribute;
 import ro.zg.openid.util.OpenIdConstants;
 import ro.zg.util.logging.Logger;
 import ro.zg.util.logging.MasterLogManager;
@@ -458,6 +459,8 @@ public class OpenGroupsApplication extends Application {
     public void openIdLogin(String providerUrl) {
 	HttpSession session = getAppContext().getHttpSession();
 	session.setAttribute(OpenIdConstants.PROVIDER_URL, providerUrl);
+	session.setAttribute(OpenIdConstants.REQUEST_ATTRIBUTES, new String[]{OpenIdAttribute.EMAIL});
+	
 	OpenGroupsMainWindow currentWindow = appState.getActiveWindow();
 	URL url = currentWindow.getURL();
 	String path = url.getPath();
