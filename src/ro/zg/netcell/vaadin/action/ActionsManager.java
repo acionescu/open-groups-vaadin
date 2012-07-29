@@ -295,8 +295,9 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 
     @Override
     public void handleActionError(Exception e, OpenGroupsApplication app) {
+	logger.error("handler error",e);
 	app.pushError(e);
-	e.printStackTrace();
+	app.handleErrors();
     }
 
     public UserAction getActionByPath(String path) {
