@@ -23,6 +23,7 @@ import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.constants.OpenGroupsIconsSet;
 import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
+import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ComplexEntityParam;
 import ro.zg.opengroups.constants.TypeRelationConfigParam;
@@ -116,7 +117,7 @@ public class EntityListHandler extends BaseListHandler {
 	displayArea.removeAllComponents();
 	ac.getWindow().setFragmentToEntity(entity);
 
-	EntityList list = getModel().getChildrenListForEntity(entity, ua, app.getCurrentUserId());
+	EntityList list = app.getModel().getChildrenListForEntity(entity, ua, app.getCurrentUserId());
 	int listSize = list.getItemsList().size();
 	if (listSize == 0) {
 	    displayNoItemsMessage(ua.getTargetEntityComplexType(), displayArea);
@@ -170,7 +171,7 @@ public class EntityListHandler extends BaseListHandler {
 	    /* first check if the target type allows a recursive list in the first place */
 //	    if (getAppConfigManager().getComplexEntityBooleanParam(ua.getTargetEntityComplexType(),
 //		    ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
-	    if(getAppConfigManager().getTypeRelationBooleanConfigParam(
+	    if(app.getAppConfigManager().getTypeRelationBooleanConfigParam(
 			ua.getTypeRelationId(), TypeRelationConfigParam.ALLOW_RECURSIVE_LIST)) {
 		/*
 		 * if it does, check if the filter is actually set to display all items, that means the recursion depth
@@ -287,7 +288,8 @@ public class EntityListHandler extends BaseListHandler {
 	/* add depth filter */
 //	boolean allowRecursiveList = getAppConfigManager().getComplexEntityBooleanParam(
 //		ua.getTargetEntityComplexType(), ComplexEntityParam.ALLOW_RECURSIVE_LIST);
-	boolean allowRecursiveList = getAppConfigManager().getTypeRelationBooleanConfigParam(
+	ApplicationConfigManager appConfigManager = app.getAppConfigManager();
+	boolean allowRecursiveList = appConfigManager.getTypeRelationBooleanConfigParam(
 		ua.getTypeRelationId(), TypeRelationConfigParam.ALLOW_RECURSIVE_LIST);
 	
 	if (allowRecursiveList) {
@@ -299,7 +301,7 @@ public class EntityListHandler extends BaseListHandler {
 
 	/* add status filter */
 	if (app.getCurrentUser() != null
-		&& getAppConfigManager().getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_STATUS)) {
+		&& appConfigManager.getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_STATUS)) {
 	    ComponentContainer statusFilter = getStatusFilter(entity, ua, app, ac);
 	    statusFilter.addStyleName("middle-left right-margin-10");
 	    filtersLayout.addComponent(statusFilter);
@@ -307,7 +309,7 @@ public class EntityListHandler extends BaseListHandler {
 	}
 
 	/* add global status filter */
-	if (getAppConfigManager().getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_STATUS)) {
+	if (appConfigManager.getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_STATUS)) {
 	    ComponentContainer globalStatusFilter = getGlobalStatusFilter(entity, ua, app, ac);
 	    globalStatusFilter.addStyleName("middle-left right-margin-10");
 	    filtersLayout.addComponent(globalStatusFilter);
@@ -315,7 +317,7 @@ public class EntityListHandler extends BaseListHandler {
 	}
 
 	/* add tag filter */
-	if (getAppConfigManager().getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_TAG)) {
+	if (appConfigManager.getComplexEntityBooleanParam(complexType, ComplexEntityParam.ALLOW_TAG)) {
 	    ComponentContainer tagsFilter = getTagsFilter(entity, ua, app, ac);
 	    tagsFilter.addStyleName("middle-left right-margin-10");
 	    filtersLayout.addComponent(tagsFilter);

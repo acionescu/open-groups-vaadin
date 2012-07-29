@@ -52,7 +52,7 @@ public class OpenSelectedEntityWithHeaderActions extends BaseEntityHandler {
 	Entity entity = actionContext.getEntity();
 	ComponentContainer container = actionContext.getTargetContainer();
 	
-	getModel().populateCauses(entity);
+	app.getModel().populateCauses(entity);
 
 	getActionsManager().executeAction(ActionsManager.REFRESH_SELECTED_ENTITY, entity, app, container, false,
 		actionContext);

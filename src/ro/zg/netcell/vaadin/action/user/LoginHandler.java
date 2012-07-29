@@ -66,8 +66,8 @@ public class LoginHandler extends UserHandler {
     public void handle(ActionContext actionContext) throws Exception {
 	Window w = new Window();
 	w.setModal(true);
-	
-	if(getAppConfigManager().isInstancePrivate()){
+	OpenGroupsApplication app = actionContext.getApp();
+	if(app.getAppConfigManager().isInstancePrivate()){
 	    w.setClosable(false);
 	}
 
@@ -87,7 +87,9 @@ public class LoginHandler extends UserHandler {
     }
 
     private ComponentContainer getLoginView(ActionContext actionContext) {
-	Map<String, Map<String, String>> loginTypes = (Map<String, Map<String, String>>) getAppConfigManager()
+	
+	OpenGroupsApplication app = actionContext.getApp();
+	Map<String, Map<String, String>> loginTypes = (Map<String, Map<String, String>>) app.getAppConfigManager()
 		.getApplicationConfigParam(ApplicationConfigParam.LOGIN_TYPES);
 
 	System.out.println("login types: " + loginTypes);
@@ -230,7 +232,7 @@ public class LoginHandler extends UserHandler {
 	/* so we have a user */
 	GenericNameValueContext userRow = (GenericNameValueContext) list
 		.getValueForIndex(0);
-	User user = getModel().getUserFromParamsContext(userRow);
+	User user = app.getModel().getUserFromParamsContext(userRow);
 	/* close the login window */
 	window.removeWindow(form.getWindow());
 	app.loginAndShowEntity(user, entity);

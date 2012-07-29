@@ -20,9 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
+import ro.zg.opengroups.constants.OpenGroupsExceptions;
 import ro.zg.opengroups.vo.TypeRelationConfig;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
@@ -31,7 +33,7 @@ import ro.zg.util.parser.ParserException;
 import ro.zg.util.parser.utils.ParseUtils;
 
 public class ApplicationConfigManager {
-    private static ApplicationConfigManager _instance = new ApplicationConfigManager();
+    private static ApplicationConfigManager _instance;
 
     private static final String GET_APPLICATION_CONFIG_PARAMS_FLOW = "ro.problems.flows.get-application-config-params";
     private static final String GET_COMPLEX_ENTITY_TYPES_FLOW = "ro.problems.flows.get-complex-entity-types";
@@ -48,35 +50,43 @@ public class ApplicationConfigManager {
     private List<String> nonLeafTypes;
     private boolean initialized;
 
-    public static ApplicationConfigManager getInstance() {
+    public static ApplicationConfigManager getInstance()
+	    throws ContextAwareException {
+	if (_instance == null) {
+	    _instance = new ApplicationConfigManager();
+	}
 	return _instance;
     }
 
-    private ApplicationConfigManager() {
+    private ApplicationConfigManager() throws ContextAwareException {
 	init();
     }
 
-    private void init() {
-	loadConfig();
-    }
-
-    private void loadConfig() {
+    private void init() throws ContextAwareException {
 	if (!initialized) {
-	    initialized = loadApplicationConfigParams() && loadComplexEntityTypes() && loadEntitiesTypesRelations();
-	    initNonLeafSubtypes();
+	    loadConfig();
+	    initialized = true;
 	}
-	
     }
 
-    private boolean loadApplicationConfigParams() {
-	CommandResponse response = ActionsManager.getInstance().execute(GET_APPLICATION_CONFIG_PARAMS_FLOW,
-		new HashMap());
-	if (response == null) {
-	    return false;
+    private void loadConfig() throws ContextAwareException {
+	loadApplicationConfigParams();
+	loadComplexEntityTypes();
+	loadEntitiesTypesRelations();
+	initNonLeafSubtypes();
+    }
+
+    private boolean loadApplicationConfigParams() throws ContextAwareException {
+	CommandResponse response = ActionsManager.getInstance().execute(
+		GET_APPLICATION_CONFIG_PARAMS_FLOW, new HashMap());
+	if (response == null || !response.isSuccessful()) {
+	    throw OpenGroupsExceptions.getSystemError();
 	}
-	GenericNameValueList result = (GenericNameValueList) response.getValue("result");
+	GenericNameValueList result = (GenericNameValueList) response
+		.getValue("result");
 	for (int i = 0; i < result.size(); i++) {
-	    GenericNameValueContext row = (GenericNameValueContext) result.getValueForIndex(i);
+	    GenericNameValueContext row = (GenericNameValueContext) result
+		    .getValueForIndex(i);
 	    String paramName = row.getValue("param_name").toString();
 	    Long intValue = (Long) row.getValue("int_value");
 	    Float floatValue = (Float) row.getValue("number_value");
@@ -86,7 +96,8 @@ public class ApplicationConfigManager {
 	    } else if (stringValue != null) {
 		if (stringValue.startsWith("{") || stringValue.startsWith("[")) {
 		    try {
-			setApplicationConfigParam(paramName, ParseUtils.parseCollection(stringValue));
+			setApplicationConfigParam(paramName,
+				ParseUtils.parseCollection(stringValue));
 		    } catch (ParserException e) {
 			e.printStackTrace();
 		    }
@@ -98,7 +109,8 @@ public class ApplicationConfigManager {
 	    }
 	}
 
-	// String logableActionsString = (String)getApplicationConfigParam(ApplicationConfigParam.LOGABLE_ACTIONS);
+	// String logableActionsString =
+	// (String)getApplicationConfigParam(ApplicationConfigParam.LOGABLE_ACTIONS);
 	// logableActions = Arrays.asList(logableActionsString.split(","));
 	// System.out.println("Logable actions: "+logableActions);
 
@@ -106,13 +118,16 @@ public class ApplicationConfigManager {
     }
 
     private boolean loadComplexEntityTypes() {
-	CommandResponse response = ActionsManager.getInstance().execute(GET_COMPLEX_ENTITY_TYPES_FLOW, new HashMap());
+	CommandResponse response = ActionsManager.getInstance().execute(
+		GET_COMPLEX_ENTITY_TYPES_FLOW, new HashMap());
 	if (response == null) {
 	    return false;
 	}
-	GenericNameValueList result = (GenericNameValueList) response.getValue("result");
+	GenericNameValueList result = (GenericNameValueList) response
+		.getValue("result");
 	for (int i = 0; i < result.size(); i++) {
-	    GenericNameValueContext row = (GenericNameValueContext) result.getValueForIndex(i);
+	    GenericNameValueContext row = (GenericNameValueContext) result
+		    .getValueForIndex(i);
 	    addComplexEntityType(row.getValue("complex_type").toString(), row);
 	}
 	return true;
@@ -122,18 +137,22 @@ public class ApplicationConfigManager {
 	subtypesRelations = new ListMap<String, String>();
 	typeRelations = new HashMap<Long, TypeRelationConfig>();
 	subtypesForType = new ListMap<Long, TypeRelationConfig>();
-	CommandResponse response = ActionsManager.getInstance().execute(GET_ENTITIES_TYPES_RELATIONS,
-		new HashMap<String, Object>());
+	CommandResponse response = ActionsManager.getInstance().execute(
+		GET_ENTITIES_TYPES_RELATIONS, new HashMap<String, Object>());
 	if (response == null) {
 	    return false;
 	}
-	GenericNameValueList result = (GenericNameValueList) response.getValue("result");
+	GenericNameValueList result = (GenericNameValueList) response
+		.getValue("result");
 	for (int i = 0; i < result.size(); i++) {
-	    GenericNameValueContext row = (GenericNameValueContext) result.getValueForIndex(i);
+	    GenericNameValueContext row = (GenericNameValueContext) result
+		    .getValueForIndex(i);
 	    TypeRelationConfig erc = new TypeRelationConfig(row);
-	    // subtypesRelations.add(row.getValue("source_complex_type").toString(), row.getValue("complex_subtype")
+	    // subtypesRelations.add(row.getValue("source_complex_type").toString(),
+	    // row.getValue("complex_subtype")
 	    // .toString());
-	    subtypesRelations.add(erc.getSourceComplexType(), erc.getTargetComplexType());
+	    subtypesRelations.add(erc.getSourceComplexType(),
+		    erc.getTargetComplexType());
 	    typeRelations.put(erc.getId(), erc);
 	    subtypesForType.add(erc.getSourceEntityTypeId(), erc);
 	}
@@ -142,12 +161,11 @@ public class ApplicationConfigManager {
     }
 
     public Object getApplicationConfigParam(String paramName) {
-	init();
 	return applicationConfigParams.get(paramName);
     }
-    
-    public Boolean getApplicationBooleanParam(String paramName){
-	Object param= getApplicationConfigParam(paramName);
+
+    public Boolean getApplicationBooleanParam(String paramName) {
+	Object param = getApplicationConfigParam(paramName);
 	return getBooleanParam(param);
     }
 
@@ -160,21 +178,22 @@ public class ApplicationConfigManager {
     }
 
     public Object getComplexEntityParam(String complexType, String paramName) {
-	init();
 	GenericNameValueContext c = complexEntityTypes.get(complexType);
 	if (c == null) {
-	    throw new RuntimeException("No complex entity with type '" + complexType + "'");
+	    throw new RuntimeException("No complex entity with type '"
+		    + complexType + "'");
 	}
 	return c.getValue(paramName);
     }
 
-    public Boolean getComplexEntityBooleanParam(String complexType, String paramName) {
+    public Boolean getComplexEntityBooleanParam(String complexType,
+	    String paramName) {
 	Object param = getComplexEntityParam(complexType, paramName);
 	return getBooleanParam(param);
     }
 
-    private Boolean getBooleanParam(Object param){
-	if(param == null){
+    private Boolean getBooleanParam(Object param) {
+	if (param == null) {
 	    return false;
 	}
 	String value = param.toString();
@@ -185,9 +204,9 @@ public class ApplicationConfigManager {
 	}
 	return (Boolean) param;
     }
-    
-    
-    public Object getTypeRelationConfigParam(long typeRelationId, String paramName) {
+
+    public Object getTypeRelationConfigParam(long typeRelationId,
+	    String paramName) {
 	TypeRelationConfig trc = typeRelations.get(typeRelationId);
 	Object param = null;
 	if (trc == null) {
@@ -203,7 +222,8 @@ public class ApplicationConfigManager {
 	return param;
     }
 
-    public Boolean getTypeRelationBooleanConfigParam(long typeRelationId, String paramName) {
+    public Boolean getTypeRelationBooleanConfigParam(long typeRelationId,
+	    String paramName) {
 	Object param = getTypeRelationConfigParam(typeRelationId, paramName);
 	String value = param.toString();
 	if ("y".equals(value)) {
@@ -215,7 +235,6 @@ public class ApplicationConfigManager {
     }
 
     public List<String> getSubtypesForComplexType(String complexType) {
-	init();
 	return subtypesRelations.get(complexType);
     }
 
@@ -234,7 +253,6 @@ public class ApplicationConfigManager {
     }
 
     public List<Long> getIdsForComplexTypes(String paramnName, String value) {
-	init();
 	List<Long> ids = new ArrayList<Long>();
 	for (GenericNameValueContext c : complexEntityTypes.values()) {
 	    if (value.equals(c.getValue(paramnName))) {
@@ -251,13 +269,12 @@ public class ApplicationConfigManager {
 	return nonLeafTypes;
     }
 
-    public String getInstanceName(){
-	return (String)getApplicationConfigParam(ApplicationConfigParam.INSTANCE_NAME);
+    public String getInstanceName() {
+	return (String) getApplicationConfigParam(ApplicationConfigParam.INSTANCE_NAME);
     }
-    
+
     public boolean isInstancePrivate() {
-	return getApplicationBooleanParam(
-		ApplicationConfigParam.IS_INSTANCE_PRIVATE);
+	return getApplicationBooleanParam(ApplicationConfigParam.IS_INSTANCE_PRIVATE);
     }
-    
+
 }

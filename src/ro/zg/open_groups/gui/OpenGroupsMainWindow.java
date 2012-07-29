@@ -47,8 +47,7 @@ public class OpenGroupsMainWindow extends Window {
     private CausalHierarchyContainer hierarchyContainer;
     private CssLayout frameContent;
 
-    public OpenGroupsMainWindow(OpenGroupsApplication app, String name) {
-	super.setCaption(name);
+    public OpenGroupsMainWindow(OpenGroupsApplication app) {
 	this.app = app;
 
     }
@@ -95,7 +94,7 @@ public class OpenGroupsMainWindow extends Window {
 	frameContent.setHeight("100%");
 	frameContent.addStyleName(OpenGroupsStyles.FRAME_PANE);
 
-	hierarchyContainer = new CausalHierarchyContainer();
+	hierarchyContainer = new CausalHierarchyContainer(app);
 	hierarchyContainer.addStyleName(OpenGroupsStyles.HIERARCHY_PANE);
 	hierarchyContainer.setWidth("350px");
 	hierarchyContainer.setHeight("96%");

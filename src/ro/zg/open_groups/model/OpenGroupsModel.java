@@ -21,17 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.terminal.UserError;
-
 import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.commons.exceptions.ExceptionContext;
 import ro.zg.netcell.control.CommandResponse;
-import ro.zg.netcell.vaadin.DataTranslationUtils;
-import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.open_groups.resources.OpenGroupsResources;
-import ro.zg.open_groups.user.UsersManager;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.constants.OpenGroupsExceptions;
 import ro.zg.opengroups.constants.TypeRelationConfigParam;
@@ -58,12 +53,13 @@ public class OpenGroupsModel {
     private static final String SAVE_USER_NOTIFICATION_RULES="ro.problems.notifications.save-rules-list";
 
     private static OpenGroupsModel instance;
+    private ApplicationConfigManager appConfigManager;
 
-    private OpenGroupsModel() {
-
+    private OpenGroupsModel() throws ContextAwareException {
+	appConfigManager=ApplicationConfigManager.getInstance();
     }
 
-    public static OpenGroupsModel getInstance() {
+    public static OpenGroupsModel getInstance() throws ContextAwareException {
 	if (instance == null) {
 	    instance = new OpenGroupsModel();
 	}
@@ -75,7 +71,7 @@ public class OpenGroupsModel {
     }
 
     private ApplicationConfigManager getAppConfigManager() {
-	return ApplicationConfigManager.getInstance();
+	return appConfigManager;
     }
 
     protected String getMessage(String key) {
@@ -121,7 +117,7 @@ public class OpenGroupsModel {
     }
 
     public EntityList getChildrenListForEntity(Entity entity, UserAction ua,
-	    Long userId) {
+	    Long userId){
 	Map<String, Object> params = ua.getActionParams();
 	params.putAll(entity.getFilterValues());
 	params.put("pageNumber", entity.getState()

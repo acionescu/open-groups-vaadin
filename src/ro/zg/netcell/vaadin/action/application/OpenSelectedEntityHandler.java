@@ -28,6 +28,7 @@ import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.constants.OpenGroupsIconsSet;
 import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
+import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ActionLocations;
 import ro.zg.opengroups.constants.ComplexEntityParam;
@@ -74,7 +75,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	EntityState entityState = entity.getState();
 	boolean isOpened = entityState.isOpened();
 	String complexEntityType = entity.getComplexType();
-	List<String> subtyesList = getAppConfigManager().getSubtypesForComplexType(complexEntityType);
+	ApplicationConfigManager appConfigManager = app.getAppConfigManager();
+	List<String> subtyesList = appConfigManager.getSubtypesForComplexType(complexEntityType);
 
 	// Panel currentContainer = (Panel) container;
 	ComponentContainer currentContainer = container;
@@ -243,7 +245,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	/* display header actions */
 	if (isOpened) {
 	    UserActionList headerActions = getAvailableActions(entity, ActionLocations.HEADER);
-	    boolean allowRefresh = getAppConfigManager().getComplexEntityBooleanParam(entity.getComplexType(),
+	    boolean allowRefresh = appConfigManager.getComplexEntityBooleanParam(entity.getComplexType(),
 		    ComplexEntityParam.ALLOW_REFRESH);
 	    boolean hasHeaderActions = headerActions != null && headerActions.getActions() != null;
 	    if (allowRefresh || hasHeaderActions) {
@@ -291,7 +293,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
 	currentContainer.addComponent(statusPane);
 
-	if (getAppConfigManager().getComplexEntityBooleanParam(complexEntityType, ComplexEntityParam.SHOW_POST_INFO)) {
+	if (appConfigManager.getComplexEntityBooleanParam(complexEntityType, ComplexEntityParam.SHOW_POST_INFO)) {
 	    String insertDateString = entity.getInsertDate().toString();
 	    Label insertDate = new Label(app.getMessage("posted") + DateUtil.removeNanos(insertDateString));
 	    statusPane.addComponent(insertDate);
@@ -306,7 +308,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	currentContainer.addComponent(statsSummaryPane);
 
 	/* add votes */
-	if (getAppConfigManager().getComplexEntityBooleanParam(complexEntityType, ComplexEntityParam.ALLOW_VOTING)) {
+	if (appConfigManager.getComplexEntityBooleanParam(complexEntityType, ComplexEntityParam.ALLOW_VOTING)) {
 	    // HorizontalLayout votesPane = new HorizontalLayout();
 	    // votesPane.setMargin(false);
 	    // votesPane.addStyleName("middle-left");
@@ -340,7 +342,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    statsSummaryPane.addComponent(opposedVotes);
 
 	}
-	List<TypeRelationConfig> subtypes = getAppConfigManager().getSubtypesForType(entity.getComplexTypeId());
+	List<TypeRelationConfig> subtypes = appConfigManager.getSubtypesForType(entity.getComplexTypeId());
 	// if (subtyesList != null) {
 	if (subtypes != null) {
 	    Map<String, Long> firstLevelSubtypesCount = entity.getSubtypeEntitiesCount();
@@ -354,7 +356,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		String displayString = displayName + ": " + firstLevelSubtypesCount.get(subtype);
 
 		// if (getAppConfigManager().getComplexEntityBooleanParam(s, ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
-		if (getAppConfigManager().getTypeRelationBooleanConfigParam(trc.getId(),
+		if (appConfigManager.getTypeRelationBooleanConfigParam(trc.getId(),
 			TypeRelationConfigParam.ALLOW_RECURSIVE_LIST)) {
 		    Long recCount = allSubtypesCount.get(subtype);
 		    if (recCount != null) {
@@ -637,7 +639,7 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	// }
 
 	UserActionList headerActions = getAvailableActions(entity, ActionLocations.HEADER);
-	boolean allowRefresh = getAppConfigManager().getComplexEntityBooleanParam(entity.getComplexType(),
+	boolean allowRefresh = app.getAppConfigManager().getComplexEntityBooleanParam(entity.getComplexType(),
 		ComplexEntityParam.ALLOW_REFRESH);
 	boolean hasHeaderActions = headerActions != null && headerActions.getActions() != null;
 	if (allowRefresh || hasHeaderActions) {

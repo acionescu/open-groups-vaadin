@@ -35,6 +35,7 @@ import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityLink;
 import ro.zg.opengroups.vo.EntityList;
 import ro.zg.opengroups.vo.EntityState;
+import ro.zg.opengroups.vo.OpenGroupsApplicationState;
 import ro.zg.opengroups.vo.Tag;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.util.logging.Logger;
@@ -45,6 +46,14 @@ public class MirrorSiteUtil {
 			.getLogger("MirrorSiteUtil");
 
 	private String baseUrl;
+	private OpenGroupsApplicationState appState;
+	
+	
+	
+
+	public MirrorSiteUtil() throws ContextAwareException {
+	   appState = new OpenGroupsApplicationState();
+	}
 
 	public void updateBaseUrl(String url) {
 		if (baseUrl == null) {
@@ -136,7 +145,7 @@ public class MirrorSiteUtil {
 	}
 
 	private ApplicationConfigManager getAppConfigManager() {
-		return ApplicationConfigManager.getInstance();
+		return appState.getAppConfigManager();
 	}
 
 	private void generatePageForIdAndPath(PrintWriter out, long id,
@@ -159,7 +168,7 @@ public class MirrorSiteUtil {
 	}
 
 	private OpenGroupsModel getModel() {
-		return OpenGroupsModel.getInstance();
+		return appState.getModel();
 	}
 
 	private Entity getEntityForId(long id) {

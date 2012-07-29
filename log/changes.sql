@@ -215,11 +215,11 @@ delete from action_strategies ast
 where ast.action_id=(
 select a.id from actions a
 where name='entity.upstream.hierarchy'
-)
+);
 
 --- login types
 insert into application_config(param_name,string_value) 
-values('login.types','{local={},openid={google=https://www.google.com/accounts/o8/id}}')
+values('login.types','{local={},openid={google=https://www.google.com/accounts/o8/id,yahoo=https://me.yahoo.com}}');
 
 -- change users
 
@@ -364,7 +364,7 @@ end;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 ALTER FUNCTION vote_log()
-  OWNER TO qualitance;
+  OWNER TO metaguvernare;
   
   
 -- Trigger: vote_log on entities_links_users
@@ -383,3 +383,46 @@ CREATE TRIGGER vote_log
   insert into action_strategies  values((select id from complex_entity_type  where complex_type='METAGROUP')
 ,(select id from user_types where type='CREATOR'),(select id from actions where name='entity.update'),(select id from entity_types where type='METAGROUP')
 ,(select id from action_targets where target='TAB'),50,(select id from complex_entity_type  where complex_type='METAGROUP'),'f');
+
+-- Function: get_direct_distance(bigint, bigint)
+
+-- DROP FUNCTION get_direct_distance(bigint, bigint);
+
+CREATE OR REPLACE FUNCTION get_direct_distance(child_id bigint, parent_id bigint)
+  RETURNS bigint AS
+$BODY$DECLARE depth bigint := -1;
+
+begin
+
+if(child_id=parent_id) then
+	return 0;
+end if;
+
+WITH RECURSIVE entity_upstream_hierarchy(id, parent_entity_id, depth) AS (
+        SELECT e.id, el.parent_id, 0
+        FROM entities e, entities_links el
+        where e.id=69
+        and el.entity_id=e.id
+        
+      UNION ALL
+        SELECT e.id, el.parent_id, eg.depth + 1
+        FROM entities e, entity_upstream_hierarchy eg, entities_links el
+        WHERE e.id = eg.parent_entity_id
+	and el.entity_id=e.id
+)
+
+select into depth eh.depth from entities e, entity_upstream_hierarchy eh
+where eh.id= parent_id;
+
+if(depth is null) then
+return -1;
+end if;
+--raise info 'depth: %',depth;
+
+return depth;
+end;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION get_direct_distance(bigint, bigint)
+  OWNER TO metaguvernare;
+
