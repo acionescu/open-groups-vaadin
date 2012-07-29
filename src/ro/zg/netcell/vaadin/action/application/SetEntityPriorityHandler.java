@@ -21,6 +21,7 @@ import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
+import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityUserData;
@@ -91,7 +92,8 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 
     private void displayCombo(final ActionContext actionContext, CssLayout targetContainer,
 	    final ActionContext ac) {
-	long maxPriority = (Long) getAppConfigManager().getApplicationConfigParam(ApplicationConfigParam.MAX_PRIORITY);
+	final OpenGroupsApplication app = actionContext.getApp();
+	long maxPriority = (Long) app.getAppConfigManager().getApplicationConfigParam(ApplicationConfigParam.MAX_PRIORITY);
 	final ComboBox select = new ComboBox();
 	select.setImmediate(true);
 	select.setWidth("55px");
@@ -109,7 +111,7 @@ public class SetEntityPriorityHandler extends OpenGroupsActionHandler {
 	}
 
 	final UserAction ua = actionContext.getUserAction();
-	final OpenGroupsApplication app = actionContext.getApp();
+	
 	select.addListener(new ValueChangeListener() {
 
 	    @Override

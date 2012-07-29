@@ -27,11 +27,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.opengroups.util.MirrorSiteUtil;
 
 public class BotsFilter implements Filter {
-    private MirrorSiteUtil mirrorSite = new MirrorSiteUtil();
+    private MirrorSiteUtil mirrorSite ;
 
     @Override
     public void destroy() {
@@ -56,7 +57,22 @@ public class BotsFilter implements Filter {
 	if (isBot) {
 	    System.out.println("Serving bot: " + userAgent);
 	    System.out.println("url: " + req.getRequestURL());
-	    if (ApplicationConfigManager.getInstance().isInstancePrivate()) {
+	    
+	    ApplicationConfigManager appCfgMan = getAppConfigManager();
+	    
+	    if(appCfgMan == null){
+		res.setStatus(res.SC_SERVICE_UNAVAILABLE);
+		return;
+	    }
+	    
+	    MirrorSiteUtil site = getMirrorSite();
+	    
+	    if(site == null){
+		res.setStatus(res.SC_SERVICE_UNAVAILABLE);
+		return;
+	    }
+	    
+	    if (appCfgMan.isInstancePrivate()) {
 		res.setStatus(res.SC_FORBIDDEN);
 		return;
 	    }
@@ -68,14 +84,14 @@ public class BotsFilter implements Filter {
 		base += ":" + url.getPort();
 	    }
 	    base += contextPath;
-	    mirrorSite.updateBaseUrl(base);
+	    site.updateBaseUrl(base);
 
 	    String uri = req.getRequestURI();
 	    String fragment = "";
 	    if (uri.length() > contextPath.length()) {
 		fragment = uri.substring(contextPath.length() + 1);
 	    }
-	    mirrorSite.generatePage(fragment, res);
+	    site.generatePage(fragment, res);
 	    return;
 	}
 	arg2.doFilter(arg0, arg1);
@@ -86,5 +102,26 @@ public class BotsFilter implements Filter {
 	// TODO Auto-generated method stub
 
     }
+    
+    private ApplicationConfigManager getAppConfigManager(){
+	try {
+	    return ApplicationConfigManager.getInstance();
+	} catch (ContextAwareException e) {
+	   return null;
+	}
+    }
+
+    public MirrorSiteUtil getMirrorSite() {
+        if(mirrorSite == null){
+            try {
+		mirrorSite = new MirrorSiteUtil();
+	    } catch (ContextAwareException e) {
+		return null;
+	    }
+        }
+        return mirrorSite;
+    }
+    
+    
 
 }

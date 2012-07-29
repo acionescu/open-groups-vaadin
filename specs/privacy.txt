@@ -1,0 +1,42 @@
+The point is to offer a user or a group of users access to some entities, without breaking the logical flow
+of problems/solutions hierarchy.
+
+A group is a collection of:
+-users
+-problems
+-resources
+- possibly actions and events
+
+
+A user can be a member of multiple groups
+
+A user can become member of a group in two ways: Either creates a group or accepts an invitation to join a certain group from
+a member of that group
+
+Levels of privacy:
+
+private -> the entity is invisible to anyone who does not have access
+readonly -> the entity is visible to the specified groups but cannot be modified ( in the sense that nobody can add anything 
+under this entity )
+
+Any principal entity ( group/problem ) can accept privacy settings.
+
+How can privacy settings be applied?
+
+To apply privacy settings to an entity, you need to use a combination of a privacy level and target groups.
+
+Each entity establishes the privacy settings of the entities beneath it unless they have their own privacy settings
+
+Important: The privacy settings are not applied on the entity but on the link between the parent and the entity!
+
+The creator of an entity can mark it as private or readonly. The information will be correlated with 
+the current entity_link_id
+
+However the privacy of an entity cannot be less restrictive then the privacies of its ancestors
+
+To share an entity that you created with people from other groups, you can create a reference to the entity under the desired
+groups, with entirely new privacy settings
+
+
+
+

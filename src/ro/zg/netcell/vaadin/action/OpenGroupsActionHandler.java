@@ -61,10 +61,6 @@ public abstract class OpenGroupsActionHandler implements ActionHandler<OpenGroup
 	return ActionsManager.getInstance();
     }
     
-    protected ApplicationConfigManager getAppConfigManager() {
-	return ApplicationConfigManager.getInstance();
-    }
-    
     protected void centerWindow(Window w, OpenGroupsApplication app) {
 	WebBrowser wb = app.getAppContext().getBrowser();
 	float width = (float)(wb.getScreenWidth() * 0.9);
@@ -117,10 +113,6 @@ public abstract class OpenGroupsActionHandler implements ActionHandler<OpenGroup
      */
     public void setUserAction(UserAction userAction) {
         this.userAction = userAction;
-    }
-    
-    public OpenGroupsModel getModel() {
-	return OpenGroupsModel.getInstance();
     }
     
     public ViewsManager getViewsManager(){

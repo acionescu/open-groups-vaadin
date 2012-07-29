@@ -70,7 +70,7 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 
     }
 
-    private DefaultForm getForm(final Entity entity, final UserAction ua, final OpenGroupsApplication application,
+    private DefaultForm getForm(final Entity entity, final UserAction ua, final OpenGroupsApplication app,
 	    final ComponentContainer targetComponent, final ActionContext ac) {
 	final DefaultForm form = ua.generateForm();
 	final Entity parentEntity = ac.getMainEntity();
@@ -95,7 +95,7 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 		}
 		paramsMap.put("tags", tags);
 
-		User user = application.getCurrentUser();
+		User user = app.getCurrentUser();
 		paramsMap.put("userId", user.getUserId());
 		paramsMap.put("parentId", parentEntity.getId());
 		paramsMap.put("entityType", ua.getTargetEntityType());
@@ -103,21 +103,21 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 		String complexType = ua.getTargetEntityComplexType();
 
 		paramsMap.put("complexType", complexType);
-		paramsMap.put("allowDuplicateTitle", getAppConfigManager().getComplexEntityBooleanParam(complexType,
+		paramsMap.put("allowDuplicateTitle", app.getAppConfigManager().getComplexEntityBooleanParam(complexType,
 			ComplexEntityParam.ALLOW_DUPLICATE_TITLE));
-		CommandResponse response = executeAction(new ActionContext(ua, application, entity), paramsMap);
+		CommandResponse response = executeAction(new ActionContext(ua, app, entity), paramsMap);
 		if (response.isSuccessful()) {
 		    if ("titleExists".equals(response.getValue("exit"))) {
-			String message = application.getMessage(ua.getTargetEntityType().toLowerCase()
+			String message = app.getMessage(ua.getTargetEntityType().toLowerCase()
 				+ ".already.exists.with.title");
 			form.setComponentError(new UserError(message));
 		    } else {
 			long entityId = (Long) response.getValue("currentEntityId");
-			displaySuccessfulMessage(entity, ua, application, targetComponent, entityId,ac);
+			displaySuccessfulMessage(entity, ua, app, targetComponent, entityId,ac);
 		    }
 		}
 		/* refresh parent */
-		application.refreshEntity(parentEntity,ac);
+		app.refreshEntity(parentEntity,ac);
 	    }
 	});
 
@@ -147,7 +147,7 @@ public class CreateEntityHandler extends OpenGroupsActionHandler {
 
 	    @Override
 	    public void buttonClick(ClickEvent event) {
-		List<String> subtypesList = getAppConfigManager().getSubtypesForComplexType(
+		List<String> subtypesList = app.getAppConfigManager().getSubtypesForComplexType(
 			ua.getTargetEntityComplexType());
 		if (subtypesList != null) {
 		    Entity entity = new Entity(entityId);
