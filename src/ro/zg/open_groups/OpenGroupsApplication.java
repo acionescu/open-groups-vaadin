@@ -19,7 +19,9 @@ import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -56,6 +58,7 @@ import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
+import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.Notification;
@@ -66,13 +69,13 @@ public class OpenGroupsApplication extends Application {
      */
     private static final long serialVersionUID = 2543794851816120227L;
 
-    public static final String APP_PATH="site";
+    public static final String APP_PATH = "site";
     private WebApplicationContext appContext;
     private ActionsManager actionsManager = ActionsManager.getInstance();
     private Map<Long, TabContainer> tabsForEntities = new HashMap<Long, TabContainer>();
     private User currentUser;
     private Map<Long, Entity> openEntities = new HashMap<Long, Entity>();
-    private Deque<Exception> errorsStack = new ArrayDeque<Exception>();
+
     private static Logger logger = MasterLogManager.getLogger("APP-LOGGER");
 
     private boolean botClient;
@@ -90,15 +93,12 @@ public class OpenGroupsApplication extends Application {
 
     @Override
     public void init() {
-
+	setTheme("open-groupstheme");
 	this.setLogoutURL(getBaseAppUrl());
 	windowsManager = new WindowsManger();
-	try {
-	    appState = new OpenGroupsApplicationState();
-	} catch (ContextAwareException e) {
-	    handleErrors();
-	}
-	setTheme("open-groupstheme");
+
+	appState = new OpenGroupsApplicationState();
+
 	appContext = (WebApplicationContext) getContext();
 	uriHandler = new OpenGroupsUriHandler(this);
 	hierarchyStartDepthListener = new CausalHierarchyStartDepthChangedListener(
@@ -121,7 +121,8 @@ public class OpenGroupsApplication extends Application {
 		    fragment = fragment.trim();
 		    OpenGroupsApplication app = (OpenGroupsApplication) application;
 		    OpenGroupsMainWindow activeWindow = app.getActiveWindow();
-		    if (activeWindow == null) {
+		    if (activeWindow == null || !isAppReady()) {
+			handleErrors();
 			return;
 		    }
 		    String oldFragment = activeWindow.getFragment();
@@ -131,8 +132,11 @@ public class OpenGroupsApplication extends Application {
 		    if (oldFragment == null) {
 			logger.debug("Process fragment '" + fragment + "'");
 			uriHandler.handleFragment(fragment);
-			activeWindow.getUriUtility().setFragment(fragment,
-				false);
+			UriFragmentUtility uriUtility = activeWindow
+				.getUriUtility();
+			if (uriUtility != null) {
+			    uriUtility.setFragment(fragment, false);
+			}
 		    }
 		    /* this may be a refresh */
 		    if (fragment.equals(oldFragment)) {
@@ -152,9 +156,6 @@ public class OpenGroupsApplication extends Application {
 
 	Window mainWindow = getWindow("showEntity");
 
-	// Window w = new Window();
-	// w.addURIHandler(uriHandler);
-	// setMainWindow(w);
     }
 
     private boolean checkOptimalBrowser() {
@@ -288,15 +289,15 @@ public class OpenGroupsApplication extends Application {
 		.getAttribute(OpenIdConstants.USER_OPENID);
 	session.removeAttribute(OpenIdConstants.USER_OPENID);
 	if (userOpenId != null && checkAllowedDomain(userOpenId)) {
-	    User user = OpenGroupsModel.getInstance().loginWithOpenId(
-		    userOpenId, getAppContext().getBrowser().getAddress());
+	    User user = getModel().loginWithOpenId(userOpenId,
+		    getAppContext().getBrowser().getAddress());
 	    return user;
 	}
 	return null;
     }
 
     private boolean checkAllowedDomain(String openid) {
-	String domains = (String) ApplicationConfigManager.getInstance()
+	String domains = (String) getAppConfigManager()
 		.getApplicationConfigParam(
 			ApplicationConfigParam.ALLOWED_OPENID_DOMAINS);
 	if (domains == null) {
@@ -357,34 +358,42 @@ public class OpenGroupsApplication extends Application {
 	return c;
     }
 
-
     public void pushError(Exception e) {
-	errorsStack.push(e);
+	appState.pushError(e);
     }
 
     public boolean hasErrors() {
-	return !errorsStack.isEmpty();
+	return appState.hasErrors();
     }
 
     public void handleErrors() {
 	String errorMessage = "";
+	Deque<Exception> errorsStack = appState.getErrorsStack();
+	Set<String> messages = new HashSet<String>();
+
 	while (errorsStack.size() > 0) {
 	    Exception e = errorsStack.pop();
+	    String newMessage = null;
 	    if (e instanceof ContextAwareException) {
 		ContextAwareException cae = (ContextAwareException) e;
 		ExceptionContext ec = cae.getExceptionContext();
 		if (ec != null) {
 		    Object[] args = (Object[]) ec.getValue("args");
 		    if (args != null) {
-			errorMessage += "<br>- "
-				+ getMessage(cae.getType(), args);
-			continue;
+			newMessage = getMessage(cae.getType(), args);
+		    } else {
+			newMessage = getMessage(((ContextAwareException) e)
+				.getType());
 		    }
 		}
-		errorMessage += "<br>- "
-			+ getMessage(((ContextAwareException) e).getType());
 	    } else {
-		errorMessage += "<br>- " + getMessage("system.error");
+		newMessage = getMessage("system.error");
+	    }
+
+	    /* don't display the same message multiple times */
+	    if (!messages.contains(newMessage)) {
+		errorMessage += "<br>- " + newMessage;
+		messages.add(newMessage);
 	    }
 	}
 	Notification notification = new Notification(
@@ -460,22 +469,24 @@ public class OpenGroupsApplication extends Application {
     public void openIdLogin(String providerUrl) {
 	HttpSession session = getAppContext().getHttpSession();
 	session.setAttribute(OpenIdConstants.PROVIDER_URL, providerUrl);
-	session.setAttribute(OpenIdConstants.REQUEST_ATTRIBUTES, new String[]{OpenIdAttribute.EMAIL});
-	
+
+	session.setAttribute(OpenIdConstants.REQUEST_ATTRIBUTES,
+		new String[] { OpenIdAttribute.EMAIL });
+
 	OpenGroupsMainWindow currentWindow = appState.getActiveWindow();
 	URL url = currentWindow.getURL();
 	String path = url.getPath();
-//	String urlString = url.getProtocol() + "://" + url.getHost() + ":"
-//		+ url.getPort();
-	
-//	if (path.length() > 1) {
-//	    int contextIndex = path.substring(1).indexOf("/");
-//	    String contextPath = null;
-//	    if (contextIndex > 0) {
-//		contextPath = path.substring(0, contextIndex + 1);
-//		urlString += contextPath + "/";
-//	    }
-//	}
+	// String urlString = url.getProtocol() + "://" + url.getHost() + ":"
+	// + url.getPort();
+
+	// if (path.length() > 1) {
+	// int contextIndex = path.substring(1).indexOf("/");
+	// String contextPath = null;
+	// if (contextIndex > 0) {
+	// contextPath = path.substring(0, contextIndex + 1);
+	// urlString += contextPath + "/";
+	// }
+	// }
 	String urlString = getBaseAppUrl();
 	String returnUrl = urlString
 		+ "#"
@@ -485,13 +496,12 @@ public class OpenGroupsApplication extends Application {
 	appState.getActiveWindow().open(
 		new ExternalResource(urlString + "openid/login"));
     }
-    
-    public String getBaseAppUrl(){
+
+    public String getBaseAppUrl() {
 	String urlString = getURL().toString();
 	int index = urlString.lastIndexOf(APP_PATH);
-	return urlString.substring(0,index);
+	return urlString.substring(0, index);
     }
-    
 
     /**
      * Opens an entity in a new window
@@ -499,6 +509,11 @@ public class OpenGroupsApplication extends Application {
      * @param entity
      */
     public void openInActiveWindow(Entity entity) {
+	if (!isAppReady()) {
+	    handleErrors();
+	    return;
+	}
+
 	System.out.println("*****opening entity: " + entity);
 	long entityId = -1;
 	long rootEntityId = -1;
@@ -533,12 +548,19 @@ public class OpenGroupsApplication extends Application {
 	}
     }
 
+    private boolean isAppReady() {
+	if (!appState.isActive()) {
+	    appState.refresh();
+	    initWindow(appState.getActiveWindow());
+	}
+	return appState.isActive();
+    }
+
     protected OpenGroupsMainWindow createWindow(String name) {
 	Integer nextId = windowsManager.getNextWindowId(name);
 	name = name + MY_WINDOW_SEPARATOR + nextId;
 	System.out.println("->createWindow(" + name + ")");
-	OpenGroupsMainWindow w = new OpenGroupsMainWindow(this,
-		getAppConfigManager().getInstanceName());
+	OpenGroupsMainWindow w = new OpenGroupsMainWindow(this);
 	System.out.println("createWindow(" + name + ") -> " + w);
 	return w;
     }
@@ -550,6 +572,7 @@ public class OpenGroupsApplication extends Application {
 	if ((w == null) && !name.contains("UIDL")) {
 	    w = createWindow(name);
 	    initWindow((OpenGroupsMainWindow) w);
+
 	    setMainWindow(w);
 
 	}
@@ -561,10 +584,14 @@ public class OpenGroupsApplication extends Application {
     }
 
     private void initWindow(OpenGroupsMainWindow w) {
+	if (!appState.isActive()) {
+	    return;
+	}
 	// OpenGroupsUriHandler uriHandler = new OpenGroupsUriHandler(this);
 	// w.getUriUtility().addListener(uriHandler);
 	// w.addURIHandler(uriHandler);
 	addCloseListener(w);
+	w.setCaption(getAppConfigManager().getInstanceName());
 	// CausalHierarchyContainer chc = w.getHierarchyContainer();
 	// chc.setStartDepthChangedListener(hierarchyStartDepthListener);
 	// chc.setTreeExpandListener(hierarchyTreeExpandListener);
@@ -711,6 +738,10 @@ public class OpenGroupsApplication extends Application {
     }
 
     public ApplicationConfigManager getAppConfigManager() {
-	return ApplicationConfigManager.getInstance();
+	return appState.getAppConfigManager();
+    }
+
+    public OpenGroupsModel getModel() {
+	return appState.getModel();
     }
 }

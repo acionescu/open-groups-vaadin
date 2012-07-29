@@ -54,7 +54,7 @@ public class UserNotificationRulesHandler extends OpenGroupsActionHandler {
 
 	    @Override
 	    public void handleEvent(UserEvent event) {
-		boolean saved = getModel().saveUserNotificationRules(
+		boolean saved = app.getModel().saveUserNotificationRules(
 			app.getCurrentUserId(),
 			actionContext.getEntity().getId(), rulesList);
 		if (saved) {
@@ -81,7 +81,7 @@ public class UserNotificationRulesHandler extends OpenGroupsActionHandler {
 	params.put("entityId", actionContext.getEntity().getId());
 
 	CommandResponse response = executeAction(actionContext, params);
-	return getModel().buildBeanFromResponse(response,
+	return app.getModel().buildBeanFromResponse(response,
 		NotificationRulesList.class);
     }
 

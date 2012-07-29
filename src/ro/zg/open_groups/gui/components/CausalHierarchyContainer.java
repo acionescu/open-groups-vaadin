@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.constants.OpenGroupsIconsSet;
 import ro.zg.open_groups.gui.constants.OpenGroupsStyles;
 import ro.zg.open_groups.managers.ApplicationConfigManager;
@@ -46,6 +47,9 @@ public class CausalHierarchyContainer extends CssLayout {
      * 
      */
     private static final long serialVersionUID = 988099253447545307L;
+    
+    private OpenGroupsApplication app;
+    
     /**
      * components
      */
@@ -59,6 +63,13 @@ public class CausalHierarchyContainer extends CssLayout {
     private long maxDepth = -1;
     private int cacheDepth = 0;
     private Object selection;
+    
+    
+    
+
+    public CausalHierarchyContainer(OpenGroupsApplication app) {
+	this.app = app;
+    }
 
     private void init() {
 	/* start depth combo */
@@ -211,7 +222,7 @@ public class CausalHierarchyContainer extends CssLayout {
      */
     private boolean hasNonLeafChildren(Entity e) {
 	Map<String, Long> subtypeEntitiesCount = e.getSubtypeEntitiesCount();
-	List<String> nonLeafTypes = ApplicationConfigManager.getInstance()
+	List<String> nonLeafTypes = app.getAppConfigManager()
 		.getNonLeafTypes();
 	for (String nlt : nonLeafTypes) {
 	    Long value = subtypeEntitiesCount.get(nlt.toLowerCase());

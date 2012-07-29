@@ -126,7 +126,7 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 
     private boolean getAllAvailableActions() {
 	CommandResponse response = netcellDao.execute(GET_ALL_AVAILABLE_ACTIONS, new HashMap<String, Object>());
-	if (response != null) {
+	if (response != null && response.isSuccessful()) {
 	    GenericNameValueList list = (GenericNameValueList) response.getValue("result");
 
 	    for (int i = 0; i < list.size(); i++) {

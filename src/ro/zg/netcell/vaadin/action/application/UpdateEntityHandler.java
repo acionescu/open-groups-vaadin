@@ -56,7 +56,7 @@ public class UpdateEntityHandler extends OpenGroupsActionHandler {
 	}
 
 	private DefaultForm getForm(final Entity entity, final UserAction ua,
-			final OpenGroupsApplication application,
+			final OpenGroupsApplication app,
 			final ComponentContainer targetContainer, final ActionContext ac) {
 		final DefaultForm form = ua.generateForm();
 		form.getField("title").setValue(entity.getTitle());
@@ -85,30 +85,30 @@ public class UpdateEntityHandler extends OpenGroupsActionHandler {
 						.getFormFieldsAsMap(event.getForm());
 				Entity selectedEntity = entity;
 
-				paramsMap.put("userId", application.getCurrentUserId());
+				paramsMap.put("userId", app.getCurrentUserId());
 				paramsMap.put("entityId", selectedEntity.getId());
 				String complexType = ua.getTargetEntityComplexType();
-				paramsMap.put("allowDuplicateTitle", getAppConfigManager()
+				paramsMap.put("allowDuplicateTitle", app.getAppConfigManager()
 						.getComplexEntityBooleanParam(complexType,
 								ComplexEntityParam.ALLOW_DUPLICATE_TITLE));
 				paramsMap.put("titleChanged", !paramsMap.get("title").equals(
 						selectedEntity.getTitle()));
 				CommandResponse response = executeAction(new ActionContext(ua,
-						application, entity), paramsMap);
+						app, entity), paramsMap);
 				if (response.isSuccessful()) {
 					if ("titleExists".equals(response.getValue("exit"))) {
-						String message = application.getMessage(ua
+						String message = app.getMessage(ua
 								.getTargetEntityType().toLowerCase()
 								+ ".already.exists.with.title");
 						form.setComponentError(new UserError(message));
 					} else {
-						application.refreshEntity(entity, ac);
-						displaySuccessfulMessage(entity, ua, application,
+						app.refreshEntity(entity, ac);
+						displaySuccessfulMessage(entity, ua, app,
 								targetContainer, ac);
 					}
 				}
 				/* refresh after update */
-				application.refreshEntity(entity, ac);
+				app.refreshEntity(entity, ac);
 			}
 		});
 

@@ -32,7 +32,7 @@ public class RefreshSelectedEntityHandler extends OpenGroupsActionHandler {
 		/* get entity info */
 		OpenGroupsApplication app = actionContext.getApp();
 		Entity selectedEntity = actionContext.getEntity();
-		getModel().refreshEntity(selectedEntity, app.getCurrentUserId());
+		app.getModel().refreshEntity(selectedEntity, app.getCurrentUserId());
 	}
 
 }

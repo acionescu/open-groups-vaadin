@@ -131,14 +131,14 @@ public class LoadMainWindowHandler extends OpenGroupsActionHandler {
     private Component getRootEntityLink(OpenGroupsApplication app) throws ContextAwareException {
 	Entity selectedEntity = app.getRootEntity();
 	if (selectedEntity == null) {
-	    selectedEntity = getModel().getRootEntity();
+	    selectedEntity = app.getModel().getRootEntity();
 	    selectedEntity.getState().setOpened(true);
 	}
 	return OpenGroupsUtil.getLinkForEntity(selectedEntity, app);
     }
 
     private Component getMetaEntityLink(OpenGroupsApplication app) throws ContextAwareException {
-	Long entityId = (Long) getAppConfigManager().getApplicationConfigParam(ApplicationConfigParam.APP_ENTITY_ID);
+	Long entityId = (Long) app.getAppConfigManager().getApplicationConfigParam(ApplicationConfigParam.APP_ENTITY_ID);
 	if (entityId != null) {
 	    Entity entity = new Entity(entityId);
 //	    getModel().refreshEntity(entity, null);

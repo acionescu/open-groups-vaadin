@@ -45,7 +45,7 @@ public class OpenHierarchyForEntityHandler extends BaseListHandler{
 //	params.put("withContent", true);
 //	params.put("userId", app.getCurrentUserId());
 	
-	EntityList entityList = getModel().getHierarchyList(selectedEntity, ua, app.getCurrentUserId());
+	EntityList entityList = app.getModel().getHierarchyList(selectedEntity, ua, app.getCurrentUserId());
 //	
 	ComponentContainer container = actionContext.getTargetContainer();
 	container.removeAllComponents();

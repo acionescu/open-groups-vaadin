@@ -15,22 +15,48 @@
  ******************************************************************************/
 package ro.zg.opengroups.vo;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
+import ro.zg.open_groups.managers.ApplicationConfigManager;
 import ro.zg.open_groups.model.OpenGroupsModel;
 
 public class OpenGroupsApplicationState {
 
+    /*
+     * TODO: app config manager should not be exposed, the handlers should only
+     * interact with the OpenGroupsModel
+     */
+    private ApplicationConfigManager appConfigManager;
+    private OpenGroupsModel model;
     private Entity rootEntity;
     private OpenGroupsMainWindow activeWindow;
     private Entity activeEntity;
     private String currentUri;
     private Entity desiredEntity;
+    private Deque<Exception> errorsStack = new ArrayDeque<Exception>();
+    private boolean active;
 
-    public OpenGroupsApplicationState() throws ContextAwareException {
-	OpenGroupsModel model = OpenGroupsModel.getInstance();
-	rootEntity = model.getRootEntity();
-
+    public OpenGroupsApplicationState() {
+	init();
+    }
+    
+    private void init(){
+	try {
+	    appConfigManager = ApplicationConfigManager.getInstance();
+	    model = OpenGroupsModel.getInstance();
+	    rootEntity = model.getRootEntity();
+	    active = true;
+	} catch (ContextAwareException e) {
+	    pushError(e);
+	    active = false;
+	}
+    }
+    
+    public void refresh(){
+	init();
     }
 
     public boolean isRootSelected() {
@@ -95,6 +121,30 @@ public class OpenGroupsApplicationState {
 
     public void setDesiredEntity(Entity desiredEntity) {
 	this.desiredEntity = desiredEntity;
+    }
+
+    public ApplicationConfigManager getAppConfigManager() {
+	return appConfigManager;
+    }
+
+    public OpenGroupsModel getModel() {
+	return model;
+    }
+
+    public void pushError(Exception e) {
+	errorsStack.push(e);
+    }
+
+    public boolean hasErrors() {
+	return !errorsStack.isEmpty();
+    }
+
+    public Deque<Exception> getErrorsStack() {
+        return errorsStack;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
 }
