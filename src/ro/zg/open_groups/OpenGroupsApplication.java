@@ -19,7 +19,9 @@ import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -367,23 +369,31 @@ public class OpenGroupsApplication extends Application {
     public void handleErrors() {
 	String errorMessage = "";
 	Deque<Exception> errorsStack = appState.getErrorsStack();
+	Set<String> messages = new HashSet<String>();
+
 	while (errorsStack.size() > 0) {
 	    Exception e = errorsStack.pop();
+	    String newMessage = null;
 	    if (e instanceof ContextAwareException) {
 		ContextAwareException cae = (ContextAwareException) e;
 		ExceptionContext ec = cae.getExceptionContext();
 		if (ec != null) {
 		    Object[] args = (Object[]) ec.getValue("args");
 		    if (args != null) {
-			errorMessage += "<br>- "
-				+ getMessage(cae.getType(), args);
-			continue;
+			newMessage = getMessage(cae.getType(), args);
+		    } else {
+			newMessage = getMessage(((ContextAwareException) e)
+				.getType());
 		    }
 		}
-		errorMessage += "<br>- "
-			+ getMessage(((ContextAwareException) e).getType());
 	    } else {
-		errorMessage += "<br>- " + getMessage("system.error");
+		newMessage = getMessage("system.error");
+	    }
+
+	    /* don't display the same message multiple times */
+	    if (!messages.contains(newMessage)) {
+		errorMessage += "<br>- " + newMessage;
+		messages.add(newMessage);
 	    }
 	}
 	Notification notification = new Notification(
@@ -459,8 +469,9 @@ public class OpenGroupsApplication extends Application {
     public void openIdLogin(String providerUrl) {
 	HttpSession session = getAppContext().getHttpSession();
 	session.setAttribute(OpenIdConstants.PROVIDER_URL, providerUrl);
-	session.setAttribute(OpenIdConstants.REQUEST_ATTRIBUTES, new String[]{OpenIdAttribute.EMAIL});
-	
+	session.setAttribute(OpenIdConstants.REQUEST_ATTRIBUTES,
+		new String[] { OpenIdAttribute.EMAIL });
+
 	OpenGroupsMainWindow currentWindow = appState.getActiveWindow();
 	URL url = currentWindow.getURL();
 	String path = url.getPath();
@@ -572,7 +583,7 @@ public class OpenGroupsApplication extends Application {
     }
 
     private void initWindow(OpenGroupsMainWindow w) {
-	if(!appState.isActive()){
+	if (!appState.isActive()) {
 	    return;
 	}
 	// OpenGroupsUriHandler uriHandler = new OpenGroupsUriHandler(this);
