@@ -17,13 +17,6 @@ package ro.zg.netcell.vaadin.action.user;
 
 import java.util.Map;
 
-import com.vaadin.terminal.UserError;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.DataTranslationUtils;
 import ro.zg.netcell.vaadin.DefaultForm;
@@ -33,8 +26,19 @@ import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
 import ro.zg.open_groups.user.UsersManager;
+import ro.zg.opengroups.util.OpenGroupsUtil;
 import ro.zg.opengroups.vo.ActionUri;
 import ro.zg.opengroups.vo.UserAction;
+
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.UserError;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 
 public class ResetPasswordHandler extends UserHandler{
 
@@ -64,6 +68,9 @@ public class ResetPasswordHandler extends UserHandler{
 	form.setWidth("60%");
 	// form.setHeight("30%");
 	layout.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
+	
+	/* hide the content of the main window */
+	mainWindow.setContentVisible(false);
 	
     }
 
@@ -99,11 +106,11 @@ public class ResetPasswordHandler extends UserHandler{
 	CommandResponse response = executeAction(new ActionContext(ua, app, null), paramsMap);
 	
 	if(response.isSuccessful()) {
-	    displaySuccessfulMessage(form.getWindow(), ua.getActionName()+".success");
+	    displaySuccessfulMessage(form.getWindow(), ua.getActionName()+".success",app);
 	}
     }
     
-    private void displaySuccessfulMessage(Window w, String messageKey) {
+    private void displaySuccessfulMessage(Window w, String messageKey, final OpenGroupsApplication app) {
 	VerticalLayout l = new VerticalLayout();
 	l.setSizeFull();
 	Label message = new Label(getMessage(messageKey));
@@ -111,5 +118,15 @@ public class ResetPasswordHandler extends UserHandler{
 	l.addComponent(message);
 	l.setComponentAlignment(message, Alignment.MIDDLE_CENTER);
 	w.setContent(l);
+	
+	w.addListener(new CloseListener() {
+	    
+	    @Override
+	    public void windowClose(CloseEvent e) {
+		app.getActiveWindow().open(new ExternalResource(OpenGroupsUtil.getUrlForEntity(app.getActiveEntity(), app)));
+		/* unhide the content of the main window */
+		app.getActiveWindow().setContentVisible(true);
+	    }
+	});
     }
 }

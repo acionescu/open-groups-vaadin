@@ -469,6 +469,7 @@ public class OpenGroupsApplication extends Application {
     public void openIdLogin(String providerUrl) {
 	HttpSession session = getAppContext().getHttpSession();
 	session.setAttribute(OpenIdConstants.PROVIDER_URL, providerUrl);
+
 	session.setAttribute(OpenIdConstants.REQUEST_ATTRIBUTES,
 		new String[] { OpenIdAttribute.EMAIL });
 
