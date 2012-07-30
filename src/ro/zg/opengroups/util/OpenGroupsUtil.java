@@ -51,6 +51,12 @@ public class OpenGroupsUtil {
 	return anchor;
     }
     
+    public static String getUrlForEntity(Entity entity, OpenGroupsApplication app){
+	String url = app.getBaseAppUrl();
+	String fragment = getDesiredFragmentForEntity(entity);
+	return url+"#"+fragment;
+    }
+    
     public static Label getLinkForEntityWithImage(Entity entity, OpenGroupsApplication app, String imagePath) {
 	String url = app.getBaseAppUrl();
 	String fragment = getDesiredFragmentForEntity(entity);
