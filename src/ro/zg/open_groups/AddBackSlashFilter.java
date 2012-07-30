@@ -69,6 +69,11 @@ public class AddBackSlashFilter implements Filter {
 //	    dispatcher.forward(req, res);
 	    return;
 	}
+	else if(uri.startsWith("/user.reset.password")){
+	    RequestDispatcher dispatcher = req.getRequestDispatcher("/"+OpenGroupsApplication.APP_PATH+uri);
+	    dispatcher.forward(req, res);
+	    return;
+	}
 	
 	arg2.doFilter(arg0, arg1);
 	

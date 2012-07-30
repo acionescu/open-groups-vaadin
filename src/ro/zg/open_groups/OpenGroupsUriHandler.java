@@ -123,6 +123,7 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
 	}
 	logger.info("handle uri '" + relativeUri + "'");
 	logger.debug("Active window: " + app.getActiveWindow());
+	relativeUri = relativeUri.trim();
 	ActionUri au = getActionUri(relativeUri);
 
 	/* check for matching uri actions */
@@ -135,6 +136,7 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
 	if (ua != null) {
 	    Map<String, Object> params = new HashMap<String, Object>();
 	    params.put("actionUri", au);
+	    app.setCurrentUri(relativeUri);
 	    logger.info("Executing " + ua.getAction() + params);
 	    ua.executeHandler(app, params);
 	    return null;
@@ -153,7 +155,7 @@ public class OpenGroupsUriHandler implements URIHandler, FragmentChangedListener
 //	}
 	
 	/* if no know action exists for current uri, set it on app state */
-	app.setCurrentUri(relativeUri.trim());
+	app.setCurrentUri(relativeUri);
 	return null;
     }
 
