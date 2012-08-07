@@ -1,0 +1,45 @@
+The point is to offer a user or a group of users access to some entities, without breaking the logical flow
+of problems/solutions hierarchy.
+
+For any entity the creator can specify a privacy level
+- private 
+- privately shared ( can only bee seen by the members of the group )
+- publicly shared ( can be seen by anyone but cannot be acted upon )
+- same as parent
+
+
+Create table privacy_levels
+
+-level 
+0 - private
+1 - privately shared
+2 - publicly shared
+null - will be considered public
+
+-level_name
+
+
+Create table privacy_rules
+
+-privacy_rule_id
+-privacy_level_id
+-sharing_group_id ( will be null if the privacy level does not refer to a shared type access level )
+
+
+The column "privacy_rule_id" will be created in the "entities" table to hold a reference to the privacy rule set for
+that entity
+
+Modify the add/update entity flows to allow the setting of privacy rule for an entity
+
+Add a new combobox to the input form from where the user can select the privacy rule for the entity
+By default "same as parent" will be selected and in this case the privacy rule of the current parent will be
+set also for current entity
+
+Modify the "open entity" flow to check if the user has access to the requested entity ( should be done in the middleware )
+
+Modify the  "list subentities" flow in order to filter out the entities to which the user does not have access
+
+
+
+
+
