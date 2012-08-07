@@ -2,3 +2,5 @@
 WebContent/VAADIN/widgetsets/
 .settings/
 target/
+log/
+spec/
