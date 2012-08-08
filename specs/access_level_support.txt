@@ -1,33 +1,46 @@
 The point is to offer a user or a group of users access to some entities, without breaking the logical flow
 of problems/solutions hierarchy.
 
-For any entity the creator can specify a privacy level
-- private 
-- privately shared ( can only bee seen by the members of the group )
-- publicly shared ( can be seen by anyone but cannot be acted upon )
-- same as parent
+The access rules will define the access to a certain entity of different types of users.
+
+There will be three types of users:
+-the creator which will have total access to the entity
+-the member of a group with which the entity is shared
+-the others
+
+Each access rule will define permission for group members and the others
+
+Permissions will define to what type of actions a users will have access to
+
+Create table access_permissions
+-id
+-name
+
+Create table action_types_permissions
+-permission_id
+-action_type_id
 
 
-Create table privacy_levels
+Create table access_rules
 
--level 
+-id
+-name
+-group_permissions_id
+-others_permissions_id
+
+
+Values for access_level:
+ 
 0 - private
 1 - privately shared
 2 - publicly shared
+
+
+The column "access_rule_id" will be created in the "entities" table to hold a reference to the access rule set for
+that entity
 null - will be considered public
 
--level_name
-
-
-Create table privacy_rules
-
--privacy_rule_id
--privacy_level_id
--sharing_group_id ( will be null if the privacy level does not refer to a shared type access level )
-
-
-The column "privacy_rule_id" will be created in the "entities" table to hold a reference to the privacy rule set for
-that entity
+Add column "group_id" to the entities table in order to store the group with which the entity is shared
 
 Modify the add/update entity flows to allow the setting of privacy rule for an entity
 
