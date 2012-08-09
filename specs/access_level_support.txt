@@ -27,6 +27,7 @@ Create table access_rules
 -name
 -group_permissions_id
 -others_permissions_id
+-active
 
 
 Values for access_level:
