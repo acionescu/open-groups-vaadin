@@ -30,8 +30,6 @@ ALTER TABLE access_rules_seq
   OWNER TO metaguvernare;
   
   
-  
-  
 -- Table: access_rules
 
 -- DROP TABLE access_rules;
@@ -43,6 +41,7 @@ CREATE TABLE access_rules
   group_permissions_id bigint,
   others_permissions_id bigint,
   active character(1) NOT NULL DEFAULT 'y'::bpchar,
+  access_level integer NOT NULL,
   CONSTRAINT access_rules_pk PRIMARY KEY (id ),
   CONSTRAINT access_rules_groups_permissions_fk FOREIGN KEY (group_permissions_id)
       REFERENCES access_permissions (id) MATCH SIMPLE
@@ -56,6 +55,7 @@ WITH (
 );
 ALTER TABLE access_rules
   OWNER TO metaguvernare;
+
  
 -- Table: action_types_permissions
 
@@ -91,9 +91,38 @@ insert into access_permissions values(1,'READONLY');
 
 insert into action_types_permissions values((select id from access_permissions where name='READONLY'),(select id from action_types where type='READ'));
 
-insert into access_rules(name,group_permissions_id,others_permissions_id) values('PRIVATE',null,null);
+insert into access_rules(name,group_permissions_id,others_permissions_id,access_level) values('HIDDEN',null,null,0);
 
-insert into access_rules(name,group_permissions_id,others_permissions_id) values('READONLY',(select id from access_permissions where name='READONLY'),(select id from access_permissions where name='READONLY'));
+insert into access_rules(name,group_permissions_id,others_permissions_id,access_level) values('READONLY',(select id from access_permissions where name='READONLY'),(select id from access_permissions where name='READONLY'),1);
 
 
+drop function children_of(bigint);
+CREATE OR REPLACE FUNCTION children_of(start_id bigint)
+   RETURNS TABLE (id bigint, owner_id bigint, complex_type_id bigint, parent_id bigint, parent_link_id bigint, cdepth integer, cpath text)
+        AS 
+$$
+
+WITH RECURSIVE subentities_list(id, owner_id, complex_type_id, parent_id, parent_link_id, depth, path) AS (
+        SELECT e.id, e.creator_id owner_id, e.complex_entity_type_id complex_type_id, el.parent_id, el.entity_link_id, 0, text ''||el.parent_id||'' 
+        FROM entities e, entities_links el
+        where el.parent_id=$1
+        and el.entity_id=e.id
+               
+      UNION ALL 
+        SELECT e.id, e.creator_id owner_id, e.complex_entity_type_id complex_type_id, el.parent_id, el.entity_link_id, eg.depth + 1, text ''||path||','||el.parent_id
+        FROM entities e, subentities_list eg, entities_links el
+        WHERE eg.id = el.parent_id
+        and e.id=el.entity_id
+        --keep out circular links
+        and path not like '%'||e.id||'%'
+        
+       
+)
+
+select * from subentities_list;
+$$
+  LANGUAGE sql VOLATILE
+  COST 100;
+ALTER FUNCTION children_of(bigint)
+  OWNER TO metaguvernare;
   

@@ -45,13 +45,40 @@ Add column "group_id" to the entities table in order to store the group with whi
 
 Modify the add/update entity flows to allow the setting of privacy rule for an entity
 
+The update flow needs to check if the access rule to be set is allowed depending if it has offsprings 
+created by other users or not, and the rule of the parent
+If it has offsprings create by others, the change of the access rule will not be allowed
+If it has only offsprings created by the owner of the entity, the access rule of those that are more permissive 
+will also be changed to the access rule of the entity being updated
+
+
 Add a new combobox to the input form from where the user can select the privacy rule for the entity
 By default "same as parent" will be selected and in this case the privacy rule of the current parent will be
 set also for current entity
 
+Add new flow to get the allowed access rules for an entity that is being updated. If the entity has children,
+then the access rule of the modified entity cannot be more restrictive the least restricted child
+
 Modify the "open entity" flow to check if the user has access to the requested entity ( should be done in the middleware )
+and also to bring the access_rule_id and the group_id values
 
 Modify the  "list subentities" flow in order to filter out the entities to which the user does not have access
+
+
+Interface changes
+---------------------
+
+In the create/update form for an entity, a new combobox will be displayed that will allow the selection
+of the access rule for the targeted entity.
+
+The possible selection values will be the access rules defined in the access_rules table that are MORE restrictive
+then the parent access_rule
++ the same rule as the parent ( default ).
+
+For the option "same as parent" the actual description of the parent access rule should be displayed
+
+
+
 
 
 

@@ -19,12 +19,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.constants.OpenGroupsExceptions;
+import ro.zg.opengroups.vo.AccessRule;
 import ro.zg.opengroups.vo.TypeRelationConfig;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.GenericNameValueList;
@@ -38,12 +41,14 @@ public class ApplicationConfigManager {
     private static final String GET_APPLICATION_CONFIG_PARAMS_FLOW = "ro.problems.flows.get-application-config-params";
     private static final String GET_COMPLEX_ENTITY_TYPES_FLOW = "ro.problems.flows.get-complex-entity-types";
     private static final String GET_ENTITIES_TYPES_RELATIONS = "ro.problems.flows.get-all-entities-types-relations";
+    private static final String GET_ACCESS_RULES = "ro.problems.data.get-active-access-rules";
 
     private Map<String, Object> applicationConfigParams = new HashMap<String, Object>();
     private Map<String, GenericNameValueContext> complexEntityTypes = new HashMap<String, GenericNameValueContext>();
     private ListMap<String, String> subtypesRelations;
     private Map<Long, TypeRelationConfig> typeRelations;
     private ListMap<Long, TypeRelationConfig> subtypesForType;
+    private Set<AccessRule> accessRules;
     /**
      * the types that can have children
      */
@@ -74,6 +79,25 @@ public class ApplicationConfigManager {
 	loadComplexEntityTypes();
 	loadEntitiesTypesRelations();
 	initNonLeafSubtypes();
+	loadAccessRules();
+    }
+
+    private void loadAccessRules() throws ContextAwareException {
+	CommandResponse response = ActionsManager.getInstance().execute(
+		GET_ACCESS_RULES, new HashMap());
+	if (response == null || !response.isSuccessful()) {
+	    throw OpenGroupsExceptions.getSystemError();
+	}
+	GenericNameValueList result = (GenericNameValueList) response
+		.getValue("result");
+	accessRules = new TreeSet<AccessRule>();
+
+	for (int i = 0; i < result.size(); i++) {
+	    GenericNameValueContext row = (GenericNameValueContext) result
+		    .getValueForIndex(i);
+	    AccessRule ar = new AccessRule(row);
+	    accessRules.add(ar);
+	}
     }
 
     private boolean loadApplicationConfigParams() throws ContextAwareException {
@@ -275,6 +299,25 @@ public class ApplicationConfigManager {
 
     public boolean isInstancePrivate() {
 	return getApplicationBooleanParam(ApplicationConfigParam.IS_INSTANCE_PRIVATE);
+    }
+
+    /**
+     * Returns the more restrictive rules then the specified level
+     * 
+     * @param accessLevel
+     * @return
+     */
+    public Set<AccessRule> getAllowedRulesForLevel(int accessLevel) {
+	Set<AccessRule> rules = new TreeSet<AccessRule>();
+
+	for (AccessRule cr : accessRules) {
+	    if (cr.getAccessLevel() >= accessLevel) {
+		break;
+	    }
+	    rules.add(cr);
+	}
+	
+	return rules;
     }
 
 }
