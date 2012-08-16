@@ -15,21 +15,47 @@
  ******************************************************************************/
 package ro.zg.opengroups.constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.commons.exceptions.ExceptionContext;
+import ro.zg.netcell.control.CommandResponse;
 
 public class OpenGroupsExceptions {
     public static final String NO_SUCH_ENTITY = "no.such.entity.error";
-    public static final String SYSTEM_ERROR="system.error";
+    public static final String SYSTEM_ERROR = "system.error";
+    public static final String ACTION_FORBIDDEN = "action.forbidden";
+
+    private static Map<String, String> responseCodesErrorsMap;
+
+    static {
+	responseCodesErrorsMap = new HashMap<String, String>();
+	responseCodesErrorsMap.put("rc9999", SYSTEM_ERROR);
+	responseCodesErrorsMap.put("rc10", ACTION_FORBIDDEN);
+
+    }
 
     public static ContextAwareException getNoSuchEntityException(long entityId) {
 	ExceptionContext ec = new ExceptionContext();
 	ec.put("ENTITY_ID", entityId);
-	return new ContextAwareException(OpenGroupsExceptions.NO_SUCH_ENTITY, ec);
+	return new ContextAwareException(OpenGroupsExceptions.NO_SUCH_ENTITY,
+		ec);
     }
 
-    public static ContextAwareException getSystemError(){
+    public static ContextAwareException getSystemError() {
 	return new ContextAwareException(SYSTEM_ERROR);
     }
-    
+
+    public static ContextAwareException getErrorFromResponse(CommandResponse res) {
+	String responseCode = res.getResponseCode();
+	System.out.println("buid error for response: "+res);
+	String error = responseCodesErrorsMap.get(responseCode);
+
+	if (error == null) {
+	    error = SYSTEM_ERROR;
+	}
+	return new ContextAwareException(error);
+    }
+
 }

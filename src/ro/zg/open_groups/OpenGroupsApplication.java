@@ -541,7 +541,7 @@ public class OpenGroupsApplication extends Application {
 	logger.debug("Open entity " + entity.getId() + " in window "
 		+ activeWindow);
 	actionsManager.executeAction(ActionsManager.OPEN_ENTITY_IN_WINDOW,
-		entity, this, activeWindow, false);
+		entity, this, activeWindow, false,false);
 	if (hasErrors()) {
 	    handleErrors();
 	    return;

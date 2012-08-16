@@ -20,4 +20,5 @@ public class MessagesConstants {
     public static final String NOTIFICATION_MODE_PREFIX="notification.mode.";
     public static final String NOTIFICATION_RULES_LIST_PREFIX="notification.rules.list.column.";
     public static final String NOTIFICATION_DEPTH_PREFIX="notification.depth.";
+    public static final String ACCESS_RULE="access.rule";
 }

@@ -46,7 +46,8 @@ public class Entity implements Serializable {
     private int subtypesCount;
     private Map<String, Long> subtypeEntitiesCount = new LinkedHashMap<String, Long>();
     private Map<String, Long> recursiveSubtypeEntitiesCount = new LinkedHashMap<String, Long>();
-
+    private long accessRuleId;
+    private long groupId;
     private long proVotes;
     private long opposedVotes;
     private long totalVotes;
@@ -548,6 +549,22 @@ public class Entity implements Serializable {
      */
     public void setSelectedCause(EntityLink selectedCause) {
 	this.selectedCause = selectedCause;
+    }
+
+    public long getAccessRuleId() {
+        return accessRuleId;
+    }
+
+    public void setAccessRuleId(long accessRuleId) {
+        this.accessRuleId = accessRuleId;
+    }
+
+    public long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
     }
 
 }

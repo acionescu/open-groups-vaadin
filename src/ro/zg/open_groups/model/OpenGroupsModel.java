@@ -99,6 +99,9 @@ public class OpenGroupsModel {
 	}
 	CommandResponse response = getActionsManager().execute(
 		GET_ENTITY_INFO_FLOW, params);
+	if(!response.isSuccessful()){
+	    throw OpenGroupsExceptions.getErrorFromResponse(response);
+	}
 	GenericNameValueList result = (GenericNameValueList) response
 		.getValue("result");
 	GenericNameValueContext row = (GenericNameValueContext) result
@@ -194,10 +197,11 @@ public class OpenGroupsModel {
     }
 
     public EntityList getCausalHierarchy(long rootNodeId, int startDepth,
-	    int cacheDepth) {
+	    int cacheDepth, Long userId) {
 	Map<String, Object> params = new HashMap<String, Object>();
 	params.put("parentId", rootNodeId);
 	params.put("startDepth", startDepth);
+	params.put("userId", userId);
 	params.put("depth", startDepth + cacheDepth);
 	params.put("withContent", false);
 	params.put("withoutLeafTypes", true);

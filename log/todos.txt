@@ -1,6 +1,7 @@
 TODO:
 
-
+finish access rules interface issues AccessRuleFormFieldController
+modify get entity info data access comp to bring also  the access_rule_id and group_id
 
 
 

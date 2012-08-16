@@ -15,9 +15,8 @@
  ******************************************************************************/
 package ro.zg.netcell.vaadin.action;
 
-import ro.zg.open_groups.OpenGroupsApplication;
 
 public interface ActionErrorHandler {
     
-    void handleActionError(Exception e,OpenGroupsApplication app);
+    void handleActionError(Exception e, ActionContext ac);
 }

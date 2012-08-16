@@ -19,9 +19,9 @@ import java.util.Map;
 
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.DataTranslationUtils;
-import ro.zg.netcell.vaadin.DefaultForm;
-import ro.zg.netcell.vaadin.DefaultForm.FormCommitEvent;
-import ro.zg.netcell.vaadin.DefaultForm.FormListener;
+import ro.zg.netcell.vaadin.ExtendedForm;
+import ro.zg.netcell.vaadin.ExtendedForm.FormCommitEvent;
+import ro.zg.netcell.vaadin.ExtendedForm.FormListener;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
@@ -60,7 +60,7 @@ public class RegisterUserHandler extends UserHandler{
 	
 	VerticalLayout layout = new VerticalLayout();
 	layout.setSizeFull();
-	Form form = getRegisterForm(actionContext.getUserAction(), app, actionContext.getWindow(),actionContext.getEntity());
+	Form form = getRegisterForm(actionContext.getUserAction(), app, actionContext.getWindow(),actionContext.getEntity(), actionContext);
 	w.setContent(layout);
 	layout.addComponent(form);
 	form.setWidth("60%");
@@ -70,8 +70,8 @@ public class RegisterUserHandler extends UserHandler{
 	
     }
 
-    private Form getRegisterForm(final UserAction ua, final OpenGroupsApplication app, final Window window, final Entity entity) {
-	DefaultForm form =  ua.generateForm();
+    private Form getRegisterForm(final UserAction ua, final OpenGroupsApplication app, final Window window, final Entity entity,ActionContext actionContext) {
+	ExtendedForm form =  ua.generateForm(actionContext);
 	
 	form.addListener(new FormListener() {
 	    
@@ -87,7 +87,7 @@ public class RegisterUserHandler extends UserHandler{
     
     private void doRegister(Form form, UserAction ua, OpenGroupsApplication app, Window window, Entity entity) {
 	form.setComponentError(null);
-	Map<String,Object> paramsMap = DataTranslationUtils.getFormFieldsAsMap(form);
+	Map<String,Object> paramsMap = (Map<String,Object>)form.getValue();
 	String password = (String)paramsMap.get("password");
 	String passwordCheck = (String)paramsMap.remove("password-again");
 	if(!password.equals(passwordCheck)) {

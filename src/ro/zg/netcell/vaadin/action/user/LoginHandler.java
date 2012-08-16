@@ -19,9 +19,9 @@ import java.util.Map;
 
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.DataTranslationUtils;
-import ro.zg.netcell.vaadin.DefaultForm;
-import ro.zg.netcell.vaadin.DefaultForm.FormCommitEvent;
-import ro.zg.netcell.vaadin.DefaultForm.FormListener;
+import ro.zg.netcell.vaadin.ExtendedForm;
+import ro.zg.netcell.vaadin.ExtendedForm.FormCommitEvent;
+import ro.zg.netcell.vaadin.ExtendedForm.FormListener;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.open_groups.OpenGroupsApplication;
@@ -166,7 +166,7 @@ public class LoginHandler extends UserHandler {
 	OpenGroupsApplication app = actionContext.getApp();
 
 	Form form = getLocalLoginForm(actionContext.getUserAction(), app,
-		actionContext.getWindow(), actionContext.getEntity());
+		actionContext.getWindow(), actionContext.getEntity(),actionContext);
 
 	layout.addComponent(form);
 	form.setWidth("60%");
@@ -185,9 +185,9 @@ public class LoginHandler extends UserHandler {
 
     private Form getLocalLoginForm(final UserAction ua,
 	    final OpenGroupsApplication app, final Window window,
-	    final Entity entity) {
+	    final Entity entity,ActionContext actionContext) {
 
-	DefaultForm form = ua.generateForm();
+	ExtendedForm form = ua.generateForm(actionContext);
 	// EntityDefinitionSummary loginDef =
 	// getActionsManager().getFlowDefinitionSummary(ua.getAction());
 	// List<InputParameter> inputParams = loginDef.getInputParameters();
@@ -213,8 +213,7 @@ public class LoginHandler extends UserHandler {
     private void doLogin(Form form, UserAction ua, OpenGroupsApplication app,
 	    Window window, Entity entity) {
 	form.setComponentError(null);
-	Map<String, Object> paramsMap = DataTranslationUtils
-		.getFormFieldsAsMap(form);
+	Map<String, Object> paramsMap = (Map<String, Object>)form.getValue();
 	paramsMap.put(
 		"password",
 		UsersManager.getInstance().encrypt(

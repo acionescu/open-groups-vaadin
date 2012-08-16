@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import ro.zg.commons.exceptions.ContextAwareException;
@@ -48,7 +49,7 @@ public class ApplicationConfigManager {
     private ListMap<String, String> subtypesRelations;
     private Map<Long, TypeRelationConfig> typeRelations;
     private ListMap<Long, TypeRelationConfig> subtypesForType;
-    private Set<AccessRule> accessRules;
+    private Map<Long,AccessRule> accessRules;
     /**
      * the types that can have children
      */
@@ -90,13 +91,13 @@ public class ApplicationConfigManager {
 	}
 	GenericNameValueList result = (GenericNameValueList) response
 		.getValue("result");
-	accessRules = new TreeSet<AccessRule>();
+	accessRules = new TreeMap<Long,AccessRule>();
 
 	for (int i = 0; i < result.size(); i++) {
 	    GenericNameValueContext row = (GenericNameValueContext) result
 		    .getValueForIndex(i);
 	    AccessRule ar = new AccessRule(row);
-	    accessRules.add(ar);
+	    accessRules.put(ar.getId(),ar);
 	}
     }
 
@@ -300,6 +301,16 @@ public class ApplicationConfigManager {
     public boolean isInstancePrivate() {
 	return getApplicationBooleanParam(ApplicationConfigParam.IS_INSTANCE_PRIVATE);
     }
+    
+    public Set<AccessRule> getMoreRestrictiveAccessRules(long accessRuleId){
+	AccessRule ar = accessRules.get(accessRuleId);
+	int accessLevel = Integer.MAX_VALUE;
+	if(ar == null){
+	    accessLevel = ar.getAccessLevel();
+	}
+	
+	return getAllowedRulesForLevel(accessLevel);
+    }
 
     /**
      * Returns the more restrictive rules then the specified level
@@ -310,8 +321,8 @@ public class ApplicationConfigManager {
     public Set<AccessRule> getAllowedRulesForLevel(int accessLevel) {
 	Set<AccessRule> rules = new TreeSet<AccessRule>();
 
-	for (AccessRule cr : accessRules) {
-	    if (cr.getAccessLevel() >= accessLevel) {
+	for (AccessRule cr : accessRules.values()) {
+	    if (cr.getAccessLevel() > accessLevel) {
 		break;
 	    }
 	    rules.add(cr);

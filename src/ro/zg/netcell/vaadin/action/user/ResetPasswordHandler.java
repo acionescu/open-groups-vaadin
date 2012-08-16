@@ -19,9 +19,9 @@ import java.util.Map;
 
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.DataTranslationUtils;
-import ro.zg.netcell.vaadin.DefaultForm;
-import ro.zg.netcell.vaadin.DefaultForm.FormCommitEvent;
-import ro.zg.netcell.vaadin.DefaultForm.FormListener;
+import ro.zg.netcell.vaadin.ExtendedForm;
+import ro.zg.netcell.vaadin.ExtendedForm.FormCommitEvent;
+import ro.zg.netcell.vaadin.ExtendedForm.FormListener;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.gui.OpenGroupsMainWindow;
@@ -62,7 +62,7 @@ public class ResetPasswordHandler extends UserHandler{
 
 	VerticalLayout layout = new VerticalLayout();
 	layout.setSizeFull();
-	Form form = getForm(actionContext.getUserAction(), app, actionContext.getParams());
+	Form form = getForm(actionContext.getUserAction(), app, actionContext.getParams(),actionContext);
 	w.setContent(layout);
 	layout.addComponent(form);
 	form.setWidth("60%");
@@ -74,8 +74,8 @@ public class ResetPasswordHandler extends UserHandler{
 	
     }
 
-    private Form getForm(final UserAction ua, final OpenGroupsApplication app,final Map<String,Object> params) {
-	final DefaultForm form = ua.generateForm();
+    private Form getForm(final UserAction ua, final OpenGroupsApplication app,final Map<String,Object> params,ActionContext actionContext) {
+	final ExtendedForm form = ua.generateForm(actionContext);
 	form.addListener(new FormListener() {
 
 	    @Override
@@ -92,7 +92,7 @@ public class ResetPasswordHandler extends UserHandler{
 	ActionUri au = (ActionUri)actionParams.get("actionUri");
 	
 	form.setComponentError(null);
-	Map<String, Object> paramsMap = DataTranslationUtils.getFormFieldsAsMap(form);
+	Map<String, Object> paramsMap = (Map<String, Object>)form.getValue();
 	String password = (String)paramsMap.get("password");
 	String passwordCheck = (String)paramsMap.get("password-again");
 	if(!password.equals(passwordCheck)) {

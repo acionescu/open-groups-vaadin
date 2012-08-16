@@ -21,7 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ro.zg.netcell.vaadin.DefaultForm;
+import ro.zg.netcell.vaadin.DefaultFormController;
+import ro.zg.netcell.vaadin.ExtendedForm;
+import ro.zg.netcell.vaadin.FormContext;
+import ro.zg.netcell.vaadin.FormController;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.ActionsManager;
 import ro.zg.netcell.vaadin.action.FormGenerator;
@@ -45,6 +48,7 @@ import ro.zg.netcell.vo.InputParameter;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ActionTypes;
+import ro.zg.opengroups.forms.controllers.CreateEntityFormController;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.ObjectsUtil;
 import ro.zg.util.parser.utils.ParseUtils;
@@ -64,6 +68,9 @@ public class UserAction implements Serializable {
     // private static Map<String, String> actionTargetDisplayNames;
     private static Map<String, OpenGroupsActionHandler> actionsHandlers;
     private static Map<String, OpenGroupsActionHandler> actionsHandlersByName;
+    private static FormController defaultFormController = new DefaultFormController();
+    
+    private static Map<String,FormController> formControllersByName;
     static {
 	/*
 	 * actionsDisplayNames = new HashMap<String, String>(); targetEntityDisplayNames = new HashMap<String,
@@ -104,6 +111,10 @@ public class UserAction implements Serializable {
 	actionsHandlersByName.put("user.request.password.reset", new RequestPasswordResetHandler());
 	actionsHandlersByName.put("user.reset.password", new ResetPasswordHandler());
 	actionsHandlersByName.put("user.notification.rules.read", new UserNotificationRulesHandler());
+	
+	
+	formControllersByName=new HashMap<String, FormController>();
+	formControllersByName.put("entity.create", new CreateEntityFormController());
     }
 
     private String action;
@@ -139,7 +150,10 @@ public class UserAction implements Serializable {
     private boolean allowReadToAll;
     private OpenGroupsActionHandler actionHandler;
     private FormGenerator formGenerator;
-
+    
+    List<Map<String, String>> formParamsList;
+    private FormController formController;
+    
     public UserAction() {
 
     }
@@ -229,12 +243,15 @@ public class UserAction implements Serializable {
 	return true;
     }
 
-    public DefaultForm generateForm() {
-	// System.out.println("generating form for actions " + actionName +
-	// " with " + formGenerator);
-	if (formGenerator != null) {
-	    return formGenerator.generate();
+    public ExtendedForm generateForm(ActionContext actionContext) {
+//	if (formGenerator != null) {
+//	    return formGenerator.generate();
+//	}
+	if(formController != null){
+	    FormContext formContext = new FormContext(actionName, formParamsList, actionContext);
+	    return formController.createForm(formContext);
 	}
+	
 	return null;
     }
 
@@ -321,7 +338,7 @@ public class UserAction implements Serializable {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-	List<Map<String, String>> formParamsList = new ArrayList<Map<String, String>>();
+	formParamsList = new ArrayList<Map<String, String>>();
 	for (Map<String, String> paramConfig : paramsList) {
 	    String value = paramConfig.get(ActionParamProperties.VALUE);
 	    if (value != null && !"".equals(value.trim())) {
@@ -333,7 +350,12 @@ public class UserAction implements Serializable {
 	    }
 	}
 	if (formParamsList.size() > 0) {
-	    formGenerator = new FormGenerator(actionName, formParamsList, OpenGroupsResources.getBundle());
+//	    formGenerator = new FormGenerator(actionName, formParamsList, OpenGroupsResources.getBundle());
+	    formController = formControllersByName.get(actionName);
+	    if(formController == null){
+		formController=defaultFormController;
+	    }
+	    
 	}
     }
 

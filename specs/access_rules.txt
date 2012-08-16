@@ -1,4 +1,4 @@
-The point is to offer a user or a group of users access to some entities, without breaking the logical flow
+The point is to offer a user or a group of users private access to some entities, without breaking the logical flow
 of problems/solutions hierarchy.
 
 The access rules will define the access to a certain entity of different types of users.
@@ -20,21 +20,17 @@ Create table action_types_permissions
 -permission_id
 -action_type_id
 
-
 Create table access_rules
 
 -id
 -name
--group_permissions_id
--others_permissions_id
+-access_level
 -active
 
-
-Values for access_level:
- 
-0 - private
-1 - privately shared
-2 - publicly shared
+Create table access_rules_strategies
+-access_rule_id
+-user_type_id
+-permission_id
 
 
 The column "access_rule_id" will be created in the "entities" table to hold a reference to the access rule set for
@@ -52,19 +48,27 @@ If it has only offsprings created by the owner of the entity, the access rule of
 will also be changed to the access rule of the entity being updated
 
 
-Add a new combobox to the input form from where the user can select the privacy rule for the entity
-By default "same as parent" will be selected and in this case the privacy rule of the current parent will be
-set also for current entity
-
-Add new flow to get the allowed access rules for an entity that is being updated. If the entity has children,
-then the access rule of the modified entity cannot be more restrictive the least restricted child
-
 Modify the "open entity" flow to check if the user has access to the requested entity ( should be done in the middleware )
 and also to bring the access_rule_id and the group_id values
 
 Modify the  "list subentities" flow in order to filter out the entities to which the user does not have access
 
+Modify the list hierarchy tree to filter out the entities for which the user does not have read access
 
+Filter the possible actions ( from action_strategies ) by the access rules of each specific entity
+
+Checking user access
+--------------------
+
+Input: userId, flowId, entityId
+
+get action_type_id from flowId
+from (userId,entityId) get user_type_ids
+get access_rule_id for entityId
+
+Check if the access_rule allows for the user_type_ids, the action_type
+
+ 
 Interface changes
 ---------------------
 
