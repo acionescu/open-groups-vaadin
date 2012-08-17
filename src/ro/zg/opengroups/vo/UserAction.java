@@ -49,6 +49,7 @@ import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.opengroups.constants.ActionTypes;
 import ro.zg.opengroups.forms.controllers.CreateEntityFormController;
+import ro.zg.opengroups.forms.controllers.UpdateEntityFormController;
 import ro.zg.util.data.GenericNameValueContext;
 import ro.zg.util.data.ObjectsUtil;
 import ro.zg.util.parser.utils.ParseUtils;
@@ -114,7 +115,10 @@ public class UserAction implements Serializable {
 	
 	
 	formControllersByName=new HashMap<String, FormController>();
-	formControllersByName.put("entity.create", new CreateEntityFormController());
+	CreateEntityFormController createEntityFormController = new CreateEntityFormController();
+	formControllersByName.put("entity.create", createEntityFormController);
+	formControllersByName.put("entity.create.with_tags", createEntityFormController);
+	formControllersByName.put("entity.update", new UpdateEntityFormController());
     }
 
     private String action;

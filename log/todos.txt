@@ -1,9 +1,10 @@
 TODO:
 
-finish access rules interface issues AccessRuleFormFieldController
-modify get entity info data access comp to bring also  the access_rule_id and group_id
 
 
+-refresh hierarchy tree on login and entity create
+
+-display access rule info for the open entity ( an icon or something ) ?
 
 
 
@@ -14,6 +15,12 @@ modify get entity info data access comp to bring also  the access_rule_id and gr
 
 DONE:
 
+-add access rule combo to update entity form
+-modify update flow to override access rules of the children of the updated entity in case
+the access rule set for the entity is more restrictive ( this will only work if the owner is the current
+entity is also the owner of all the children )
+-modify get entity info data access comp to bring also  the access_rule_id and group_id
+-finish access rules interface  AccessRuleFormFieldController
 -add support for instance configuration ( instance name)
 -add mandatory login if the instance is private
 -add domain check for openid login

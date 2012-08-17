@@ -2,6 +2,8 @@ package ro.zg.opengroups.vo;
 
 import java.io.Serializable;
 
+import ro.zg.netcell.vaadin.action.constants.MessagesConstants;
+import ro.zg.open_groups.resources.OpenGroupsResources;
 import ro.zg.util.data.GenericNameValueContext;
 
 public class AccessRule implements Serializable,Comparable<AccessRule>{
@@ -12,13 +14,14 @@ public class AccessRule implements Serializable,Comparable<AccessRule>{
     private long id;
     private int accessLevel;
     private String name;
-    
+    private String description;
     
     public AccessRule(GenericNameValueContext data){
 	
 	id = Long.parseLong(data.getValue("id").toString());
 	accessLevel= Integer.parseInt(data.getValue("access_level").toString());
 	name = data.getValue("name").toString();
+	description = OpenGroupsResources.getMessage(MessagesConstants.ACCESS_RULE+name);
     }
 
 
@@ -52,9 +55,19 @@ public class AccessRule implements Serializable,Comparable<AccessRule>{
     }
 
 
+    public String getDescription() {
+        return description;
+    }
+
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+
     @Override
     public int compareTo(AccessRule o) {
-	if(accessLevel < o.accessLevel) return -1;
+	if(accessLevel > o.accessLevel) return -1;
 	else if(accessLevel == o.accessLevel) return 0;
 	return 1;
     }

@@ -6,7 +6,7 @@ public class CreateEntityFormController extends DefaultFormController{
 
     public CreateEntityFormController() {
 	super();
-	addFieldController("access_rule_id", new AccessRuleFormFieldController());
+	addFieldController("access_rule_id", new CreateEntityAccessRuleFieldController());
     }
     
     

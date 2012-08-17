@@ -5,7 +5,7 @@
 CREATE OR REPLACE FUNCTION entities_last_update()
   RETURNS trigger AS
 $BODY$BEGIN
-if(NEW.last_update is null) then
+if(new.title != old.title or new.content != old.content) then
 NEW.last_update := localtimestamp;
 end if;
 RETURN NEW;
@@ -14,7 +14,6 @@ END;$BODY$
   COST 100;
 ALTER FUNCTION entities_last_update()
   OWNER TO metaguvernare;
-
 
 -- Table: access_permissions
 
@@ -172,6 +171,37 @@ insert into access_rules_strategies(access_rule_id,user_type_id,denied_permissio
 );
 
 
+
+-- Function: log_activity()
+
+-- DROP FUNCTION log_activity();
+
+CREATE OR REPLACE FUNCTION log_activity()
+  RETURNS trigger AS
+$BODY$BEGIN
+IF(TG_OP='INSERT') THEN
+INSERT INTO ACTIVITY_LOG(ENTITY_ID,ACTION_TYPE_ID)
+VALUES(NEW.ID,(SELECT ID FROM ACTION_TYPES WHERE TYPE='CREATE'));
+ELSIF(TG_OP='UPDATE' and ( new.title != old.title or new.content != old.content) ) THEN
+INSERT INTO ACTIVITY_LOG(ENTITY_ID,ACTION_TYPE_ID)
+VALUES(NEW.ID,(SELECT ID FROM ACTION_TYPES WHERE TYPE='UPDATE'));
+END IF;
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION log_activity()
+  OWNER TO metaguvernare;
+
+
+
+update entities
+set access_rule_id=(select id from access_rules where name='DEFAULT')
+where access_rule_id is null;
+
+
+
+
 --drop function children_of(bigint);
 CREATE OR REPLACE FUNCTION children_of(start_id bigint)
    RETURNS TABLE (id bigint, owner_id bigint, complex_type_id bigint, parent_id bigint, parent_link_id bigint, cdepth integer, cpath text)
@@ -275,8 +305,20 @@ ALTER FUNCTION is_action_type_allowed(bigint, bigint, bigint)
 
 
 
+update access_rules set active='n' where name='READONLY';
+
+update actions
+set params='[{name=title,is-required=true,is-form-field=true,field-width=60%,field-input-regex="^[\w\W]{2,120}$"},{name=content,is-required=true,is-form-field=true,field-input-regex="^[\w\W]{0,30000}$",field-ui-type=richtextarea,field-width=100%,field-height=100%},{name=access_rule_id,is-required=false, is-form-field=true,
+field-ui-type=combobox,field-width=30%}]'
+where name='entity.create';
 
 
+update actions
+set params='[{name=title,is-required=true,is-form-field=true,field-width=60%,field-input-regex="^[\w\W]{2,120}$"},{name=content,is-required=true,is-form-field=true,field-input-regex="^[\w\W]{0,30000}$",field-ui-type=richtextarea,field-width=100%,field-height=100%},{name=tags,is-required=true,is-form-field=true,field-width=30%},{name=access_rule_id,is-required=false, is-form-field=true,
+field-ui-type=combobox,field-width=30%}]'
+where name='entity.create.with_tags';
 
-
-
+update actions
+set params='[{name=title,is-required=true,is-form-field=true,field-width=60%,field-input-regex="^[\w\W]{2,120}$"},{name=content,is-required=true,is-form-field=true,field-input-regex="^[\w\W]{0,30000}$",field-ui-type=richtextarea,field-width=100%,field-height=100%},{name=access_rule_id,is-required=false, is-form-field=true,
+field-ui-type=combobox,field-width=30%}]'
+where name='entity.update';

@@ -153,7 +153,8 @@ a:link,a:visited {
 	overflow-y: scroll !important;
 	overflow-x: auto !important;
 	height: 100%;
-	/* 	width: 100%; */
+/* 		width: 100%; */
+	min-width: 500px;
 	margin-left: 350px;
 }
 

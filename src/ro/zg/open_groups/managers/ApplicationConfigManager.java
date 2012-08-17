@@ -49,7 +49,8 @@ public class ApplicationConfigManager {
     private ListMap<String, String> subtypesRelations;
     private Map<Long, TypeRelationConfig> typeRelations;
     private ListMap<Long, TypeRelationConfig> subtypesForType;
-    private Map<Long,AccessRule> accessRules;
+    private Map<Long, AccessRule> accessRules;
+    private AccessRule defaultAccessRule;
     /**
      * the types that can have children
      */
@@ -91,13 +92,16 @@ public class ApplicationConfigManager {
 	}
 	GenericNameValueList result = (GenericNameValueList) response
 		.getValue("result");
-	accessRules = new TreeMap<Long,AccessRule>();
+	accessRules = new TreeMap<Long, AccessRule>();
 
 	for (int i = 0; i < result.size(); i++) {
 	    GenericNameValueContext row = (GenericNameValueContext) result
 		    .getValueForIndex(i);
 	    AccessRule ar = new AccessRule(row);
-	    accessRules.put(ar.getId(),ar);
+	    accessRules.put(ar.getId(), ar);
+	    if(ar.getName().equals("DEFAULT")){
+		defaultAccessRule=ar;
+	    }
 	}
     }
 
@@ -301,14 +305,15 @@ public class ApplicationConfigManager {
     public boolean isInstancePrivate() {
 	return getApplicationBooleanParam(ApplicationConfigParam.IS_INSTANCE_PRIVATE);
     }
-    
-    public Set<AccessRule> getMoreRestrictiveAccessRules(long accessRuleId){
-	AccessRule ar = accessRules.get(accessRuleId);
+
+    public Set<AccessRule> getMoreRestrictiveAccessRules(Long accessRuleId) {
 	int accessLevel = Integer.MAX_VALUE;
-	if(ar == null){
-	    accessLevel = ar.getAccessLevel();
+	if (accessRuleId != null) {
+	    AccessRule ar = accessRules.get(accessRuleId);
+	    if (ar != null) {
+		accessLevel = ar.getAccessLevel();
+	    }
 	}
-	
 	return getAllowedRulesForLevel(accessLevel);
     }
 
@@ -327,8 +332,15 @@ public class ApplicationConfigManager {
 	    }
 	    rules.add(cr);
 	}
-	
+
 	return rules;
     }
 
+    public AccessRule getAccessRuleById(Long accessRuleId){
+	if(accessRuleId == null){
+	    return defaultAccessRule;
+	}
+	return accessRules.get(accessRuleId);
+    }
+    
 }
