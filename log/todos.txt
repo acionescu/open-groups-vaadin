@@ -1,8 +1,7 @@
 TODO:
 
 
-
--refresh hierarchy tree on login and entity create
+-find a way to edit a comment's access rule
 
 -display access rule info for the open entity ( an icon or something ) ?
 
@@ -15,6 +14,9 @@ TODO:
 
 DONE:
 
+-don't count posts that are not visible by the user
+-fix has children info in hierarchy tree
+-refresh hierarchy tree on login and entity create
 -add access rule combo to update entity form
 -modify update flow to override access rules of the children of the updated entity in case
 the access rule set for the entity is more restrictive ( this will only work if the owner is the current

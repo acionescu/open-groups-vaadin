@@ -457,6 +457,8 @@ public class OpenGroupsApplication extends Application {
 	login(currentUser);
 	/* refresh main application window */
 	openInActiveWindow(entity);
+	/* refresh hierarchy tree */
+	ActionsManager.getInstance().executeAction(ActionsManager.REFRESH_CAUSAL_HIERARCHY, new ActionContext(this));
     }
 
     public void logout() {
