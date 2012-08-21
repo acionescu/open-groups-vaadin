@@ -17,6 +17,7 @@ package ro.zg.netcell.vaadin.action;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -83,7 +84,7 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     private ThinClientNetcellDao netcellDao = new ThinClientNetcellDao(
 	    "localhost", 2000);
     private Map<String, EntityDefinitionSummary> flowDefSummaries;
-    private Map<String, UserActionList> actionsMap = new HashMap<String, UserActionList>();
+    private Map<String, UserActionList> actionsMap = new LinkedHashMap<String, UserActionList>();
     private Map<String, UserAction> allActions = new HashMap<String, UserAction>();
     private Map<String, UserAction> globalActionsByLocation = new HashMap<String, UserAction>();
     private Map<String, UserAction> globalActionsByName = new HashMap<String, UserAction>();

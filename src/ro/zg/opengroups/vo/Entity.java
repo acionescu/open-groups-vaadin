@@ -76,22 +76,24 @@ public class Entity implements Serializable {
     private ComponentContainer headerActionLinksContainer;
 
     private EntityUserData userData;
-    private EntityState state = new EntityState();
+    private EntityState state; 
 
     public Entity() {
-
+	state= new EntityState(this);
     }
 
     public Entity(long id) {
+	this();
 	this.id = id;
     }
 
     public Entity(long id, String complexType) {
-	this.id = id;
+	this(id);
 	setComplexType(complexType);
     }
 
     public Entity(GenericNameValueContext dataMap) {
+	this();
 	update(dataMap);
     }
 

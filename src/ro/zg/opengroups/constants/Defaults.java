@@ -24,6 +24,8 @@ public abstract class Defaults {
 	static{
 		DEFAULT_ACTION_FOR_ENTITY = new HashMap<String, String>();
 		DEFAULT_ACTION_FOR_ENTITY.put(EntityType.COMMENT, "/LIST/entity.list.newest");
+		DEFAULT_ACTION_FOR_ENTITY.put(EntityType.SOLUTION, "/LIST/entity.list.newest");
+		DEFAULT_ACTION_FOR_ENTITY.put(EntityType.ISSUE, "/LIST/entity.list.newest");
 	}
 	
 	public static String getDefaultActionForEntityType(String entityType){

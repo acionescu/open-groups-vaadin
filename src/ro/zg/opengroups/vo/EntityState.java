@@ -18,10 +18,14 @@ package ro.zg.opengroups.vo;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import ro.zg.netcell.vaadin.action.ActionsManager;
+import ro.zg.opengroups.constants.ActionLocations;
 
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Table;
@@ -56,19 +60,38 @@ public class EntityState implements Serializable {
     private UserAction currentTabAction;
     private ComponentContainer currentTabActionContainer;
     private Table childrenListContainer;
-
+    private Entity owner;
     private Map<String, Integer> currentPageForAction = new HashMap<String, Integer>();
+    
+    public EntityState(Entity owner){
+	this.owner=owner;
+    }
 
     public String getDesiredActionsPath() {
 	StringBuffer path = new StringBuffer();
-	if (desiredActionTabsQueue == null || desiredActionTabsQueue.size() == 0) {
+	if (desiredActionTabsQueue.size() == 0) {
 //	    return path.toString();
-		desiredActionTabsQueue.add(DEFAULT_ACTION);
+//		desiredActionTabsQueue.add(DEFAULT_ACTION);
+	    initDesiredAction();
 	}
 	for (String act : desiredActionTabsQueue) {
 	    path.append("/").append(act);
 	}
 	return path.toString();
+    }
+    
+    private void initDesiredAction(){
+	    ActionsManager actionsManager = ActionsManager.getInstance();
+	    UserActionList ual =actionsManager.getAvailableActions(owner, ActionLocations.TAB);
+	    if(ual != null){
+		Collection<UserAction> actions = ual.getActions().values();
+		if(actions.size() > 0){
+		    for(UserAction ua : actions){
+			desiredActionTabsQueue.add(ua.getActionName());
+			break;
+		    }
+		}
+	    }
     }
 
     public void setDesiredActionsPath(String actionsPath) {

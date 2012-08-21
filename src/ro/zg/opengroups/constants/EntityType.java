@@ -17,4 +17,6 @@ package ro.zg.opengroups.constants;
 
 public class EntityType {
 	public static final String COMMENT="COMMENT";
+	public static final String SOLUTION="SOLUTION";
+	public static final String ISSUE="ISSUE";
 }

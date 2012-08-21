@@ -1,7 +1,9 @@
 TODO:
 
 
--find a way to edit a comment's access rule
+-make a comment editable
+
+
 
 -display access rule info for the open entity ( an icon or something ) ?
 
@@ -14,6 +16,8 @@ TODO:
 
 DONE:
 
+-make subtypes statistics links to the corresponding type list
+-make a comment openable
 -don't count posts that are not visible by the user
 -fix has children info in hierarchy tree
 -refresh hierarchy tree on login and entity create
