@@ -322,3 +322,17 @@ update actions
 set params='[{name=title,is-required=true,is-form-field=true,field-width=60%,field-input-regex="^[\w\W]{2,120}$"},{name=content,is-required=true,is-form-field=true,field-input-regex="^[\w\W]{0,30000}$",field-ui-type=richtextarea,field-width=100%,field-height=100%},{name=access_rule_id,is-required=false, is-form-field=true,
 field-ui-type=combobox,field-width=30%}]'
 where name='entity.update';
+
+
+insert into action_strategies values(
+(select id from complex_entity_type where complex_type='COMMENT')
+,(select id from user_types where type='CREATOR')
+,(select id from actions where name='entity.update')
+,(select id from entity_types where type='COMMENT')
+,(select id from action_targets where target='TAB')
+,55
+,(select id from complex_entity_type where complex_type='COMMENT')
+,'f'
+);
+
+
