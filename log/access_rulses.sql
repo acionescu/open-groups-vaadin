@@ -1,3 +1,9 @@
+begin;
+
+delete from actions a where
+a.name = 'user.notification.rules.read'
+and not exists ( select 1 from action_strategies where action_id=a.id);
+
 -- Function: entities_last_update()
 
 -- DROP FUNCTION entities_last_update();
@@ -97,12 +103,16 @@ CREATE TABLE access_rules_strategies
 (
   access_rule_id bigint NOT NULL,
   user_type_id bigint NOT NULL,
-  permission_id bigint NOT NULL,
-  CONSTRAINT access_rules_strategies_pk PRIMARY KEY (access_rule_id , user_type_id , permission_id ),
+  allowed_permissions_id bigint,
+  denied_permissions_id bigint,
+  CONSTRAINT access_rules_strategies_pk PRIMARY KEY (access_rule_id , user_type_id ),
   CONSTRAINT access_rules_strategies_access_rules_fk FOREIGN KEY (access_rule_id)
       REFERENCES access_rules (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT access_rules_strategies_permissions_fk FOREIGN KEY (permission_id)
+  CONSTRAINT access_rules_strategies_allowed_permissions_fk FOREIGN KEY (allowed_permissions_id)
+      REFERENCES access_permissions (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT access_rules_strategies_denied_permissions_id FOREIGN KEY (denied_permissions_id)
       REFERENCES access_permissions (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT access_rules_strategies_usert_types_fk FOREIGN KEY (user_type_id)
@@ -114,6 +124,7 @@ WITH (
 );
 ALTER TABLE access_rules_strategies
   OWNER TO metaguvernare;
+
  
   
 
@@ -139,6 +150,9 @@ insert into access_rules_strategies(access_rule_id,user_type_id,allowed_permissi
 ,(select id from user_types  where type='CREATOR')
 ,(select id from access_permissions  where name='ALL')
 );
+
+
+select setval('user_types_seq', (select max(id) from user_types), true);
 
 insert into user_types(type,description) values('OTHER','A user than is not the creator nor belongs to the group of an entity');
 
@@ -335,4 +349,47 @@ insert into action_strategies values(
 ,'f'
 );
 
+-- make only metagroups issues and solutions capable of supporting notification rules
 
+
+insert into action_strategies values(
+(select id from complex_entity_type where complex_type='METAGROUP')
+,(select id from user_types where type='MEMBER')
+,(select id from actions where name='user.notification.rules.read')
+,(select id from entity_types where type='METAGROUP')
+,(select id from action_targets where target='TAB')
+,50
+,(select id from complex_entity_type where complex_type='#')
+,'f'
+);
+
+insert into action_strategies values(
+(select id from complex_entity_type where complex_type='ISSUE')
+,(select id from user_types where type='MEMBER')
+,(select id from actions where name='user.notification.rules.read')
+,(select id from entity_types where type='ISSUE')
+,(select id from action_targets where target='TAB')
+,50
+,(select id from complex_entity_type where complex_type='#')
+,'f'
+);
+
+
+insert into action_strategies values(
+(select id from complex_entity_type where complex_type='SOLUTION')
+,(select id from user_types where type='MEMBER')
+,(select id from actions where name='user.notification.rules.read')
+,(select id from entity_types where type='SOLUTION')
+,(select id from action_targets where target='TAB')
+,50
+,(select id from complex_entity_type where complex_type='#')
+,'f'
+);
+
+delete from action_strategies acs
+using actions a
+where a.name='user.notification.rules.read'
+and acs.action_id=a.id
+and acs.complex_entity_type_id=(select id from complex_entity_type where complex_type='*');
+
+commit;
