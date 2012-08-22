@@ -11,7 +11,7 @@ and not exists ( select 1 from action_strategies where action_id=a.id);
 CREATE OR REPLACE FUNCTION entities_last_update()
   RETURNS trigger AS
 $BODY$BEGIN
-if(new.title != old.title or new.content != old.content) then
+if(tg_op='UPDATE' and (new.title != old.title or new.content != old.content)) then
 NEW.last_update := localtimestamp;
 end if;
 RETURN NEW;
@@ -20,6 +20,7 @@ END;$BODY$
   COST 100;
 ALTER FUNCTION entities_last_update()
   OWNER TO metaguvernare;
+
 
 -- Table: access_permissions
 
@@ -135,6 +136,26 @@ alter table entities add column group_id bigint null;
 alter table entities add constraint entity_group_fk foreign key (group_id) references entities (id);
 
 
+-- Function: get_max_allowed_access_level(bigint)
+
+-- DROP FUNCTION get_max_allowed_access_level(bigint);
+
+CREATE OR REPLACE FUNCTION get_max_allowed_access_level(p_entity_id bigint)
+  RETURNS integer AS
+$BODY$declare res bigint;
+begin
+select max(access_level) val into res from entities e2, access_rules ar2 where e2.id in (select parent_id from entities_links where entity_id=p_entity_id) and ar2.id=e2.access_rule_id;
+return res;
+end;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION get_max_allowed_access_level(bigint)
+  OWNER TO metaguvernare;
+
+
+
+
+
 insert into access_permissions values(1,'READONLY');
 
 insert into action_types_permissions values((select id from access_permissions where name='READONLY'),(select id from action_types where type='READ'));
@@ -235,7 +256,6 @@ WITH RECURSIVE subentities_list(id, owner_id, complex_type_id, parent_id, parent
         and e.id=el.entity_id
         --keep out circular links
         and path not like '%'||e.id||'%'
-        
        
 )
 
@@ -245,6 +265,39 @@ $$
   COST 100;
 ALTER FUNCTION children_of(bigint)
   OWNER TO metaguvernare;
+  
+
+
+CREATE OR REPLACE FUNCTION offsprings_of(IN start_id bigint,IN pdepth integer)
+  RETURNS TABLE(id bigint, owner_id bigint, complex_type_id bigint, parent_id bigint, parent_link_id bigint, cdepth integer, cpath text) AS
+$BODY$
+
+WITH RECURSIVE subentities_list(id, owner_id, complex_type_id, parent_id, parent_link_id, depth, path) AS (
+        SELECT e.id, e.creator_id owner_id, e.complex_entity_type_id complex_type_id, el.parent_id, el.entity_link_id, 0, text ''||el.parent_id||'' 
+        FROM entities e, entities_links el
+        where el.parent_id=$1
+        and el.entity_id=e.id
+               
+      UNION ALL 
+        SELECT e.id, e.creator_id owner_id, e.complex_entity_type_id complex_type_id, el.parent_id, el.entity_link_id, eg.depth + 1, text ''||path||','||el.parent_id
+        FROM entities e, subentities_list eg, entities_links el
+        WHERE eg.id = el.parent_id
+        and e.id=el.entity_id
+        --keep out circular links
+        and path not like '%'||e.id||'%'
+        and ( ($2 is null or $2 < 0) or (eg.depth < $2) )
+       
+)
+
+select * from subentities_list;
+$BODY$
+  LANGUAGE sql VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION offsprings_of(bigint,integer)
+  OWNER TO metaguvernare;
+  
+  
   
   
 -- get user types
