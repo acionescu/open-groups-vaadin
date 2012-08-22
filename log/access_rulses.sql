@@ -136,21 +136,22 @@ alter table entities add column group_id bigint null;
 alter table entities add constraint entity_group_fk foreign key (group_id) references entities (id);
 
 
--- Function: get_max_allowed_access_level(bigint)
+-- Function: get_max_allowed_access_level(bigint, bigint)
 
--- DROP FUNCTION get_max_allowed_access_level(bigint);
+-- DROP FUNCTION get_max_allowed_access_level(bigint, bigint);
 
-CREATE OR REPLACE FUNCTION get_max_allowed_access_level(p_entity_id bigint)
+CREATE OR REPLACE FUNCTION get_max_allowed_access_level(p_entity_id bigint, p_parent_id bigint)
   RETURNS integer AS
 $BODY$declare res bigint;
 begin
-select max(access_level) val into res from entities e2, access_rules ar2 where e2.id in (select parent_id from entities_links where entity_id=p_entity_id) and ar2.id=e2.access_rule_id;
+select max(access_level) val into res from entities e2, access_rules ar2 where e2.id in (select parent_id from entities_links where entity_id=p_entity_id and ( p_parent_id is null or entity_id != p_parent_id)) and ar2.id=e2.access_rule_id;
 return res;
 end;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION get_max_allowed_access_level(bigint)
+ALTER FUNCTION get_max_allowed_access_level(bigint, bigint)
   OWNER TO metaguvernare;
+
 
 
 
