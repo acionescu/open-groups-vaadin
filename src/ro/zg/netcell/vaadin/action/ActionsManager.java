@@ -17,10 +17,12 @@ package ro.zg.netcell.vaadin.action;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.netcell.client.ThinClientNetcellDao;
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.action.application.LoadMainWindowHandler;
@@ -35,6 +37,7 @@ import ro.zg.netcell.vaadin.action.application.RefreshSelectedEntityHandler;
 import ro.zg.netcell.vaadin.action.application.ShowCausalHierarchyHandler;
 import ro.zg.netcell.vo.definitions.EntityDefinitionSummary;
 import ro.zg.open_groups.OpenGroupsApplication;
+import ro.zg.opengroups.constants.OpenGroupsExceptions;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.UserAction;
 import ro.zg.opengroups.vo.UserActionList;
@@ -61,8 +64,8 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     public static String GET_TAGS = "ro.problems.flows.get-tags";
 
     public static final String LOAD_MAIN_WINDOW = "loadMainWindow";
-    public static final String SHOW_CAUSAL_HIERARCHY="SHOW_CAUSAL_HIERARCHY";
-    public static final String REFRESH_CAUSAL_HIERARCHY="REFRESH_CAUSAL_HIERARCHY";
+    public static final String SHOW_CAUSAL_HIERARCHY = "SHOW_CAUSAL_HIERARCHY";
+    public static final String REFRESH_CAUSAL_HIERARCHY = "REFRESH_CAUSAL_HIERARCHY";
     public static final String OPEN_ENTITY_WITH_ACTIONS = "openEntityWithActions";
     public static final String OPEN_AND_REFRESH_ENTITY = "openAndRefreshEntity";
     public static final String OPEN_SELECTED_ENTITY = "openSelectedEntity";
@@ -74,19 +77,21 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     public static final String OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS = "openEntityWithHeaderActions";
 
     public static final String ENTITY_WITH_UPSTREAM_HIERARCHY = "entity.upstream.hierarchy";
-    public static final String LOGIN_ACTION="user.login";
+    public static final String LOGIN_ACTION = "user.login";
 
     private Map<String, OpenGroupsActionHandler> handlers = new HashMap<String, OpenGroupsActionHandler>();
 
-    private ThinClientNetcellDao netcellDao = new ThinClientNetcellDao("localhost", 2000);
+    private ThinClientNetcellDao netcellDao = new ThinClientNetcellDao(
+	    "localhost", 2000);
     private Map<String, EntityDefinitionSummary> flowDefSummaries;
-    private Map<String, UserActionList> actionsMap = new HashMap<String, UserActionList>();
+    private Map<String, UserActionList> actionsMap = new LinkedHashMap<String, UserActionList>();
     private Map<String, UserAction> allActions = new HashMap<String, UserAction>();
     private Map<String, UserAction> globalActionsByLocation = new HashMap<String, UserAction>();
     private Map<String, UserAction> globalActionsByName = new HashMap<String, UserAction>();
-    
+
     private static ActionsManager _instance = new ActionsManager();
-    private ThreadPoolExecutor handlersExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+    private ThreadPoolExecutor handlersExecutor = (ThreadPoolExecutor) Executors
+	    .newCachedThreadPool();
     private boolean initialized;
     private Logger logger = MasterLogManager.getLogger("ACTIONS-LOGGER");
 
@@ -113,37 +118,44 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     private void initHandlers() {
 	handlers.put(LOAD_MAIN_WINDOW, new LoadMainWindowHandler());
 	handlers.put(SHOW_CAUSAL_HIERARCHY, new ShowCausalHierarchyHandler());
-	handlers.put(REFRESH_CAUSAL_HIERARCHY, new RefreshCausalHierarchyHandler());
-	handlers.put(OPEN_ENTITY_WITH_ACTIONS, new OpenEntityWithActionsHandler());
+	handlers.put(REFRESH_CAUSAL_HIERARCHY,
+		new RefreshCausalHierarchyHandler());
+	handlers.put(OPEN_ENTITY_WITH_ACTIONS,
+		new OpenEntityWithActionsHandler());
 	handlers.put(OPEN_AND_REFRESH_ENTITY, new OpenAndRefreshEntityHandler());
 	handlers.put(OPEN_SELECTED_ENTITY, new OpenSelectedEntityHandler());
 	handlers.put(OPEN_ENTITY_IN_WINDOW, new OpenEntityInWindowHandler());
 	handlers.put(OPEN_ENTITY_IN_TAB, new OpenEntityInTabHandler());
-	handlers.put(REFRESH_SELECTED_ENTITY, new RefreshSelectedEntityHandler());
-	handlers.put(OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS, new OpenSelectedEntityWithHeaderActions());
+	handlers.put(REFRESH_SELECTED_ENTITY,
+		new RefreshSelectedEntityHandler());
+	handlers.put(OPEN_SELECTED_ENTITY_WITH_HEADER_ACTIONS,
+		new OpenSelectedEntityWithHeaderActions());
     }
 
-
     private boolean getAllAvailableActions() {
-	CommandResponse response = netcellDao.execute(GET_ALL_AVAILABLE_ACTIONS, new HashMap<String, Object>());
+	CommandResponse response = netcellDao.execute(
+		GET_ALL_AVAILABLE_ACTIONS, new HashMap<String, Object>());
 	if (response != null && response.isSuccessful()) {
-	    GenericNameValueList list = (GenericNameValueList) response.getValue("result");
+	    GenericNameValueList list = (GenericNameValueList) response
+		    .getValue("result");
 
 	    for (int i = 0; i < list.size(); i++) {
-		GenericNameValueContext row = (GenericNameValueContext) list.getValueForIndex(i);
+		GenericNameValueContext row = (GenericNameValueContext) list
+			.getValueForIndex(i);
 		UserAction ua = new UserAction(row);
 		// System.out.println(ua.getSourceEntityComplexType() + " "
 		// + ua.getActionName() + " : " + ua.getActionPath());
-		getUserActionList(ua.getSourceEntityActionLocation()).addAction(ua.getActionPath(), ua);
+		getUserActionList(ua.getSourceEntityActionLocation())
+			.addAction(ua.getActionPath(), ua);
 		allActions.put(ua.getFullActionPath(), ua);
-		
-		if(ua.getSourceEntityComplexType().equals("*")) {
+
+		if (ua.getSourceEntityComplexType().equals("*")) {
 		    globalActionsByLocation.put(ua.getActionLocation(), ua);
 		    globalActionsByName.put(ua.getActionName(), ua);
 		}
 	    }
 	    injectGlobalActions();
-	    
+
 	    return true;
 	}
 	return false;
@@ -158,57 +170,79 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
 	return ual;
     }
 
-    public CommandResponse executeAction(ActionContext actionContext, Map<String, Object> params) {
+    public CommandResponse executeAction(ActionContext actionContext,
+	    Map<String, Object> params) {
 	UserAction ua = actionContext.getUserAction();
-//	Entity entity = actionContext.getEntity();
+	// Entity entity = actionContext.getEntity();
 	OpenGroupsApplication app = actionContext.getApp();
 
 	/* check if the action is allowed */
-//	List<String> currentUserTypes = UsersManager.getInstance().getCurrentUserTypes(entity, app);
-//	boolean actionAllowed = currentUserTypes.contains(ua.getUserType());
+	// List<String> currentUserTypes =
+	// UsersManager.getInstance().getCurrentUserTypes(entity, app);
+	// boolean actionAllowed = currentUserTypes.contains(ua.getUserType());
 	boolean actionAllowed = ua.allowExecute(actionContext);
 	if (actionAllowed) {
 	    return execute(ua.getAction(), params);
 	}
-	app.showNotification(ua.getUserType() + ".required.to." + ua.getActionName());
+	app.showNotification(ua.getUserType() + ".required.to."
+		+ ua.getActionName());
 	return null;
     }
 
-    public void executeAction(String actionName, UserAction ua, Entity entity, OpenGroupsApplication app,
-	    ComponentContainer container, boolean runInSeparateThread) {
-	ActionContext ac = new ActionContext(ua, app, entity, container, runInSeparateThread);
+    public void executeAction(String actionName, UserAction ua, Entity entity,
+	    OpenGroupsApplication app, ComponentContainer container,
+	    boolean runInSeparateThread) {
+	ActionContext ac = new ActionContext(ua, app, entity, container,
+		runInSeparateThread);
 	executeAction(actionName, ac);
     }
 
-    public void executeAction(String actionName, Entity entity, OpenGroupsApplication app,
-	    ComponentContainer container, boolean runInSeparateThread) {
-	ActionContext ac = new ActionContext(null, app, entity, container, runInSeparateThread);
+    public void executeAction(String actionName, Entity entity,
+	    OpenGroupsApplication app, ComponentContainer container,
+	    boolean runInSeparateThread) {
+	ActionContext ac = new ActionContext(null, app, entity, container,
+		runInSeparateThread);
 	executeAction(actionName, ac);
     }
 
-    public void executeHandler(OpenGroupsActionHandler handler, UserAction ua, Entity entity,
-	    OpenGroupsApplication app, ComponentContainer container, boolean runInSeparateThread) {
-	ActionContext ac = new ActionContext(ua, app, entity, container, runInSeparateThread);
+    public void executeAction(String actionName, Entity entity,
+	    OpenGroupsApplication app, ComponentContainer container,
+	    boolean runInSeparateThread, boolean handleErrorsImmediately) {
+	ActionContext ac = new ActionContext(null, app, entity, container,
+		runInSeparateThread, handleErrorsImmediately);
+	executeAction(actionName, ac);
+    }
+
+    public void executeHandler(OpenGroupsActionHandler handler, UserAction ua,
+	    Entity entity, OpenGroupsApplication app,
+	    ComponentContainer container, boolean runInSeparateThread) {
+	ActionContext ac = new ActionContext(ua, app, entity, container,
+		runInSeparateThread);
 	executeHandler(handler, ac);
     }
-    
-    public void executeHandler(OpenGroupsActionHandler handler, UserAction ua, Entity entity,
-	    OpenGroupsApplication app, ComponentContainer container, boolean runInSeparateThread,ActionContext rootContext) {
-	ActionContext ac = new ActionContext(ua, app, entity, container, runInSeparateThread);
+
+    public void executeHandler(OpenGroupsActionHandler handler, UserAction ua,
+	    Entity entity, OpenGroupsApplication app,
+	    ComponentContainer container, boolean runInSeparateThread,
+	    ActionContext rootContext) {
+	ActionContext ac = new ActionContext(ua, app, entity, container,
+		runInSeparateThread);
 	ac.setMainEntity(rootContext.getMainEntity());
 	ac.setWindow(rootContext.getWindow());
-	if(entity == null) {
+	if (entity == null) {
 	    ac.setEntity(rootContext.getMainEntity());
 	}
 	executeHandler(handler, ac);
     }
 
-    public void executeAction(String actionName, Entity entity, OpenGroupsApplication app,
-	    ComponentContainer container, boolean runInSeparateThread, ActionContext rootContext) {
-	ActionContext ac = new ActionContext(null, app, entity, container, runInSeparateThread);
+    public void executeAction(String actionName, Entity entity,
+	    OpenGroupsApplication app, ComponentContainer container,
+	    boolean runInSeparateThread, ActionContext rootContext) {
+	ActionContext ac = new ActionContext(null, app, entity, container,
+		runInSeparateThread,rootContext.isHandleErrorsImmediatelyOn());
 	ac.setMainEntity(rootContext.getMainEntity());
 	ac.setWindow(rootContext.getWindow());
-	if(entity == null) {
+	if (entity == null) {
 	    ac.setEntity(rootContext.getMainEntity());
 	}
 	executeAction(actionName, ac);
@@ -221,14 +255,16 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     public void executeHandler(OpenGroupsActionHandler handler, ActionContext ac) {
 	if (ac.isRunInThread()) {
 	    // showProgressIndicator(ac.getTargetContainer());
-	    RunnableActionHandler runnableHandler = new RunnableActionHandler(handler, ac, this);
+	    RunnableActionHandler runnableHandler = new RunnableActionHandler(
+		    handler, ac, this);
 	    handlersExecutor.execute(runnableHandler);
-	    System.out.println("Active threads: " + handlersExecutor.getActiveCount());
+	    System.out.println("Active threads: "
+		    + handlersExecutor.getActiveCount());
 	} else {
 	    try {
 		handler.handle(ac);
 	    } catch (Exception e) {
-		handleActionError(e, ac.getApp());
+		handleActionError(e, ac);
 	    }
 	}
     }
@@ -253,32 +289,39 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     }
 
     /*
-     * protected UserActionList getAvailableActions(User user, OpenGroupsApplication app) { Map<String, Object> params =
-     * new HashMap<String, Object>(); if (user != null) { params.put("userId", user.getUserId()); }
-     * params.put("entityId", app.getSelectedEntity().getId()); CommandResponse response =
-     * netcellDao.execute(GET_POSSIBLE_ACTIONS, params); GenericNameValueList list = (GenericNameValueList)
-     * response.getValue("result"); UserActionList userActionsList = new UserActionList(list); return userActionsList; }
+     * protected UserActionList getAvailableActions(User user,
+     * OpenGroupsApplication app) { Map<String, Object> params = new
+     * HashMap<String, Object>(); if (user != null) { params.put("userId",
+     * user.getUserId()); } params.put("entityId",
+     * app.getSelectedEntity().getId()); CommandResponse response =
+     * netcellDao.execute(GET_POSSIBLE_ACTIONS, params); GenericNameValueList
+     * list = (GenericNameValueList) response.getValue("result"); UserActionList
+     * userActionsList = new UserActionList(list); return userActionsList; }
      * 
-     * public UserActionList getAvailableActions(OpenGroupsApplication app) { User user = (User)
-     * app.getAppContext().getHttpSession().getAttribute("user"); return getAvailableActions(user, app); }
+     * public UserActionList getAvailableActions(OpenGroupsApplication app) {
+     * User user = (User)
+     * app.getAppContext().getHttpSession().getAttribute("user"); return
+     * getAvailableActions(user, app); }
      */
-    
-    
+
     private void injectGlobalActions() {
-	for(Map.Entry<String, UserAction> e : globalActionsByLocation.entrySet()) {
+	for (Map.Entry<String, UserAction> e : globalActionsByLocation
+		.entrySet()) {
 	    String location = e.getKey();
 	    UserAction ua = e.getValue();
-	    for(Map.Entry<String, UserActionList> uale : actionsMap.entrySet()) {
-		if(uale.getKey().contains(location)) {
+	    for (Map.Entry<String, UserActionList> uale : actionsMap.entrySet()) {
+		if (uale.getKey().contains(location)) {
 		    uale.getValue().addAction(ua.getActionPath(), ua);
 		}
 	    }
 	}
     }
-    
-    public UserActionList getAvailableActions(Entity selectedEntity, String actionLocation) {
+
+    public UserActionList getAvailableActions(Entity selectedEntity,
+	    String actionLocation) {
 	init();
-	String searchValue = selectedEntity.getComplexType() + ":" + actionLocation;
+	String searchValue = selectedEntity.getComplexType() + ":"
+		+ actionLocation;
 	return actionsMap.get(searchValue);
 
     }
@@ -294,17 +337,32 @@ public class ActionsManager implements Serializable, ActionErrorHandler {
     }
 
     @Override
-    public void handleActionError(Exception e, OpenGroupsApplication app) {
-	logger.error("handler error",e);
+    public void handleActionError(Exception e, ActionContext ac) {
+	logError(e);
+	OpenGroupsApplication app = ac.getApp();
 	app.pushError(e);
-	app.handleErrors();
+	if (ac.isHandleErrorsImmediatelyOn()) {
+	    /* handle the error immediately */
+	    app.handleErrors();
+	}
+    }
+    
+    private void logError(Exception e){
+	/* log only system error or unexpected errors */
+	if(e instanceof ContextAwareException){
+	    ContextAwareException cae = (ContextAwareException)e;
+	    if(!cae.getType().equals(OpenGroupsExceptions.SYSTEM_ERROR)){
+		return;
+	    }
+	}
+	logger.error("Unexpected error: ", e);
     }
 
     public UserAction getActionByPath(String path) {
 	return allActions.get(path);
     }
-    
-    public UserAction getGlobalActionByName(String actionName){
+
+    public UserAction getGlobalActionByName(String actionName) {
 	return globalActionsByName.get(actionName);
     }
 }

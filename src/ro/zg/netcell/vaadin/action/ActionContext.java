@@ -42,6 +42,7 @@ public class ActionContext implements Serializable{
     private Map<String, Object> params;
     private OpenGroupsMainWindow window;
     private Entity mainEntity;
+    private boolean handleErrorsImmediatelyOn=true;
 
     public ActionContext(UserAction ua, OpenGroupsApplication app, Entity e, ComponentContainer c, boolean rit) {
 	userAction = ua;
@@ -50,6 +51,11 @@ public class ActionContext implements Serializable{
 	targetContainer = c;
 	runInThread = rit;
 	window = app.getActiveWindow();
+    }
+    
+    public ActionContext(UserAction ua, OpenGroupsApplication app, Entity e, ComponentContainer c, boolean rit, boolean hei) {
+	this(ua,app,e,c,rit);
+	this.handleErrorsImmediatelyOn=hei;
     }
 
     public ActionContext(UserAction ua, OpenGroupsApplication app, Entity e, ComponentContainer c) {
@@ -223,6 +229,10 @@ public class ActionContext implements Serializable{
      */
     public void setMainEntity(Entity mainEntity) {
 	this.mainEntity = mainEntity;
+    }
+
+    public boolean isHandleErrorsImmediatelyOn() {
+        return handleErrorsImmediatelyOn;
     }
 
 }

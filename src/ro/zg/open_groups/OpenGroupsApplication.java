@@ -457,6 +457,8 @@ public class OpenGroupsApplication extends Application {
 	login(currentUser);
 	/* refresh main application window */
 	openInActiveWindow(entity);
+	/* refresh hierarchy tree */
+	ActionsManager.getInstance().executeAction(ActionsManager.REFRESH_CAUSAL_HIERARCHY, new ActionContext(this));
     }
 
     public void logout() {
@@ -541,7 +543,7 @@ public class OpenGroupsApplication extends Application {
 	logger.debug("Open entity " + entity.getId() + " in window "
 		+ activeWindow);
 	actionsManager.executeAction(ActionsManager.OPEN_ENTITY_IN_WINDOW,
-		entity, this, activeWindow, false);
+		entity, this, activeWindow, false,false);
 	if (hasErrors()) {
 	    handleErrors();
 	    return;

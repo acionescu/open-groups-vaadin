@@ -76,7 +76,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	boolean isOpened = entityState.isOpened();
 	String complexEntityType = entity.getComplexType();
 	ApplicationConfigManager appConfigManager = app.getAppConfigManager();
-	List<String> subtyesList = appConfigManager.getSubtypesForComplexType(complexEntityType);
+	List<String> subtyesList = appConfigManager
+		.getSubtypesForComplexType(complexEntityType);
 
 	// Panel currentContainer = (Panel) container;
 	ComponentContainer currentContainer = container;
@@ -107,18 +108,20 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    }
 	    // Label typeIcon = new Label();
 	    // typeIcon.setDescription(entityTypeCaption);
-	    // typeIcon.setIcon(OpenGroupsResources.getIcon(entity.getComplexType().toLowerCase(), size));
+	    // typeIcon.setIcon(OpenGroupsResources.getIcon(entity.getComplexType().toLowerCase(),
+	    // size));
 	    // typeIcon.setSizeUndefined();
 	    // typeIcon.addStyleName("top-left right-margin-20");
 	    // headerContainer.addComponent(typeIcon);
-	    Embedded eicon = new Embedded(null,
-		    OpenGroupsResources.getIcon(entity.getComplexType().toLowerCase(), size));
+	    Embedded eicon = new Embedded(null, OpenGroupsResources.getIcon(
+		    entity.getComplexType().toLowerCase(), size));
 	    eicon.setDescription(entityTypeCaption);
 	    eicon.addStyleName("top-left right-margin-20");
 
 	    headerContainer.addComponent(eicon);
 
-	    // Embedded eicon2 = new Embedded("", OpenGroupsResources.getIcon(entity.getComplexType().toLowerCase(),
+	    // Embedded eicon2 = new Embedded("",
+	    // OpenGroupsResources.getIcon(entity.getComplexType().toLowerCase(),
 	    // size));
 	    // eicon2.setDescription(entityTypeCaption);
 	    // eicon2.addStyleName("top-left right-margin-20");
@@ -137,11 +140,14 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    String msg = getMessage(actionType);
 	    // Label actionLabel = new Label();
 	    // actionLabel.setDescription(msg);
-	    // actionLabel.setIcon(OpenGroupsResources.getIcon(actionType, OpenGroupsIconsSet.MEDIUM));
+	    // actionLabel.setIcon(OpenGroupsResources.getIcon(actionType,
+	    // OpenGroupsIconsSet.MEDIUM));
 	    // actionLabel.setSizeUndefined();
 	    // actionLabel.addStyleName(OpenGroupsStyles.MIDDLE_LEFT);
 	    // titleContainer.addComponent(actionLabel);
-	    Embedded actionIcon = new Embedded(null, OpenGroupsResources.getIcon(actionType, OpenGroupsIconsSet.MEDIUM));
+	    Embedded actionIcon = new Embedded(null,
+		    OpenGroupsResources.getIcon(actionType,
+			    OpenGroupsIconsSet.MEDIUM));
 	    actionIcon.setDescription(msg);
 	    actionIcon.addStyleName("top-left right-margin-20");
 	    headerContainer.addComponent(actionIcon);
@@ -150,8 +156,12 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
 	EntityLink selectedCause = entity.getSelectedCause();
 	/* display title */
-	/* if the entity is open or it is a leaf entity, and it is not displayed in the recent activity list */
-	if (isOpened || (subtyesList == null && entity.getLastActionType() == null)) {
+	/* if the entity is open */
+	/* treat leafs like all posts 21.08.2012 */
+	if (isOpened /*
+		      * || (subtyesList == null && entity.getLastActionType() ==
+		      * null)
+		      */) {
 	    Label title = new Label(entity.getTitle());
 	    if (isOpened) {
 		title.addStyleName(OpenGroupsStyles.TITLE_LINK);
@@ -172,33 +182,28 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    // titleLink.addStyleName("issue-title");
 	    // titleLink.setDescription(entity.getContentPreview());
 	    Label titleLink = null;
-	    if (subtyesList != null) {
-		// titleLink.addListener(new ClickListener() {
-		//
-		// @Override
-		// public void buttonClick(ClickEvent event) {
-		// entity.getState().setEntityTypeVisible(true);
-		// getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, entity, app, null,
-		// false,actionContext);
-		// }
-		// });
-		titleLink = OpenGroupsUtil.getLinkForEntity(entity, app);
-		titleLink.setDescription(entity.getContentPreview());
-		titleLink.addStyleName("list-issue-title");
-	    }
-	    /* is a leaf entity in the recent activity list */
-	    else {
-		String parentTitle = selectedCause.getParentTitle();
-		Entity parentEntity = new Entity(selectedCause.getParentId());
-		parentEntity.setTitle(parentTitle);
+	    /* treat leafs like all posts 21.08.2012 */
+	    // if (subtyesList != null) {
+	    titleLink = OpenGroupsUtil.getLinkForEntity(entity, app);
+	    titleLink.setDescription(entity.getContentPreview());
+	    titleLink.addStyleName("list-issue-title");
+	    // }
+	    // /* is a leaf entity in the recent activity list */
+	    // else {
+	    // String parentTitle = selectedCause.getParentTitle();
+	    // Entity parentEntity = new Entity(selectedCause.getParentId());
+	    // parentEntity.setTitle(parentTitle);
+	    //
+	    // parentEntity.getState().setDesiredActionsPath(
+	    // complexEntityType +
+	    // Defaults.getDefaultActionForEntityType(complexEntityType));
+	    // titleLink = OpenGroupsUtil.getLinkForEntity(parentEntity, app,
+	    // entity.getTitle());
+	    // titleLink.setDescription(entity.getContentPreview());
+	    // titleLink.addStyleName("list-issue-title");
+	    //
+	    // }
 
-		parentEntity.getState().setDesiredActionsPath(
-			complexEntityType + Defaults.getDefaultActionForEntityType(complexEntityType));
-		titleLink = OpenGroupsUtil.getLinkForEntity(parentEntity, app, entity.getTitle());
-		titleLink.setDescription(entity.getContentPreview());
-		titleLink.addStyleName("list-issue-title");
-
-	    }
 	    // titleLink.setWidth("75%");
 	    titleLink.addStyleName("top-left");
 	    headerContainer.addComponent(titleLink);
@@ -212,11 +217,13 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    // parentInfoContainer.addStyleName(OpenGroupsStyles.TOP_RIGHT);
 	    // headerContainer.addComponent(parentInfoContainer);
 	    // headerContainer.setColumnExpandRatio(1, 1f);
-	    // headerContainer.setComponentAlignment(parentInfoContainer, Alignment.TOP_RIGHT);
+	    // headerContainer.setComponentAlignment(parentInfoContainer,
+	    // Alignment.TOP_RIGHT);
 	    /* if parent entity is the current selected entity, say it */
 	    Entity mainEntity = actionContext.getMainEntity();
 	    if (selectedCause.getParentId() == mainEntity.getId()) {
-		// String currentMsg = getMessage(mainEntity.getComplexType() + ".current");
+		// String currentMsg = getMessage(mainEntity.getComplexType() +
+		// ".current");
 		// Label currentEntityLabel = new Label(currentMsg);
 		// currentEntityLabel.setSizeUndefined();
 		// currentEntityLabel.addStyleName("top-right");
@@ -224,11 +231,14 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		// titleContainer.setExpandRatio(currentEntityLabel, 2f);
 	    } else {/* add link to the parent entity */
 		String parentTitle = selectedCause.getParentTitle();
-		final Entity parentEntity = new Entity(selectedCause.getParentId());
+		final Entity parentEntity = new Entity(
+			selectedCause.getParentId());
 		parentEntity.setTitle(parentTitle);
 
-		Label parentLink = OpenGroupsUtil.getLinkForEntityWithImage(parentEntity, app, OpenGroupsResources
-			.getIconPath(OpenGroupsIconsSet.PARENT, OpenGroupsIconsSet.MEDIUM));
+		Label parentLink = OpenGroupsUtil.getLinkForEntityWithImage(
+			parentEntity, app, OpenGroupsResources.getIconPath(
+				OpenGroupsIconsSet.PARENT,
+				OpenGroupsIconsSet.MEDIUM));
 		parentLink.setDescription(parentTitle);
 		parentLink.setSizeUndefined();
 		parentLink.addStyleName(OpenGroupsStyles.TOP_RIGHT);
@@ -244,10 +254,13 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
 	/* display header actions */
 	if (isOpened) {
-	    UserActionList headerActions = getAvailableActions(entity, ActionLocations.HEADER);
-	    boolean allowRefresh = appConfigManager.getComplexEntityBooleanParam(entity.getComplexType(),
-		    ComplexEntityParam.ALLOW_REFRESH);
-	    boolean hasHeaderActions = headerActions != null && headerActions.getActions() != null;
+	    UserActionList headerActions = getAvailableActions(entity,
+		    ActionLocations.HEADER);
+	    boolean allowRefresh = appConfigManager
+		    .getComplexEntityBooleanParam(entity.getComplexType(),
+			    ComplexEntityParam.ALLOW_REFRESH);
+	    boolean hasHeaderActions = headerActions != null
+		    && headerActions.getActions() != null;
 	    if (allowRefresh || hasHeaderActions) {
 		HorizontalLayout actionsContainer = new HorizontalLayout();
 		actionsContainer.addStyleName(OpenGroupsStyles.TOP_RIGHT);
@@ -257,14 +270,16 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		// actionsContainer.addComponent(getRefreshButton(entity, app));
 		// }
 		// if (hasHeaderActions) {
-		// for (final UserAction ha : headerActions.getActions().values()) {
+		// for (final UserAction ha :
+		// headerActions.getActions().values()) {
 		// Button actButton = getButtonForAction(ha, entity, app);
 		// actionsContainer.addComponent(actButton);
 		// }
 		// }
 		headerContainer.addComponent(actionsContainer);
 		// headerContainer.setColumnExpandRatio(1, 1f);
-		// headerContainer.setComponentAlignment(actionsContainer, Alignment.TOP_RIGHT);
+		// headerContainer.setComponentAlignment(actionsContainer,
+		// Alignment.TOP_RIGHT);
 		entity.setHeaderActionLinksContainer(actionsContainer);
 		refreshHeaderActionLinks(entity, app, actionContext);
 	    }
@@ -283,7 +298,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 			tagsList += ", ";
 		    }
 		}
-		String tagsLabelString = app.getMessage("tags.label") + tagsList;
+		String tagsLabelString = app.getMessage("tags.label")
+			+ tagsList;
 		currentContainer.addComponent(new Label(tagsLabelString));
 	    }
 	}
@@ -293,9 +309,11 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
 	currentContainer.addComponent(statusPane);
 
-	if (appConfigManager.getComplexEntityBooleanParam(complexEntityType, ComplexEntityParam.SHOW_POST_INFO)) {
+	if (appConfigManager.getComplexEntityBooleanParam(complexEntityType,
+		ComplexEntityParam.SHOW_POST_INFO)) {
 	    String insertDateString = entity.getInsertDate().toString();
-	    Label insertDate = new Label(app.getMessage("posted") + DateUtil.removeNanos(insertDateString));
+	    Label insertDate = new Label(app.getMessage("posted")
+		    + DateUtil.removeNanos(insertDateString));
 	    statusPane.addComponent(insertDate);
 	    // statusPane.setColumnExpandRatio(0, 1f);
 	}
@@ -308,21 +326,24 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	currentContainer.addComponent(statsSummaryPane);
 
 	/* add votes */
-	if (appConfigManager.getComplexEntityBooleanParam(complexEntityType, ComplexEntityParam.ALLOW_VOTING)) {
+	if (appConfigManager.getComplexEntityBooleanParam(complexEntityType,
+		ComplexEntityParam.ALLOW_VOTING)) {
 	    // HorizontalLayout votesPane = new HorizontalLayout();
 	    // votesPane.setMargin(false);
 	    // votesPane.addStyleName("middle-left");
 	    // votesPane.addStyleName("margin-right");
 	    // statsSummaryPane.addComponent(votesPane);
 	    // statsSummaryPane.setExpandRatio(votesPane, 1f);
-	    // statsSummaryPane.setComponentAlignment(votesPane, Alignment.MIDDLE_LEFT);
+	    // statsSummaryPane.setComponentAlignment(votesPane,
+	    // Alignment.MIDDLE_LEFT);
 
 	    Label votesLabel = new Label(app.getMessage("votes") + ":&nbsp;");
 	    votesLabel.setContentMode(Label.CONTENT_XHTML);
 	    votesLabel.setSizeUndefined();
 	    votesLabel.addStyleName("middle-left");
 	    // votesPane.addComponent(votesLabel);
-	    Label proVotes = FormatingUtils.coloredLabel(entity.getProVotes(), "336633");
+	    Label proVotes = FormatingUtils.coloredLabel(entity.getProVotes(),
+		    "336633");
 	    proVotes.addStyleName("middle-left");
 	    proVotes.setSizeUndefined();
 	    // votesPane.addComponent(proVotes);
@@ -330,7 +351,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    dash.addStyleName("middle-left");
 	    dash.setSizeUndefined();
 	    // votesPane.addComponent(new Label("-"));
-	    Label opposedVotes = FormatingUtils.coloredLabel(entity.getOpposedVotes(), "660000");
+	    Label opposedVotes = FormatingUtils.coloredLabel(
+		    entity.getOpposedVotes(), "660000");
 	    // votesPane.addComponent(opposedVotes);
 	    opposedVotes.addStyleName("middle-left");
 	    opposedVotes.addStyleName("right-margin-10");
@@ -342,34 +364,59 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    statsSummaryPane.addComponent(opposedVotes);
 
 	}
-	List<TypeRelationConfig> subtypes = appConfigManager.getSubtypesForType(entity.getComplexTypeId());
+	List<TypeRelationConfig> subtypes = appConfigManager
+		.getSubtypesForType(entity.getComplexTypeId());
 	// if (subtyesList != null) {
 	if (subtypes != null) {
-	    Map<String, Long> firstLevelSubtypesCount = entity.getSubtypeEntitiesCount();
-	    Map<String, Long> allSubtypesCount = entity.getRecursiveSubtypeEntitiesCount();
+	    Map<String, Long> firstLevelSubtypesCount = entity
+		    .getSubtypeEntitiesCount();
+	    Map<String, Long> allSubtypesCount = entity
+		    .getRecursiveSubtypeEntitiesCount();
 
 	    // for (String s : subtyesList) {
 	    // String subtype = s.toLowerCase();
 	    for (TypeRelationConfig trc : subtypes) {
-		String subtype = trc.getTargetComplexType().toLowerCase();
+		String targetComplexType = trc.getTargetComplexType();
+		String subtype = targetComplexType.toLowerCase();
 		String displayName = app.getMessage("subtype." + subtype);
-		String displayString = displayName + ": " + firstLevelSubtypesCount.get(subtype);
 
-		// if (getAppConfigManager().getComplexEntityBooleanParam(s, ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
-		if (appConfigManager.getTypeRelationBooleanConfigParam(trc.getId(),
+		Entity refEntity = new Entity(entity.getId());
+
+		refEntity
+			.getState()
+			.setDesiredActionsPath(
+				targetComplexType
+					+ Defaults
+						.getDefaultActionForEntityType(targetComplexType));
+		Label subtypeLink = OpenGroupsUtil.getLinkForEntity(refEntity,
+			app, displayName);
+
+		String valueString = ": "
+			+ firstLevelSubtypesCount.get(subtype);
+
+		// if (getAppConfigManager().getComplexEntityBooleanParam(s,
+		// ComplexEntityParam.ALLOW_RECURSIVE_LIST)) {
+		if (appConfigManager.getTypeRelationBooleanConfigParam(
+			trc.getId(),
 			TypeRelationConfigParam.ALLOW_RECURSIVE_LIST)) {
 		    Long recCount = allSubtypesCount.get(subtype);
 		    if (recCount != null) {
-			displayString += " / " + recCount;
+			valueString += " / " + recCount;
 		    }
 		}
-		Label sl = new Label(displayString);
+		Label sl = new Label(valueString);
 		sl.setWidth(null);
 		sl.addStyleName("middle-left");
 		sl.addStyleName("right-margin-10");
+
+		subtypeLink.setWidth(null);
+		subtypeLink.addStyleName("middle-left");
+
+		statsSummaryPane.addComponent(subtypeLink);
 		statsSummaryPane.addComponent(sl);
 		// statsSummaryPane.setExpandRatio(sl, 1f);
-		// statsSummaryPane.setComponentAlignment(sl, Alignment.MIDDLE_LEFT);
+		// statsSummaryPane.setComponentAlignment(sl,
+		// Alignment.MIDDLE_LEFT);
 	    }
 	}
 
@@ -377,9 +424,11 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
 	// statusPane.addComponent(statsSummaryPane, 1, 0);
 	// statusPane.setColumnExpandRatio(1, 1.8f);
-	// statusPane.setComponentAlignment(statsSummaryPane, Alignment.MIDDLE_RIGHT);
+	// statusPane.setComponentAlignment(statsSummaryPane,
+	// Alignment.MIDDLE_RIGHT);
 
-	// summaryLayout.setComponentAlignment(statsSummaryPane, Alignment.MIDDLE_RIGHT);
+	// summaryLayout.setComponentAlignment(statsSummaryPane,
+	// Alignment.MIDDLE_RIGHT);
 
 	/* add the content */
 	Object contentObj = entity.getContent();
@@ -401,15 +450,17 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
     }
 
-    
-    private void displayFooterActions(Entity entity, OpenGroupsApplication app, ComponentContainer currentContainer,
-	    ActionContext ac) {
-	UserActionList entityActions = getAvailableActions(entity, ActionLocations.FOOTER);
+    private void displayFooterActions(Entity entity, OpenGroupsApplication app,
+	    ComponentContainer currentContainer, ActionContext ac) {
+	UserActionList entityActions = getAvailableActions(entity,
+		ActionLocations.FOOTER);
 	UserActionList globalActions = getGlobalActions(ActionLocations.FOOTER);
 
-	Collection<UserAction> allActions = getAllFooterActions(entityActions, globalActions);
+	Collection<UserAction> allActions = getAllFooterActions(entityActions,
+		globalActions);
 
-	// if (entityActions == null || entityActions.getActions() == null || entityActions.getActions().size() == 0) {
+	// if (entityActions == null || entityActions.getActions() == null ||
+	// entityActions.getActions().size() == 0) {
 	// return;
 	// }
 
@@ -444,11 +495,14 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		if (rightCount > 0) {
 		    changeRow = true;
 		}
-		
+
 	    }
 
 	    if (changeRow) {
-		/* add the left/right containers to the previous action container */
+		/*
+		 * add the left/right containers to the previous action
+		 * container
+		 */
 		if (actionContainer != null) {
 		    if (leftCount > 0) {
 			actionContainer.addComponent(leftContainer);
@@ -459,7 +513,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		}
 
 		actionContainer = new CssLayout();
-		actionContainer.addStyleName(OpenGroupsStyles.FOOTER_ACTION_PANE);
+		actionContainer
+			.addStyleName(OpenGroupsStyles.FOOTER_ACTION_PANE);
 		actionsContainer.addComponent(actionContainer);
 
 		leftContainer = new CssLayout();
@@ -470,20 +525,19 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 		leftCount = 0;
 		changeRow = false;
 	    }
-	    
-	    if(isLeft) {
+
+	    if (isLeft) {
 		leftCount++;
 		leftContainer.addComponent(cc);
 		cc.addStyleName("middle-left");
-	    }
-	    else {
+	    } else {
 		rightCount++;
 		rightContainer.addComponent(cc);
 	    }
 
 	    ua.executeHandler(entity, app, cc, ac);
 	}
-	
+
 	/* add these also for the last row */
 	if (actionContainer != null) {
 	    if (leftCount > 0) {
@@ -497,7 +551,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	currentContainer.addComponent(actionsContainer);
     }
 
-    private Collection<UserAction> getAllFooterActions(UserActionList local, UserActionList global) {
+    private Collection<UserAction> getAllFooterActions(UserActionList local,
+	    UserActionList global) {
 	List<UserAction> result = new ArrayList<UserAction>();
 	Deque<UserAction> localStack = new ArrayDeque<UserAction>();
 	Deque<UserAction> globalStack = new ArrayDeque<UserAction>();
@@ -517,7 +572,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
 	boolean localNotEmpty = false;
 	boolean globalNotEmpty = false;
-	while ((localNotEmpty = localStack.size() > 0) | (globalNotEmpty = globalStack.size() > 0)) {
+	while ((localNotEmpty = localStack.size() > 0)
+		| (globalNotEmpty = globalStack.size() > 0)) {
 	    long localOrder = Integer.MAX_VALUE;
 	    long globalOrder = Integer.MAX_VALUE;
 	    UserAction localAction = null;
@@ -554,11 +610,14 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	}
     }
 
-    private void displaySummaryActions(Entity entity, OpenGroupsApplication app, CssLayout currentContainer,
+    private void displaySummaryActions(Entity entity,
+	    OpenGroupsApplication app, CssLayout currentContainer,
 	    ActionContext ac) {
-	UserActionList actions = getAvailableActions(entity, ActionLocations.SUMMARY);
+	UserActionList actions = getAvailableActions(entity,
+		ActionLocations.SUMMARY);
 	// ComponentContainer container = app.getTargetComponent();
-	if (actions == null || actions.getActions() == null || actions.getActions().size() == 0) {
+	if (actions == null || actions.getActions() == null
+		|| actions.getActions().size() == 0) {
 	    return;
 	}
 
@@ -568,32 +627,36 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    actionContainer.addStyleName("left-margin-20");
 	    currentContainer.addComponent(actionContainer);
 	    // currentContainer.setExpandRatio(actionContainer, 2f);
-	    // currentContainer.setComponentAlignment(actionContainer, Alignment.MIDDLE_RIGHT);
+	    // currentContainer.setComponentAlignment(actionContainer,
+	    // Alignment.MIDDLE_RIGHT);
 	    ua.executeHandler(entity, app, actionContainer, ac);
 	}
     }
 
-    private Button getButtonForAction(final UserAction ha, final Entity entity, final OpenGroupsApplication app,
-	    ActionContext ac) {
+    private Button getButtonForAction(final UserAction ha, final Entity entity,
+	    final OpenGroupsApplication app, ActionContext ac) {
 	if (entity.getState().isActionActive(ha.getActionName())) {
 	    return getButtonForActiveAction(ha, entity, app, ac);
 	}
 	return getButtonForInactiveAction(ha, entity, app, ac);
     }
 
-    private Button getButtonForInactiveAction(final UserAction ha, final Entity entity,
-	    final OpenGroupsApplication app, final ActionContext ac) {
+    private Button getButtonForInactiveAction(final UserAction ha,
+	    final Entity entity, final OpenGroupsApplication app,
+	    final ActionContext ac) {
 	String actionState = ha.getActionName() + ".off";
 	String caption = OpenGroupsResources.getMessage(actionState);
 	Button actButton = new Button();
 	actButton.setDescription(caption);
-	actButton.setIcon(OpenGroupsResources.getIcon(actionState, OpenGroupsIconsSet.MEDIUM));
+	actButton.setIcon(OpenGroupsResources.getIcon(actionState,
+		OpenGroupsIconsSet.MEDIUM));
 	actButton.addStyleName(BaseTheme.BUTTON_LINK);
 	actButton.addListener(new ClickListener() {
 	    @Override
 	    public void buttonClick(ClickEvent event) {
 		// ha.executeHandler(entity,app,app.getTemporaryTab(entity).getContainer());
-		CssLayout hac = (CssLayout) entity.getHeaderActionContainer(ha.getActionName());
+		CssLayout hac = (CssLayout) entity.getHeaderActionContainer(ha
+			.getActionName());
 		hac.setVisible(true);
 		ha.executeHandler(entity, app, hac, ac);
 		// app.refreshEntity(entity);
@@ -603,22 +666,26 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	return actButton;
     }
 
-    private Button getButtonForActiveAction(final UserAction ha, final Entity entity, final OpenGroupsApplication app,
+    private Button getButtonForActiveAction(final UserAction ha,
+	    final Entity entity, final OpenGroupsApplication app,
 	    final ActionContext ac) {
 
 	String actionState = ha.getActionName() + ".on";
 	String caption = OpenGroupsResources.getMessage(actionState);
 	Button actButton = new Button();
 	actButton.setDescription(caption);
-	actButton.setIcon(OpenGroupsResources.getIcon(actionState, OpenGroupsIconsSet.MEDIUM));
+	actButton.setIcon(OpenGroupsResources.getIcon(actionState,
+		OpenGroupsIconsSet.MEDIUM));
 	actButton.addStyleName(BaseTheme.BUTTON_LINK);
 	actButton.addListener(new ClickListener() {
 	    @Override
 	    public void buttonClick(ClickEvent event) {
 		entity.getState().setActionInactive(ha.getActionName());
 		// app.getTemporaryTab(entity).setRefreshOn(true);
-		// getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, entity,app,null, false);
-		CssLayout hac = (CssLayout) entity.getHeaderActionContainer(ha.getActionName());
+		// getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB,
+		// entity,app,null, false);
+		CssLayout hac = (CssLayout) entity.getHeaderActionContainer(ha
+			.getActionName());
 		hac.setVisible(false);
 		// app.refreshEntity(entity);
 		refreshHeaderActionLinks(entity, app, ac);
@@ -627,10 +694,13 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	return actButton;
     }
 
-    private void refreshHeaderActionLinks(Entity entity, OpenGroupsApplication app, ActionContext ac) {
-	// UserActionList headerActions = getAvailableActions(entity, ActionLocations.HEADER);
+    private void refreshHeaderActionLinks(Entity entity,
+	    OpenGroupsApplication app, ActionContext ac) {
+	// UserActionList headerActions = getAvailableActions(entity,
+	// ActionLocations.HEADER);
 	// if (headerActions != null && headerActions.getActions() != null) {
-	// HorizontalLayout actionsContainer = (HorizontalLayout) entity.getHeaderActionLinksContainer();
+	// HorizontalLayout actionsContainer = (HorizontalLayout)
+	// entity.getHeaderActionLinksContainer();
 	// actionsContainer.removeAllComponents();
 	// for (final UserAction ha : headerActions.getActions().values()) {
 	// Button actButton = getButtonForAction(ha, entity, app);
@@ -638,16 +708,21 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	// }
 	// }
 
-	UserActionList headerActions = getAvailableActions(entity, ActionLocations.HEADER);
-	boolean allowRefresh = app.getAppConfigManager().getComplexEntityBooleanParam(entity.getComplexType(),
-		ComplexEntityParam.ALLOW_REFRESH);
-	boolean hasHeaderActions = headerActions != null && headerActions.getActions() != null;
+	UserActionList headerActions = getAvailableActions(entity,
+		ActionLocations.HEADER);
+	boolean allowRefresh = app.getAppConfigManager()
+		.getComplexEntityBooleanParam(entity.getComplexType(),
+			ComplexEntityParam.ALLOW_REFRESH);
+	boolean hasHeaderActions = headerActions != null
+		&& headerActions.getActions() != null;
 	if (allowRefresh || hasHeaderActions) {
-	    HorizontalLayout actionsContainer = (HorizontalLayout) entity.getHeaderActionLinksContainer();
+	    HorizontalLayout actionsContainer = (HorizontalLayout) entity
+		    .getHeaderActionLinksContainer();
 	    actionsContainer.removeAllComponents();
 	    /* add refresh button */
 	    if (allowRefresh) {
-		actionsContainer.addComponent(getRefreshButton(entity, app, ac));
+		actionsContainer
+			.addComponent(getRefreshButton(entity, app, ac));
 	    }
 	    if (hasHeaderActions) {
 		for (final UserAction ha : headerActions.getActions().values()) {
@@ -660,10 +735,12 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 
     }
 
-    private Button getRefreshButton(final Entity entity, final OpenGroupsApplication app, final ActionContext ac) {
+    private Button getRefreshButton(final Entity entity,
+	    final OpenGroupsApplication app, final ActionContext ac) {
 	Button refreshButton = new Button();
 	refreshButton.setDescription(getMessage("refresh.entity"));
-	refreshButton.setIcon(OpenGroupsResources.getIcon(OpenGroupsIconsSet.REFRESH, OpenGroupsIconsSet.MEDIUM));
+	refreshButton.setIcon(OpenGroupsResources.getIcon(
+		OpenGroupsIconsSet.REFRESH, OpenGroupsIconsSet.MEDIUM));
 	refreshButton.addStyleName(BaseTheme.BUTTON_LINK);
 
 	refreshButton.addListener(new ClickListener() {
@@ -671,7 +748,8 @@ public class OpenSelectedEntityHandler extends OpenGroupsActionHandler {
 	    @Override
 	    public void buttonClick(ClickEvent event) {
 		// app.getTemporaryTab(entity).setRefreshOn(true);
-		// getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB, entity, app, null, false);
+		// getActionsManager().executeAction(ActionsManager.OPEN_ENTITY_IN_TAB,
+		// entity, app, null, false);
 		app.fullyRefreshEntity(entity, ac);
 	    }
 	});

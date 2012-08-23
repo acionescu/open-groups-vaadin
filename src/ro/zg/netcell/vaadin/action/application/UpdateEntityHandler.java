@@ -19,9 +19,9 @@ import java.util.Map;
 
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.DataTranslationUtils;
-import ro.zg.netcell.vaadin.DefaultForm;
-import ro.zg.netcell.vaadin.DefaultForm.FormCommitEvent;
-import ro.zg.netcell.vaadin.DefaultForm.FormListener;
+import ro.zg.netcell.vaadin.ExtendedForm;
+import ro.zg.netcell.vaadin.ExtendedForm.FormCommitEvent;
+import ro.zg.netcell.vaadin.ExtendedForm.FormListener;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.netcell.vaadin.action.OpenGroupsActionHandler;
 import ro.zg.open_groups.OpenGroupsApplication;
@@ -32,6 +32,7 @@ import ro.zg.opengroups.vo.UserAction;
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Button.ClickEvent;
@@ -49,16 +50,16 @@ public class UpdateEntityHandler extends OpenGroupsActionHandler {
 		ComponentContainer targetContainer = actionContext.getTargetContainer();
 		Entity entity = actionContext.getEntity();
 		targetContainer.removeAllComponents();
-		DefaultForm form = getForm(entity, actionContext.getUserAction(),
+		ExtendedForm form = getForm(entity, actionContext.getUserAction(),
 				actionContext.getApp(), targetContainer, actionContext);
 		targetContainer.addComponent(form);
 
 	}
 
-	private DefaultForm getForm(final Entity entity, final UserAction ua,
+	private ExtendedForm getForm(final Entity entity, final UserAction ua,
 			final OpenGroupsApplication app,
 			final ComponentContainer targetContainer, final ActionContext ac) {
-		final DefaultForm form = ua.generateForm();
+		final ExtendedForm form = ua.generateForm(ac);
 		form.getField("title").setValue(entity.getTitle());
 		form.getField("content").setValue(entity.getContent());
 		// EntityDefinitionSummary actionDef =
@@ -81,8 +82,8 @@ public class UpdateEntityHandler extends OpenGroupsActionHandler {
 			@Override
 			public void onCommit(FormCommitEvent event) {
 
-				Map<String, Object> paramsMap = DataTranslationUtils
-						.getFormFieldsAsMap(event.getForm());
+				ExtendedForm f = (ExtendedForm)event.getForm();
+				Map<String, Object> paramsMap = f.getValue();
 				Entity selectedEntity = entity;
 
 				paramsMap.put("userId", app.getCurrentUserId());

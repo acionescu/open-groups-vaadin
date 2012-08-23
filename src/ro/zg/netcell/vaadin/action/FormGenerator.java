@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import ro.zg.netcell.vaadin.DefaultForm;
+import ro.zg.netcell.vaadin.ExtendedForm;
 import ro.zg.netcell.vaadin.action.constants.ActionParamProperties;
 
 import com.vaadin.data.validator.RegexpValidator;
@@ -46,8 +46,8 @@ public class FormGenerator implements Serializable {
 	this.messages = messages;
     }
     
-    public DefaultForm generate() {
-	DefaultForm form = new DefaultForm();
+    public ExtendedForm generate() {
+	ExtendedForm form = new ExtendedForm();
 	for(Map<String,String> paramConfig : paramsConfigList) {
 	    String fieldName = paramConfig.get(ActionParamProperties.NAME);
 	    Field f = getFieldFromParamsMap(paramConfig);
@@ -90,7 +90,6 @@ public class FormGenerator implements Serializable {
 	if(inputRegex != null) {
 	    f.addValidator(new RegexpValidator(inputRegex, messages.getString(formId+"."+fieldName+".regex.error")));
 	}
-	
 	
 	return f;
     }

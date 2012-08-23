@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import ro.zg.commons.exceptions.ContextAwareException;
 import ro.zg.commons.exceptions.ExceptionContext;
@@ -31,6 +33,7 @@ import ro.zg.opengroups.constants.ApplicationConfigParam;
 import ro.zg.opengroups.constants.OpenGroupsExceptions;
 import ro.zg.opengroups.constants.TypeRelationConfigParam;
 import ro.zg.opengroups.util.NetcellBean;
+import ro.zg.opengroups.vo.AccessRule;
 import ro.zg.opengroups.vo.Entity;
 import ro.zg.opengroups.vo.EntityLink;
 import ro.zg.opengroups.vo.EntityList;
@@ -50,13 +53,14 @@ public class OpenGroupsModel {
     private static final String GET_CAUSAL_HIERARCHY = "ro.problems.flows.get-entities-list";
     private static final String GET_CAUSES = "ro.problems.flows.get-all-causes-for-entity";
     private static final String LOGIN_WITH_OPENID = "ro.problems.flows.login-with-openid";
-    private static final String SAVE_USER_NOTIFICATION_RULES="ro.problems.notifications.save-rules-list";
+    private static final String SAVE_USER_NOTIFICATION_RULES = "ro.problems.notifications.save-rules-list";
+    private static final String GET_AVAILABLE_ACCESS_RULES_FOR_ENTITY = "ro.problems.data.get-available-access-rules-for-entity";
 
     private static OpenGroupsModel instance;
     private ApplicationConfigManager appConfigManager;
 
     private OpenGroupsModel() throws ContextAwareException {
-	appConfigManager=ApplicationConfigManager.getInstance();
+	appConfigManager = ApplicationConfigManager.getInstance();
     }
 
     public static OpenGroupsModel getInstance() throws ContextAwareException {
@@ -99,6 +103,9 @@ public class OpenGroupsModel {
 	}
 	CommandResponse response = getActionsManager().execute(
 		GET_ENTITY_INFO_FLOW, params);
+	if (!response.isSuccessful()) {
+	    throw OpenGroupsExceptions.getErrorFromResponse(response);
+	}
 	GenericNameValueList result = (GenericNameValueList) response
 		.getValue("result");
 	GenericNameValueContext row = (GenericNameValueContext) result
@@ -117,7 +124,7 @@ public class OpenGroupsModel {
     }
 
     public EntityList getChildrenListForEntity(Entity entity, UserAction ua,
-	    Long userId){
+	    Long userId) {
 	Map<String, Object> params = ua.getActionParams();
 	params.putAll(entity.getFilterValues());
 	params.put("pageNumber", entity.getState()
@@ -194,10 +201,11 @@ public class OpenGroupsModel {
     }
 
     public EntityList getCausalHierarchy(long rootNodeId, int startDepth,
-	    int cacheDepth) {
+	    int cacheDepth, Long userId) {
 	Map<String, Object> params = new HashMap<String, Object>();
 	params.put("parentId", rootNodeId);
 	params.put("startDepth", startDepth);
+	params.put("userId", userId);
 	params.put("depth", startDepth + cacheDepth);
 	params.put("withContent", false);
 	params.put("withoutLeafTypes", true);
@@ -292,16 +300,44 @@ public class OpenGroupsModel {
 
 	return bean;
     }
-    
-    public boolean saveUserNotificationRules(long userId, long entityId, NotificationRulesList rulesList){
-	Map<String,Object> params = new HashMap<String, Object>();
-	
+
+    public boolean saveUserNotificationRules(long userId, long entityId,
+	    NotificationRulesList rulesList) {
+	Map<String, Object> params = new HashMap<String, Object>();
+
 	params.put("userId", userId);
-	params.put("entityId",entityId);
-	params.put("rulesList",rulesList.getRawData());
-	
-	CommandResponse response = getActionsManager().execute(SAVE_USER_NOTIFICATION_RULES, params);
-	
+	params.put("entityId", entityId);
+	params.put("rulesList", rulesList.getRawData());
+
+	CommandResponse response = getActionsManager().execute(
+		SAVE_USER_NOTIFICATION_RULES, params);
+
 	return response.isSuccessful();
+    }
+
+    public Set<AccessRule> getAllowedAccessRulesForEntity(long entityId)
+	    throws ContextAwareException {
+	Map<String, Object> params = new HashMap<String, Object>();
+
+	params.put("entityId", entityId);
+	CommandResponse response = getActionsManager().execute(
+		GET_AVAILABLE_ACCESS_RULES_FOR_ENTITY, params);
+
+	if (!response.isSuccessful()) {
+	    throw OpenGroupsExceptions.getErrorFromResponse(response);
+	}
+
+	GenericNameValueList result = (GenericNameValueList) response
+		.getValue("result");
+	Set<AccessRule> accessRules = new TreeSet<AccessRule>();
+
+	for (int i = 0; i < result.size(); i++) {
+	    GenericNameValueContext row = (GenericNameValueContext) result
+		    .getValueForIndex(i);
+	    AccessRule ar = new AccessRule(row);
+	    accessRules.add(ar);
+	}
+	
+	return accessRules;
     }
 }

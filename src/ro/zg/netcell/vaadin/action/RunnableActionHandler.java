@@ -37,7 +37,7 @@ public class RunnableActionHandler implements Runnable{
 	try {
 	    nestedHandler.handle(actionContext);
 	} catch (Exception e) {
-	    errorHandler.handleActionError(e,actionContext.getApp());
+	    errorHandler.handleActionError(e,actionContext);
 	}
 	
     }

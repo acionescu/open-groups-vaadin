@@ -46,7 +46,8 @@ public class Entity implements Serializable {
     private int subtypesCount;
     private Map<String, Long> subtypeEntitiesCount = new LinkedHashMap<String, Long>();
     private Map<String, Long> recursiveSubtypeEntitiesCount = new LinkedHashMap<String, Long>();
-
+    private Long accessRuleId;
+    private Long groupId;
     private long proVotes;
     private long opposedVotes;
     private long totalVotes;
@@ -75,22 +76,24 @@ public class Entity implements Serializable {
     private ComponentContainer headerActionLinksContainer;
 
     private EntityUserData userData;
-    private EntityState state = new EntityState();
+    private EntityState state; 
 
     public Entity() {
-
+	state= new EntityState(this);
     }
 
     public Entity(long id) {
+	this();
 	this.id = id;
     }
 
     public Entity(long id, String complexType) {
-	this.id = id;
+	this(id);
 	setComplexType(complexType);
     }
 
     public Entity(GenericNameValueContext dataMap) {
+	this();
 	update(dataMap);
     }
 
@@ -109,6 +112,8 @@ public class Entity implements Serializable {
 	this.opposedVotes = (Long) dataMap.getValue("opposed_votes");
 	this.totalVotes = (Long) dataMap.getValue("total_votes");
 	this.creatorId = (Long) dataMap.getValue("creator_id");
+	this.accessRuleId=(Long)dataMap.getValue("access_rule_id");
+	this.groupId=(Long)dataMap.getValue("group_id");
 	if (dataMap.getValue("general_priority") != null) {
 	    this.generalPriority = (Long) dataMap.getValue("general_priority");
 	} else {
@@ -548,6 +553,22 @@ public class Entity implements Serializable {
      */
     public void setSelectedCause(EntityLink selectedCause) {
 	this.selectedCause = selectedCause;
+    }
+
+    public Long getAccessRuleId() {
+        return accessRuleId;
+    }
+
+    public void setAccessRuleId(Long accessRuleId) {
+        this.accessRuleId = accessRuleId;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
 }

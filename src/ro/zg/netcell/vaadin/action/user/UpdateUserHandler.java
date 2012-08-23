@@ -19,9 +19,9 @@ import java.util.Map;
 
 import ro.zg.netcell.control.CommandResponse;
 import ro.zg.netcell.vaadin.DataTranslationUtils;
-import ro.zg.netcell.vaadin.DefaultForm;
-import ro.zg.netcell.vaadin.DefaultForm.FormCommitEvent;
-import ro.zg.netcell.vaadin.DefaultForm.FormListener;
+import ro.zg.netcell.vaadin.ExtendedForm;
+import ro.zg.netcell.vaadin.ExtendedForm.FormCommitEvent;
+import ro.zg.netcell.vaadin.ExtendedForm.FormListener;
 import ro.zg.netcell.vaadin.action.ActionContext;
 import ro.zg.open_groups.OpenGroupsApplication;
 import ro.zg.opengroups.vo.User;
@@ -52,7 +52,7 @@ public class UpdateUserHandler extends UserHandler{
     }
     
     private Form getUpdateForm(final UserAction ua, final OpenGroupsApplication app, final ComponentContainer container, final ActionContext ac) {
-	DefaultForm form =  ua.generateForm();
+	ExtendedForm form =  ua.generateForm(ac);
 	User currentUser = app.getCurrentUser();
 //	form.getField("email").setValue(currentUser.getEmail());
 	form.getField("email").setPropertyDataSource(new ObjectProperty(currentUser.getEmail()));
@@ -71,7 +71,7 @@ public class UpdateUserHandler extends UserHandler{
     private void doUpdate(Form form, UserAction ua, OpenGroupsApplication app,ComponentContainer container, final ActionContext ac) {
 	form.setComponentError(null);
 	User user = app.getCurrentUser();
-	Map<String,Object> paramsMap = DataTranslationUtils.getFormFieldsAsMap(form);
+	Map<String,Object> paramsMap = (Map<String,Object>)form.getValue();
 	if(!isDataMofified(user, paramsMap)) {
 	    app.showNotification("data.not.changed");
 	    return;

@@ -18,6 +18,7 @@ package ro.zg.netcell.vaadin;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 import ro.zg.netcell.vo.InputParameter;
 
@@ -31,9 +32,24 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 
-public class DefaultForm extends Form {
+public class ExtendedForm extends Form {
 
     private static Method FORM_COMMIT_METHOD;
+    
+    private String formId;
+    private FormController formController;
+    
+    public ExtendedForm() {
+	super();
+    }
+    
+    public ExtendedForm(String formId, FormController formController) {
+	super();
+	this.formId = formId;
+	this.formController = formController;
+    }
+
+
 
     public void populateFromInputParameterList(List<InputParameter> list) {
 	setItemDataSource(DataTranslationUtils.inputParameterListToPropertysetItem(list));
@@ -69,6 +85,10 @@ public class DefaultForm extends Form {
 		discard();
 	    }
 	});
+    }
+    
+    public Map<String,Object> getValue(){
+	return formController.getFormData(this);
     }
 
     public void addSubmitButton(String caption) {
@@ -122,7 +142,7 @@ public class DefaultForm extends Form {
      * Emits the options change event.
      */
     protected void fireCommitEvent() {
-	fireEvent(new DefaultForm.FormCommitEvent(this));
+	fireEvent(new ExtendedForm.FormCommitEvent(this));
     }
 
     /**

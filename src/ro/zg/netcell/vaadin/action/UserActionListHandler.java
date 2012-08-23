@@ -95,6 +95,9 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 			    return;
 			}
 		    }
+		    else{
+			entity.getState().resetPageInfo();
+		    }
 		}
 		
 		if (ua instanceof UserActionList) {
@@ -115,8 +118,8 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 			entity.getState().setCurrentTabAction(ua);
 			entity.getState().setCurrentTabActionContainer(selectedTabContent);
 			entity.getState().setCurrentActionsPath(ua.getFullActionPath());
-			entity.getState().getDesiredActionTabsQueue().clear();
-			entity.getState().resetPageInfoForCurrentAction();
+//			entity.getState().getDesiredActionTabsQueue().clear();
+//			entity.getState().resetPageInfoForCurrentAction();
 			actionContext.getWindow().setFragmentToEntity(entity);
 		    }
 		    ua.executeHandler(entity, app, selectedTabContent, false, actionContext);

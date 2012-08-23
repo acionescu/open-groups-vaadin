@@ -54,7 +54,7 @@ public class RefreshCausalHierarchyHandler extends OpenGroupsActionHandler {
 	    }
 	}
 
-	EntityList hierarchyList = app.getModel().getCausalHierarchy(parentNodeId, startDepth, chc.getCacheDepth());
+	EntityList hierarchyList = app.getModel().getCausalHierarchy(parentNodeId, startDepth, chc.getCacheDepth(),app.getCurrentUserId());
 	
 	chc.updateHierarchy(hierarchyList, refresh);
 	chc.setSelected(app.getActiveEntity().getId());
