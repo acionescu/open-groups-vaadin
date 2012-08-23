@@ -446,4 +446,45 @@ where a.name='user.notification.rules.read'
 and acs.action_id=a.id
 and acs.complex_entity_type_id=(select id from complex_entity_type where complex_type='*');
 
+--fix for get_direct_distance
+
+-- Function: get_direct_distance(bigint, bigint)
+
+-- DROP FUNCTION get_direct_distance(bigint, bigint);
+
+CREATE OR REPLACE FUNCTION get_direct_distance(child_id bigint, parent_id bigint)
+  RETURNS bigint AS
+$BODY$DECLARE depth bigint;
+
+begin
+
+if(child_id=parent_id) then
+return 0;
+end if;
+
+WITH RECURSIVE entity_upstream_hierarchy(id, parent_entity_id, depth) AS (
+        SELECT el.entity_id, el.parent_id, 0
+        FROM entities_links el
+        where el.entity_id=child_id
+
+      UNION ALL
+        SELECT el.entity_id, el.parent_id, eg.depth + 1
+        FROM entities_links el, entity_upstream_hierarchy eg
+        WHERE el.entity_id = eg.parent_entity_id
+        and el.entity_id != el.parent_id
+)
+
+select into depth eh.depth from entity_upstream_hierarchy eh
+where eh.id= parent_id;
+
+
+
+return depth;
+end;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION get_direct_distance(bigint, bigint)
+  OWNER TO metaguvernare;
+
+
 commit;

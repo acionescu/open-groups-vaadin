@@ -95,6 +95,9 @@ public class UserActionListHandler extends OpenGroupsActionHandler {
 			    return;
 			}
 		    }
+		    else{
+			entity.getState().resetPageInfo();
+		    }
 		}
 		
 		if (ua instanceof UserActionList) {
